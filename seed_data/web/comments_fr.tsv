@@ -1,0 +1,15 @@
+# NGE V1.26 — French comment bank (light; other kinds fall back to English).
+kind	archetype	parent_sent	era_from	era_to	text
+agree	any	pos	2008	2016	Exactement ça.
+agree	any	pos	2008	2016	Je confirme.
+agree	any	pos	2008	2016	Entièrement d'accord.
+agree	any	neg	2008	2016	Merci, je croyais que ça venait de moi.
+agree	any	neg	2008	2016	Pareil pour moi.
+disagree	any	pos	2008	2016	Pas du tout d'accord.
+disagree	any	neg	2008	2016	Un peu sévère, non ?
+question	any	any	2008	2016	Ça tourne sur l'ancien modèle ?
+question	any	any	2008	2016	L'édition spéciale vaut le coup ?
+answer	any	any	2008	2016	@{prev_user} oui, mais les chargements sont plus longs.
+agree	any	pos	2008	2016	+1
+agree	any	pos	2008	2016	Voilà.
+disagree	any	pos	2008	2016	Non, pas d'accord.

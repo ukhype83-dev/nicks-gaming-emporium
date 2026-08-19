@@ -1,0 +1,651 @@
+# NGE V1.26 — English phrase bank, TRANCHE 1 (design §4 + Appendix B)
+# Columns: slot / archetype / sentiment / era_from / era_to / text
+# archetype 'any' = usable by all; sentiment 'any' = usable at any sentiment.
+# Micro-slots filled by the ENGINE from real data:
+#   {title} {platform} {genre} {publisher} {developer} {price} {city}
+#   {n_years} {credit_amount} {year} {month_name} {condition_grade}
+# Micro-slots resolved recursively from THIS bank (rows whose slot matches):
+#   {praise_verb} {flaw_noun} {kid_word} {family_word} {staff_detail}
+#   {expire_phrase} {store_word} {time_ago} {era_slang_pos} {era_slang_neg}
+# Quirk noise (typos, caps, punctuation) is applied AFTER assembly per the
+# archetype dials in archetypes.tsv — do not bake typos into fragments except
+# where the voice demands it (capslock/driveby rows may carry them).
+slot	archetype	sentiment	era_from	era_to	text
+opener_long	essayist	any	2005	2016	I have been mulling this review over for a week, so bear with me.
+opener_long	essayist	any	2005	2016	Let me preface this by saying I rarely write reviews, but {title} deserves a proper one.
+opener_long	essayist	any	2005	2016	There are three things you should know before buying {title}, and none of them fit in one sentence.
+opener_long	essayist	any	2005	2016	I finished {title} last night and I have been thinking about it ever since.
+opener_long	essayist	any	2005	2016	This is going to be a long one, because {title} is not a game you can sum up in a line.
+opener_disappointed	any	neg	2005	2016	I wanted to like this. I really did.
+opener_disappointed	any	neg	2005	2016	It brings me no joy to write this review.
+opener_disappointed	any	neg	2005	2016	I gave {title} every chance. Three separate evenings. It did not earn them.
+opener_disappointed	any	neg	2005	2016	How do you get {genre} this wrong in {year}?
+opener_disappointed	any	neg	2005	2016	Somewhere at {publisher} there is a meeting room where this seemed like a good idea.
+context	essayist	any	2005	2016	For context, I have played every {genre} release worth mentioning since the SNES days.
+context	essayist	any	2005	2016	I picked this up {time_ago} on the strength of the previews, going in almost blind.
+context	essayist	any	2005	2016	My history with {developer} goes back a long way, which is exactly why my expectations were where they were.
+context	essayist	any	2005	2016	I ordered this from the {city} store, and the copy arrived exactly as described.
+context	essayist	any	2005	2016	A friend lent me the {platform} version first; I liked it enough to buy my own copy.
+experience	any	any	2005	2016	The first hour is slow, but it opens up considerably after that.
+experience	any	any	2005	2016	I sat down for a quick look and lost the entire evening, which tells you most of what you need to know.
+experience	any	any	2005	2016	It took me about a weekend to see everything the game wanted to show me.
+experience	any	any	2005	2016	My save file says {n_years} hours and I am not proud of it. Actually, yes I am.
+experience	any	any	2005	2016	I played through twice, once normally and once to test what I am about to complain about.
+experience_loud	capslock	any	2005	2011	played it ALL WEEKEND. mom had to physically unplug the tv
+experience_loud	capslock	any	2005	2011	me and my brother took turns until 3am on a SCHOOL NIGHT
+experience_loud	capslock	any	2005	2011	beat it in two days. TWO DAYS. no sleep club
+experience_loud	capslock	any	2012	2016	Played it all weekend like I was 14 again. No regrets.
+experience_loud	capslock	any	2012	2016	Stayed up way too late with this one. Some habits survive your twenties.
+praise_detail	any	pos	2005	2016	The {genre} mechanics are the tightest I have seen this generation.
+praise_detail	any	pos	2005	2016	Visually it is comfortably the best thing on {platform} right now.
+praise_detail	any	pos	2005	2016	The soundtrack alone is worth the asking price; I have had it on in the car.
+praise_detail	any	pos	2005	2016	Whoever designed the difficulty curve deserves a raise — challenging without ever feeling cheap.
+praise_detail	any	pos	2005	2016	It respects your time, which I am starting to realise is the rarest feature of all.
+praise_detail	any	pos	2005	2016	{developer} clearly cared about this one. It shows in a hundred small touches.
+praise_loud	capslock	pos	2005	2011	the graphics are INSANE. my friend thought it was a movie. A MOVIE
+praise_loud	capslock	pos	2005	2011	best {genre} game EVER MADE and im not even exaggerating
+praise_loud	capslock	pos	2005	2011	the bosses in this game?? absolutely LEGENDARY
+praise_loud	capslock	pos	2012	2016	Honestly? Still the best {genre} game I've played since the old days.
+praise_loud	superfan	pos	2005	2016	This is why {developer} is the greatest studio working today. Nobody else comes close.
+praise_loud	superfan	pos	2005	2016	Every entry in this series raises the bar and this one cleared it with room to spare.
+praise_grudging	grouch	any	2005	2016	Credit where due: the core of the game is solid.
+praise_grudging	grouch	any	2005	2016	I will grudgingly admit the second half is genuinely good.
+praise_grudging	grouch	any	2005	2016	Fine. The soundtrack is excellent. There, I said something nice.
+minor_flaw	any	any	2005	2016	My only real complaint is the menu system, which feels like it was designed by a committee that never met.
+minor_flaw	any	any	2005	2016	Knock a point off for the load times, which test your patience in the later chapters.
+minor_flaw	any	any	2005	2016	The camera occasionally has ideas of its own, though you learn to work with it.
+minor_flaw	any	any	2005	2016	A patch has since fixed my main gripe, for what that is worth.
+flaw_detail	any	neg	2005	2016	The controls fight you constantly, like the game resents being played.
+flaw_detail	any	neg	2005	2016	It crashes. Not occasionally — reliably, in the same chapter, on two different consoles.
+flaw_detail	any	neg	2005	2016	The difficulty is not challenge, it is padding. Cheap deaths to stretch six hours of content into twelve.
+flaw_detail	any	neg	2005	2016	Half the features on the back of the box are technically present and practically unusable.
+flaw_detail	any	neg	2005	2016	The AI is an embarrassment. I watched an enemy walk into a wall for a full minute.
+flaw_detail	any	neg	2005	2016	Whatever {publisher} paid the QA team, it was too much.
+flaw_detail	any	mixed	2005	2016	For every good idea there is a baffling one right next to it.
+flaw_detail	any	mixed	2005	2016	The ambition outruns the execution in a few too many places.
+flaw_loud	capslock	any	2005	2011	the camera is BROKEN. actually BROKEN. who shipped this
+flaw_loud	capslock	any	2005	2011	40 dollars for SIX HOURS?? are you kidding me
+flaw_loud	capslock	any	2012	2016	The camera is still broken, by the way. Some things never change.
+flaw_tech	technerd	any	2005	2016	Frame rate drops into the low twenties whenever more than three characters are on screen. I measured it.
+flaw_tech	technerd	any	2005	2016	The "HD" textures are upscaled, not native. Compare any signage at 1:1 and it is obvious.
+flaw_tech	technerd	any	2005	2016	Input latency is around 130ms on a standard HDMI chain, which is unacceptable for {genre}.
+flaw_tech	technerd	any	2005	2016	It does not hold sync on interlaced displays, which matters if you still run a CRT for the older systems.
+spec_detail	technerd	any	2005	2016	For reference I am running component out into a calibrated set, so this is not a cabling issue.
+spec_detail	technerd	any	2005	2016	Load times: 41 seconds from menu to gameplay on the stock drive, 28 after the drive swap.
+spec_detail	technerd	any	2005	2016	The manual claims 60fps. It is 60 in menus. In gameplay it is a locked 30, which is fine, but say so.
+spec_detail	technerd	any	2005	2016	Note that the {platform} version renders at a lower internal resolution than its competitors. Details in my profile.
+methodology	technerd	any	2005	2016	Methodology as always: capture card, frame counter, three runs, worst case reported.
+methodology	technerd	any	2005	2016	I tested on two consoles and three discs to rule out hardware, before anyone asks.
+weigh_up	any	mixed	2005	2016	So where does that leave us? Somewhere frustratingly in the middle.
+weigh_up	any	mixed	2005	2016	The good outweighs the bad, but only just, and only if you are patient.
+weigh_up	any	mixed	2005	2016	I keep going back and forth on this one, which is itself a kind of verdict.
+concession	any	neg	2005	2016	To be fair, the opening act shows real promise before it all goes sideways.
+concession	any	neg	2005	2016	I will grant that the art team did their job; everyone else let them down.
+comparison	any	any	2005	2016	If you liked the previous one, temper your expectations — this is a different animal.
+comparison	any	any	2005	2016	It sits somewhere between the last two entries in quality, closer to the good one.
+comparison	any	any	2005	2016	People compare it to the {platform} classics, and for once the comparison is not embarrassing.
+verdict_long	essayist	pos	2005	2016	In conclusion: not perfect, but essential. {title} will be remembered when this generation's shelf is cleared.
+verdict_long	essayist	pos	2005	2016	In the end I can only judge a game by whether I think about it when I am not playing it. By that measure, five stars.
+verdict_mixed	any	mixed	2005	2016	Three stars: worth playing, hard to love. Wait for the price to drop.
+verdict_mixed	any	mixed	2005	2016	A rental, in the old language. Try before you commit.
+verdict_mixed	any	mixed	2005	2016	Buy it used, keep your receipt, and you will get your money's worth. Probably.
+verdict_neg	any	neg	2005	2016	Save your money. There are better ways to spend {price} and most of them are also games.
+verdict_neg	any	neg	2005	2016	Traded it back in within the week, which says more than the last four paragraphs.
+verdict_neg	any	neg	2005	2016	The box art wrote a cheque the game could not cash.
+verdict_loud	capslock	pos	2005	2011	GAME OF THE YEAR. dont even read the other reviews just BUY IT
+verdict_loud	capslock	pos	2005	2011	10/10 would lose sleep again
+verdict_loud	capslock	pos	2012	2016	Game of the year, and I say that as a grown adult with a mortgage.
+verdict_mixed_loud	capslock	mixed	2005	2011	its good but its not THAT good. rent it first trust me
+verdict_neg_loud	capslock	neg	2005	2011	do NOT buy this. im serious. worst {price} i ever spent
+verdict_neg_loud	capslock	neg	2012	2016	Hard pass. And I'm the guy who defended the last one.
+opener_hype	capslock	any	2005	2011	FINALLY.
+opener_hype	capslock	any	2005	2011	OK LISTEN UP.
+opener_hype	capslock	any	2005	2011	been waiting for this since the magazine preview and IT DELIVERS
+opener_hype	capslock	any	2012	2016	Okay, listen. I've been doing this since the dial-up days.
+opener_letdown_loud	capslock	neg	2005	2011	i saved up for THREE MONTHS for this
+opener_letdown_loud	capslock	neg	2012	2016	I pre-ordered this. I have nobody to blame but myself.
+opener_reluctant	grouch	any	2005	2016	Against my better judgement, I bought this at full price.
+opener_reluctant	grouch	any	2005	2016	Everyone told me this was the good one. "Everyone" has a lot to answer for.
+opener_reluctant	grouch	any	2005	2016	I have complained about this company for years, so believe me when I say I came in ready to hate this.
+verdict_grudging	grouch	pos	2005	2016	{stars} stars, and it hurt to type that.
+verdict_grudging	grouch	pos	2005	2016	Fine. It is good. Do not make me say it twice.
+signoff_grouch	grouch	any	2005	2016	I will be back when they inevitably ruin the sequel.
+signoff_grouch	grouch	any	2005	2016	As usual, nobody at head office will read this.
+store_gripe	any	neg	2005	2016	Also, the {city} store shelved this under the wrong platform for a month. Sort it out.
+store_gripe	any	neg	2005	2016	Sold to me as "{condition_grade}". It was not. That is two grading complaints this year.
+store_gripe	any	neg	2013	2016	And before anyone asks — yes, another local store closed while I was writing this.
+store_note	any	pos	2005	2013	Shout-out to the {city} store staff, who {staff_detail}.
+store_note	any	pos	2005	2013	The staff at my local NGE actually knew the game and talked me out of the worse edition. That still counts for something.
+store_note	any	pos	2005	2016	Delivery from the warehouse was two days flat, credit where due.
+opener_parent	parent	any	2005	2016	Bought this for my {kid_word}'s birthday after the usual weeks of hints.
+opener_parent	parent	any	2005	2016	Full disclosure: I am the parent here, and my {kid_word} is the actual expert.
+opener_parent	parent	any	2005	2016	Every Christmas there is one box that matters most. This year it was {title}.
+occasion	parent	any	2005	2016	The {city} store had it wrapped and behind the counter for me, which saved the surprise.
+occasion	parent	any	2005	2016	We made the mistake of opening it before dinner. Dinner was late.
+occasion	parent	any	2005	2016	It was a good-report-card present, for the record. We have rules.
+kid_reaction	parent	pos	2005	2016	I have not seen a reaction like that since the bike with the streamers. Total silence, then screaming.
+kid_reaction	parent	pos	2005	2016	My {kid_word} has now explained the plot to me four times. I understand none of it. Five stars.
+kid_reaction	parent	pos	2005	2016	Grandma is now genuinely competitive at it, which has caused some issues at Sunday lunch.
+kid_reaction	parent	mixed	2005	2016	It was the favourite for about two weeks, and has since joined the pile. Par for the course.
+parent_note	parent	any	2005	2016	Note for other parents: the age rating is about right, maybe a shade generous.
+parent_note	parent	any	2005	2016	You do NOT need the accessory bundle, whatever the box implies. The basic set is fine.
+parent_note	parent	any	2005	2016	The two-player mode is the reason to buy it — it is the first game the whole {family_word} actually shares.
+parent_concern	parent	neg	2005	2016	Nothing on the box mentions the online chat, which I would have liked to know about in advance.
+parent_concern	parent	neg	2005	2016	It is much harder than the cover suggests; there were tears by Boxing Day.
+parent_concern	parent	neg	2005	2016	The "free" extras all cost real money once you are inside the game. In a children's title. Honestly.
+verdict_parent	parent	pos	2005	2016	Five stars from the household. The dog abstained.
+verdict_parent	parent	pos	2005	2016	Worth every penny of the {price}, and I am the one who counts the pennies.
+verdict_neg_parent	parent	neg	2005	2016	Returned it, and the {city} store were decent about it, which salvages one star.
+opener_tech	technerd	any	2005	2016	Before the flames start: everything below is measured, not vibes.
+opener_tech	technerd	any	2005	2016	Everyone benchmarking the launch build is missing the point, so let me try again with numbers.
+opener_tech	technerd	any	2005	2016	Three claims on the back of this box are testable. I tested them.
+verdict_tech	technerd	pos	2005	2016	Recommended, with the caveats above. The numbers hold up.
+verdict_tech	technerd	pos	2005	2016	Buy the {platform} version specifically. The delta is real and visible.
+verdict_mixed_tech	technerd	mixed	2005	2016	Wait for the revision. The silicon will improve; the launch units will not.
+verdict_neg_tech	technerd	neg	2005	2016	Cannot recommend at any price until the patch lands. The data is in my profile if you want to argue.
+verdict_short_pos	driveby	pos	2005	2016	good.
+verdict_short_pos	driveby	pos	2005	2016	10/10
+verdict_short_pos	driveby	pos	2005	2016	buy it
+verdict_short_pos	driveby	pos	2005	2016	best one yet
+verdict_short_pos	driveby	pos	2005	2016	W
+verdict_short_mixed	driveby	mixed	2005	2016	its ok
+verdict_short_mixed	driveby	mixed	2005	2016	mid. wait for a sale
+verdict_short_mixed	driveby	mixed	2005	2016	fine i guess
+verdict_short_neg	driveby	neg	2005	2016	trash
+verdict_short_neg	driveby	neg	2005	2016	no.
+verdict_short_neg	driveby	neg	2005	2016	refunded
+verdict_short_neg	driveby	neg	2005	2016	L
+opener_collector	collector	any	2005	2016	Arrived today: {title}, {platform}, listed {condition_grade}. Grading notes below, as always.
+opener_collector	collector	any	2005	2016	This fills the last gap in my {platform} shelf, so I was prepared to forgive a lot.
+opener_collector	collector	any	2005	2016	Ordered sight-unseen from the {city} store's used stock, which is always a small act of faith.
+condition_note	collector	any	2005	2016	Cart pins clean, label square with minor sun-fade, battery holding a save from 1998 — which I left in place, obviously.
+condition_note	collector	any	2005	2016	Disc resurfaced but honest about it, manual complete, case original. That is a fair "{condition_grade}".
+condition_note	collector	any	2005	2016	Complete in box with both inserts, which is rarer than the game itself at this point.
+grading_gripe	collector	neg	2005	2016	"{condition_grade}" used to mean tested, complete, minor wear. What arrived fails all three. The chart means something or it means nothing.
+grading_gripe	collector	neg	2005	2016	Three years ago the {city} store would have priced this two grades lower. Somebody in purchasing knows this.
+grading_gripe	collector	neg	2005	2016	Coffee ring on the manual. A COFFEE RING. Grade honestly or do not grade at all.
+verdict_collector	collector	pos	2005	2016	Shelf-worthy. The hunt continues.
+verdict_collector	collector	pos	2005	2016	Five stars for the item, and a nod to whoever at the warehouse packed it properly.
+verdict_neg_collector	collector	neg	2005	2016	Returned. One star back when the grading chart means something again.
+opener_fan	superfan	any	2005	2016	Been with this series since the first one, so you know where this is going.
+opener_fan	superfan	any	2005	2016	THE WAIT IS OVER.
+opener_fan	superfan	any	2005	2016	I took the day off for this release. Zero shame.
+launch_story	superfan	any	2005	2013	Midnight launch at the {city} store — staff had pizza going and somebody brought a CRT for the old ones. This is what it is about.
+launch_story	superfan	any	2005	2013	First in line at {city}, second year running. The manager knows my order before I say it.
+launch_story	superfan	any	2005	2016	Pre-ordered the day it was announced. The receipt has been on the fridge since.
+loyalty_note	superfan	any	2005	2016	I will still be here for the next one. That was never in question.
+loyalty_note	superfan	neg	2005	2016	I defended the last one. I defended the one before that. Even I have limits.
+opener_betrayed	superfan	neg	2005	2016	I have bought every entry in this series at launch. Which is why this hurts.
+opener_betrayed	superfan	neg	2005	2016	They finally did it. They made one I cannot defend.
+verdict_fan	superfan	pos	2005	2016	Series peak. I do not say that lightly.
+verdict_fan	superfan	pos	2005	2016	Five stars, day one, no regrets. See you at the next midnight launch.
+verdict_neg_fan	superfan	neg	2005	2016	One of these stars is pure loyalty, and it is embarrassed to be here.
+opener_refund	bucks_victim	any	2015	2016	So let me tell you what happened when I tried to return this.
+opener_refund	bucks_victim	any	2015	2016	The product is beside the point. This review is about what NGE calls a "refund" now.
+refund_story	bucks_victim	any	2015	2016	Faulty out of the box, returned within warranty, no argument from the staff — so far so good.
+refund_story	bucks_victim	any	2015	2016	Took it back to the {city} store with the receipt, expecting this to take five minutes.
+bucks_rage	bucks_victim	any	2015	2016	Instead of my {credit_amount} back I got "EmporiumBucks" which {expire_phrase}. That is not a refund, it is a hostage situation.
+bucks_rage	bucks_victim	any	2015	2016	{credit_amount} in EmporiumBucks. Spendable only at NGE. My nearest NGE {expire_phrase}. Do the maths.
+bucks_rage	bucks_victim	any	2015	2016	They printed my {credit_amount} onto a card that expires in 18 months. The store itself may not last that long. Nobody at the till disagreed with me.
+closure_ref	bucks_victim	any	2015	2016	The {city} store closes next month. The next nearest is an hour away. Where exactly am I meant to spend this?
+closure_ref	any	neg	2013	2016	Half the stores in my state have shut since I started this hobby. You can feel it in the shelves.
+verdict_bucks	bucks_victim	neg	2015	2016	One star, and it is not about the game. Give people their money back, Priscilla.
+verdict_bucks	bucks_victim	neg	2015	2016	Buy from anywhere that still deals in actual money.
+opener_deal	dealhunter	any	2005	2016	Picked this up in the sale for {price}, tags still on.
+opener_deal	dealhunter	any	2005	2016	Patience pays: {price}, down from launch price, six months later.
+opener_deal	dealhunter	any	2005	2016	The {city} store's clearance shelf strikes again.
+price_note	dealhunter	pos	2005	2016	At {price} this is the best pound-for-pound purchase I have made all year.
+price_note	dealhunter	pos	2005	2016	Cheaper than a cinema ticket and it lasted me a month. That is the whole review, really.
+price_note	dealhunter	mixed	2005	2016	At full price this would be three stars. At {price} it rounds up.
+price_gripe	dealhunter	neg	2005	2016	Even at {price} I want my money back, and I did not pay much.
+price_gripe	dealhunter	neg	2005	2016	Saw it for less elsewhere a week later, which is somehow the perfect ending.
+verdict_deal	dealhunter	pos	2005	2016	{price} well spent. Wait for the drop and thank me later.
+verdict_deal	dealhunter	pos	2005	2016	Full marks at this price. Would not pay launch price, but that is what patience is for.
+opener_troll_contrarian	troll	neg	2006	2016	So I finally played the "masterpiece."
+opener_troll_contrarian	troll	neg	2006	2016	Unpopular opinion incoming. Someone has to say it.
+opener_troll_contrarian	troll	neg	2006	2016	Everybody relax, I'm about to fix this game's average rating.
+opener_troll_ironic	troll	pos	2006	2016	Five stars. Genuinely. Hear me out.
+opener_troll_ironic	troll	pos	2006	2016	This is the greatest comedy release of {year} and it does not even know it.
+bait_line	troll	any	2006	2016	Sorry your childhood was mid.
+bait_line	troll	any	2006	2016	The fans praising this have literally never played anything else. It shows.
+bait_line	troll	any	2006	2016	Imagine defending {publisher} for free. Couldn't be me.
+bait_line	troll	any	2006	2016	Downvotes to the left, I'll wait.
+bait_line	troll	any	2006	2016	I've seen better {genre} mechanics in a cereal-box demo disc.
+dismiss_classic	troll	neg	2006	2016	It's a fishing minigame with a good soundtrack. That's it. That's the "classic."
+dismiss_classic	troll	neg	2006	2016	Remove the nostalgia and there is genuinely nothing here. I said what I said.
+dismiss_classic	troll	neg	2006	2016	This gets a pass because you were twelve when you played it. I wasn't.
+concession_fake	troll	mixed	2006	2016	I'll give it one thing: the box art goes hard. Shame about the contents.
+verdict_troll	troll	mixed	2006	2016	Perfectly average, and average deserves to hear it.
+verdict_troll	troll	mixed	2006	2016	Three stars. Being generous because the comments will be free entertainment.
+verdict_troll	troll	neg	2006	2016	Rating it what it deserves, not what you remember.
+verdict_troll	troll	neg	2006	2016	Cry about it in the comments, that's what they're for.
+verdict_troll_ironic	troll	pos	2006	2016	Five stars. Funniest {price} I ever spent. Buy it for someone you dislike.
+troll_signoff	troll	any	2006	2016	Replies are open. Bring friends.
+troll_signoff	troll	any	2006	2016	Inb4 "you just don't get it." Correct. Neither do you.
+signoff	any	any	2005	2016	Happy to answer questions in the comments.
+signoff	any	any	2005	2016	Hope this helps somebody on the fence.
+signoff	any	any	2005	2016	As always: my copy, my money, my opinion.
+signoff	essayist	any	2005	2016	If you read this far, you were always going to buy it. Enjoy.
+postscript	any	any	2005	2016	EDIT: typos, and no I am not changing the rating.
+postscript	capslock	any	2005	2011	edit: 2 people asked, its the {city} store, they still have some
+postscript	superfan	any	2005	2016	EDIT since people asked: yes the collector's edition is worth it. It is always worth it.
+verdict_mixed	grouch	mixed	2005	2016	Three stars, which for me is practically a parade.
+# ---- sub-slot vocabularies (resolved recursively) -------------------------
+praise_verb	any	any	2005	2016	went out of their way to help
+praise_verb	any	any	2005	2016	actually knew their stock
+praise_verb	any	any	2005	2016	held my pre-order past the deadline
+staff_detail	any	any	2005	2016	printed out the setup steps for me without being asked
+staff_detail	any	any	2005	2016	dug the last copy out of the back room
+staff_detail	any	any	2005	2016	talked me out of the worse edition, against their own commission I assume
+staff_detail	any	any	2005	2016	carried it out to the car like it was a piano
+kid_word	any	any	2005	2016	son
+kid_word	any	any	2005	2016	daughter
+kid_word	any	any	2005	2016	eldest
+kid_word	any	any	2005	2016	youngest
+kid_word	any	any	2005	2016	nephew
+kid_word	any	any	2005	2016	granddaughter
+family_word	any	any	2005	2016	family
+family_word	any	any	2005	2016	household
+family_word	any	any	2005	2016	house
+expire_phrase	any	any	2015	2016	expire in 18 months
+expire_phrase	any	any	2015	2016	can only be spent at stores that keep closing
+expire_phrase	any	any	2015	2016	apparently "expire", which nobody mentioned at the till
+expire_phrase	any	any	2015	2016	expire before anywhere is left to spend them
+time_ago	any	any	2005	2016	on launch day
+time_ago	any	any	2005	2016	a few weeks back
+time_ago	any	any	2005	2016	over the holidays
+time_ago	any	any	2005	2016	after months of fence-sitting
+store_word	any	any	2005	2016	store
+store_word	any	any	2005	2016	shop
+store_word	any	any	2005	2016	branch
+# ---- anomaly pools --------------------------------------------------------
+# A2 review-bomb, Oct-Nov 2012 ONLY. Deliberately narrow: the sameness is the
+# signature. Engine uses slot 'bomb_line' verbatim as the whole body.
+bomb_line	any	neg	2012	2012	sinking ship. read the filings. spend your money somewhere that will exist next year
+bomb_line	any	neg	2012	2012	company is finished, google the going concern warning. dont get stuck with worthless store credit
+bomb_line	any	neg	2012	2012	why would you buy from a chain that wont exist by christmas. read the news
+bomb_line	any	neg	2012	2012	sinking ship. dont say nobody warned you
+bomb_line	any	neg	2012	2012	store credit from a bankrupt company is confetti. shop literally anywhere else
+# A4 shill pocket, Sept-Oct 2008, Too Human (release 41900) ONLY. Same rule:
+# suspicious sameness, five-star, breathless, no specifics a player would know.
+shill_line	any	pos	2008	2008	Incredible next-gen action experience. The innovative combat system needs to be experienced to be believed. Instant classic!
+shill_line	any	pos	2008	2008	A stunning achievement in the action RPG genre. The epic story and innovative controls set a new standard. Highly recommended!
+shill_line	any	pos	2008	2008	Finally a title that delivers on the next-gen promise! Amazing visuals and deep combat. Do not miss this instant classic.
+shill_line	any	pos	2008	2008	The most innovative action experience this year. Epic in every sense. A must-buy for any serious gamer!
+# A7 the goodbye threads, Sept 2016 ONLY (comments engine also draws these).
+goodbye_line	any	any	2016	2016	Bought my first game at the {city} store in another lifetime. Whoever is still reading this: thanks.
+goodbye_line	any	any	2016	2016	They announced the last day today. I know it's just a shop. It isn't, though.
+goodbye_line	any	any	2016	2016	Went in for the fire sale and ended up just standing there for a bit. Anyone else?
+goodbye_line	any	any	2016	2016	My dad took me on Saturdays. I took my kids on Saturdays. Out of Saturdays now.
+goodbye_line	any	any	2016	2016	30 years. Thanks for all of it, Nick.
+
+# ---- TRANCHE 2 variety expansion (2026-07-19): break repetition at 30g scale ----
+opener_fan	superfan	any	2005	2016	I have every entry in this series, sealed and loose. So take this seriously.
+opener_fan	superfan	any	2005	2016	Day one. Always day one for this series.
+opener_fan	superfan	any	2005	2016	Longtime fan, first-time reviewer of a numbered entry. Here we go.
+opener_fan	superfan	any	2005	2016	You already know I was always buying this. The question is whether YOU should.
+opener_fan	superfan	any	2005	2016	I've defended this franchise in worse comment sections than this one.
+opener_fan	superfan	any	2005	2016	The countdown clock has been on my desktop for months. It hit zero last night.
+opener_fan	superfan	any	2005	2016	There are people who play this series and people who live in it. Guess which I am.
+opener_fan	superfan	any	2005	2016	My handle should tell you where my loyalties lie. Review below anyway.
+opener_fan	superfan	any	2005	2016	Fifteen years I've followed these games. Let me tell you where this one lands.
+opener_fan	superfan	any	2005	2016	I don't review much, but for this series I make an exception every time.
+opener_fan	superfan	any	2005	2016	Been here since the pixel-art days. This one had a lot to live up to.
+opener_fan	superfan	any	2005	2016	New entry, same ritual: preorder, day off booked, snacks laid in.
+opener_fan	superfan	any	2005	2016	I could recite the lore in my sleep, so consider this an informed opinion.
+opener_fan	superfan	any	2005	2016	Another year, another one of these on my shelf before the shrink-wrap cooled.
+opener_fan	superfan	any	2005	2016	I skipped plans I shouldn't have to play this early. Worth it? Read on.
+opener_tech	technerd	any	2005	2016	Numbers first, feelings never. Let's go.
+opener_tech	technerd	any	2005	2016	I'll keep the adjectives to a minimum and the measurements to a maximum.
+opener_tech	technerd	any	2005	2016	Before anyone argues: yes, I calibrated the display first.
+opener_tech	technerd	any	2005	2016	Pulled the capture card out for this one. Findings below.
+opener_tech	technerd	any	2005	2016	Marketing says one thing; the frame counter says another. Guess which I trust.
+opener_tech	technerd	any	2005	2016	This is a technical review. If you want vibes, skip to the star rating.
+opener_tech	technerd	any	2005	2016	Ran this on three setups to be sure. The bottleneck is not where you think.
+opener_tech	technerd	any	2005	2016	I test so you don't have to return it. Here's what I found.
+opener_tech	technerd	any	2005	2016	Spec sheet in one hand, stopwatch in the other. Let's audit the claims.
+opener_tech	technerd	any	2005	2016	People keep quoting the box. I measured the box's claims. Different story.
+opener_tech	technerd	any	2005	2016	Latency, resolution, load times — the three things reviewers skip. Not here.
+opener_tech	technerd	any	2005	2016	The short version is in the stars. The long version has graphs.
+opener_tech	technerd	any	2005	2016	I don't care how it feels until I know how it runs. It runs like this.
+opener_tech	technerd	any	2005	2016	Fair warning: this review has more numbers than adjectives.
+opener_tech	technerd	any	2005	2016	Two consoles, three discs, one CRT and one flat panel. Methodical as always.
+opener_reluctant	grouch	any	2005	2016	Fine. I bought it. Against every instinct I have.
+opener_reluctant	grouch	any	2005	2016	I told myself I wouldn't. Then I did. Here's my punishment, in review form.
+opener_reluctant	grouch	any	2005	2016	Everyone whose taste I distrust loved this. So my expectations were low.
+opener_reluctant	grouch	any	2005	2016	I have been disappointed by this genre for a decade. Continuing the tradition.
+opener_reluctant	grouch	any	2005	2016	Let me lower your expectations before the game does it for you.
+opener_reluctant	grouch	any	2005	2016	I came in wanting to hate it. Read on to see if I got my wish.
+opener_reluctant	grouch	any	2005	2016	The hype train left without me. I bought a ticket anyway, reluctantly.
+opener_reluctant	grouch	any	2005	2016	Another 'must-play,' another chance for me to be the one adult in the room.
+opener_reluctant	grouch	any	2005	2016	Nobody asked for my opinion, which has never once stopped me.
+opener_reluctant	grouch	any	2005	2016	I approached this with the enthusiasm of a man doing his taxes.
+opener_reluctant	grouch	any	2005	2016	Prepare yourself: I am about to be reasonable about something I dislike.
+opener_reluctant	grouch	any	2005	2016	I've been let down by better games than this. Low bar. It still tripped.
+opener_disappointed	any	neg	2005	2016	Well. That was a way to spend an evening.
+opener_disappointed	any	neg	2005	2016	I don't enjoy negative reviews. This one wrote itself.
+opener_disappointed	any	neg	2005	2016	Some games disappoint you slowly. This one got it over with fast.
+opener_disappointed	any	neg	2005	2016	I keep a list of games I regret. Say hello to the newest entry.
+opener_disappointed	any	neg	2005	2016	There is a good game somewhere in here, buried under everything else.
+opener_disappointed	any	neg	2005	2016	How much did they spend on the trailer versus the game? It shows.
+opener_disappointed	any	neg	2005	2016	I wanted my money back before the title screen finished loading.
+opener_disappointed	any	neg	2005	2016	This is what happens when a deadline beats a design document.
+opener_disappointed	any	neg	2005	2016	I've played student projects with more polish and fewer excuses.
+opener_disappointed	any	neg	2005	2016	The box promised a lot. The disc had other plans.
+opener_disappointed	any	neg	2005	2016	Every generation has its cautionary tale. Meet this one's.
+opener_disappointed	any	neg	2005	2016	I gave it the benefit of the doubt right until it stopped earning it.
+opener_disappointed	any	neg	2005	2016	Not offended, just tired. Which is somehow worse.
+opener_disappointed	any	neg	2005	2016	There's a refund button and there's regret. I have experienced both today.
+opener_parent	parent	any	2005	2016	Reviewing on behalf of a very opinionated eight-year-old and myself.
+opener_parent	parent	any	2005	2016	Bought under duress after weeks of 'everyone else has it.'
+opener_parent	parent	any	2005	2016	Parent here. The kids are the experts; I'm the wallet and the referee.
+opener_parent	parent	any	2005	2016	This was the big present this year, so no pressure on it or anything.
+opener_parent	parent	any	2005	2016	I don't play games, but I do buy them, wrap them, and hear about them nonstop.
+opener_parent	parent	any	2005	2016	Grandkid wanted it, grandkid got it, grandkid has explained it to me twice.
+opener_parent	parent	any	2005	2016	A birthday review from a household that now argues about this game.
+opener_parent	parent	any	2005	2016	Bought it to stop the pestering. Stayed for the surprisingly nice family evenings.
+opener_parent	parent	any	2005	2016	Full disclosure: I only know this game through a nine-year-old's commentary.
+opener_parent	parent	any	2005	2016	The things we buy for our children. Here's how this one landed.
+opener_parent	parent	any	2005	2016	Two kids, one console, one copy of this. Imagine the negotiations.
+opener_parent	parent	any	2005	2016	I'm the parent who actually reads the age rating. Notes below for the others.
+opener_collector	collector	any	2005	2016	Another one for the shelf. Grading notes as ever.
+opener_collector	collector	any	2005	2016	Tracked this down for longer than I'll admit. Arrived today.
+opener_collector	collector	any	2005	2016	Condition report incoming. The game itself is not really the point for me.
+opener_collector	collector	any	2005	2016	Filling a gap in the collection that has bothered me for years.
+opener_collector	collector	any	2005	2016	Complete-in-box or it doesn't go on the shelf. Let's see how this did.
+opener_collector	collector	any	2005	2016	I collect, I don't hoard. There is a difference and this review explains it.
+opener_collector	collector	any	2005	2016	The hunt is half the hobby. Here's where this specimen ended up.
+opener_collector	collector	any	2005	2016	For the collectors reading: yes, I checked the label alignment. Obviously.
+opener_collector	collector	any	2005	2016	New arrival, white gloves on, notes below.
+opener_collector	collector	any	2005	2016	Been chasing a clean copy of this for three years. Judgement day.
+opener_hype	capslock	any	2005	2011	STOP SCROLLING. read this first.
+opener_hype	capslock	any	2005	2011	i dont write reviews but WOW ok
+opener_hype	capslock	any	2005	2011	my hands are still shaking so excuse the typing
+opener_hype	capslock	any	2005	2011	ok so. OK SO.
+opener_hype	capslock	any	2005	2011	someone had to say it and its gonna be me
+opener_hype	capslock	any	2012	2016	Alright, gather round, the old head has thoughts.
+opener_hype	capslock	any	2012	2016	I'm calmer than I was in 2007 but only barely.
+opener_hype	capslock	any	2012	2016	Deep breath. Okay. Let's talk about this one.
+opener_deal	dealhunter	any	2005	2016	Waited nine months, paid a third of launch. This is the way.
+opener_deal	dealhunter	any	2005	2016	Bargain bin, bottom shelf, back of the store. My natural habitat.
+opener_deal	dealhunter	any	2005	2016	Never paid full price for a game in my life and I'm not starting now.
+opener_deal	dealhunter	any	2005	2016	Found this in a clearance box under a broken fan. Review reflects the price.
+opener_deal	dealhunter	any	2005	2016	Price-per-hour is the only metric that matters. Let's do the math.
+opener_deal	dealhunter	any	2005	2016	Some people wait for reviews. I wait for the price to break.
+opener_deal	dealhunter	any	2005	2016	Sale alert brought me here; the game kept me. Sort of.
+opener_deal	dealhunter	any	2005	2016	For what I paid, my expectations were a coupon and a prayer.
+opener_long	essayist	any	2005	2016	Grab a coffee; this one earned the long treatment.
+opener_long	essayist	any	2005	2016	I've started this review four times. Here's the fifth and final attempt.
+opener_long	essayist	any	2005	2016	A game this divisive deserves more than a thumbs up or down, so bear with me.
+opener_long	essayist	any	2005	2016	Let me talk you through why this stayed with me long after the credits.
+opener_long	essayist	any	2005	2016	This is less a review than an argument I need to get out of my head.
+opener_long	essayist	any	2005	2016	I'll try to be concise and fail immediately, because there's a lot here.
+opener_long	essayist	any	2005	2016	Some games you rate; some you have to write your way through. This is the latter.
+opener_long	essayist	any	2005	2016	Consider this the review I wish I'd read before buying.
+opener_long	essayist	any	2005	2016	Settle in. I have opinions and I have footnotes.
+opener_long	essayist	any	2005	2016	I promised myself I'd keep this short. We both know how that goes.
+opener_troll_contrarian	troll	neg	2006	2016	Here to be the villain in your favourite game's reviews.
+opener_troll_contrarian	troll	neg	2006	2016	Someone check the water supply, everyone's lost their minds over this.
+opener_troll_contrarian	troll	neg	2006	2016	Counterpoint, since apparently I'm the only one thinking clearly.
+opener_troll_contrarian	troll	neg	2006	2016	Time for your regularly scheduled reality check.
+opener_troll_contrarian	troll	neg	2006	2016	The emperor has no clothes and I brought a camera.
+opener_troll_ironic	troll	pos	2006	2016	Five stars, ironically, and I will die on this hill.
+opener_troll_ironic	troll	pos	2006	2016	Genuinely the funniest thing I've played all year, none of it on purpose.
+opener_troll_ironic	troll	pos	2006	2016	A masterpiece of unintentional comedy. Bravo.
+opener_refund	bucks_victim	any	2015	2016	Buckle up, this is a story about 'store credit.'
+opener_refund	bucks_victim	any	2015	2016	The game's fine. The refund policy is the villain here.
+opener_refund	bucks_victim	any	2015	2016	Let me save you the trouble I just went through.
+opener_refund	bucks_victim	any	2015	2016	This review is a warning, not a recommendation.
+experience	any	any	2005	2016	I went in for twenty minutes and surfaced three hours later.
+experience	any	any	2005	2016	It took me two sittings to see what all the fuss was about.
+experience	any	any	2005	2016	The opening drags; push past it and the game finally shows up.
+experience	any	any	2005	2016	Somewhere around the halfway mark it clicked, and then I couldn't stop.
+experience	any	any	2005	2016	First playthrough blind, second with a guide, third to argue with this review.
+experience	any	any	2005	2016	I put it down twice and picked it back up twice. That has to mean something.
+experience	any	any	2005	2016	It respects a lunch break: easy to start, hard to leave.
+experience	any	any	2005	2016	By the end I was rationing it out so it wouldn't finish too soon.
+experience	any	any	2005	2016	The middle third is where it lives or dies, and mine barely survived.
+experience	any	any	2005	2016	I played more of this than I meant to and less than it deserved.
+experience	any	any	2005	2016	It sank its hooks in before I'd decided whether I liked it.
+experience	any	any	2005	2016	A slow burn worth tending, if you have the patience.
+experience	any	any	2005	2016	I lost a weekend and found a new favourite, roughly in that order.
+experience	any	any	2005	2016	Two evenings in and I already knew how I felt; I finished it anyway to be fair.
+experience	any	any	2005	2016	It grew on me like a splinter, slowly and against my will.
+praise_detail	any	pos	2005	2016	The pacing is the quiet triumph here; nothing overstays its welcome.
+praise_detail	any	pos	2005	2016	Whoever did the sound design deserves their name above the title.
+praise_detail	any	pos	2005	2016	It nails the one thing the genre usually fumbles: making failure feel fair.
+praise_detail	any	pos	2005	2016	The art direction will outlive the hardware it launched on.
+praise_detail	any	pos	2005	2016	Small mercies everywhere — quick restarts, honest checkpoints, no filler.
+praise_detail	any	pos	2005	2016	It trusts the player, which in this genre is practically radical.
+praise_detail	any	pos	2005	2016	The systems interlock so cleanly you stop noticing them and just play.
+praise_detail	any	pos	2005	2016	There's a confidence to it — it knows exactly what it wants to be.
+praise_detail	any	pos	2005	2016	The writing punches above every expectation I had for a game like this.
+praise_detail	any	pos	2005	2016	It's the rare sequel that improves the original without betraying it.
+praise_detail	any	pos	2005	2016	You can feel the years of iteration in how little of it is wasted.
+praise_detail	any	pos	2005	2016	It's beautiful in motion in a way screenshots genuinely undersell.
+praise_detail	any	pos	2005	2016	The last hour recontextualises the first, and I love it for that.
+praise_detail	any	pos	2005	2016	It does one thing better than anything else on the platform, and that's enough.
+praise_detail	any	pos	2005	2016	The difficulty options are generous without ever being condescending.
+flaw_detail	any	neg	2005	2016	The load times aren't a nuisance, they're an intermission.
+flaw_detail	any	neg	2005	2016	Every good idea here is fighting three bad ones for screen time.
+flaw_detail	any	neg	2005	2016	The tutorial never ends and the game never quite begins.
+flaw_detail	any	neg	2005	2016	It confuses length with content and pads accordingly.
+flaw_detail	any	neg	2005	2016	The framerate treats sixty as a suggestion and thirty as a dream.
+flaw_detail	any	neg	2005	2016	Bugs I could forgive; the design decisions are the real problem.
+flaw_detail	any	neg	2005	2016	It asks for forty hours and earns about twelve of them.
+flaw_detail	any	neg	2005	2016	The UI was clearly designed by someone who never had to use it.
+flaw_detail	any	neg	2005	2016	The story sets up a dozen threads and pays off maybe two.
+flaw_detail	any	neg	2005	2016	There's a good ten-hour game trapped inside this thirty-hour one.
+flaw_detail	any	neg	2005	2016	The checkpointing is actively hostile, like the game is mad at you.
+flaw_detail	any	neg	2005	2016	It launches broken and asks you to wait for the patch you already paid for.
+flaw_detail	any	neg	2005	2016	The best part is the part they used in the ads, and it's over in an hour.
+flaw_detail	any	neg	2005	2016	It's not that it's hard. It's that it's unfair, and it can't tell the difference.
+flaw_detail	any	neg	2005	2016	Whoever signed off on the final boss owes everyone an apology.
+verdict_short_pos	driveby	pos	2005	2016	peak
+verdict_short_pos	driveby	pos	2005	2016	no notes
+verdict_short_pos	driveby	pos	2005	2016	buy it twice
+verdict_short_pos	driveby	pos	2005	2016	GOTY easily
+verdict_short_pos	driveby	pos	2005	2016	obsessed
+verdict_short_pos	driveby	pos	2005	2016	underrated
+verdict_short_pos	driveby	pos	2005	2016	instant classic
+verdict_short_pos	driveby	pos	2005	2016	worth it
+verdict_short_pos	driveby	pos	2005	2016	10/10 no regrets
+verdict_short_pos	driveby	pos	2005	2016	yes
+verdict_short_pos	driveby	pos	2005	2016	cant put it down
+verdict_short_pos	driveby	pos	2005	2016	slaps
+verdict_short_mixed	driveby	mixed	2005	2016	it's fine
+verdict_short_mixed	driveby	mixed	2005	2016	6/10
+verdict_short_mixed	driveby	mixed	2005	2016	has its moments
+verdict_short_mixed	driveby	mixed	2005	2016	meh but ok
+verdict_short_mixed	driveby	mixed	2005	2016	rent first
+verdict_short_mixed	driveby	mixed	2005	2016	middle of the road
+verdict_short_mixed	driveby	mixed	2005	2016	aggressively okay
+verdict_short_mixed	driveby	mixed	2005	2016	3 stars moving on
+verdict_short_mixed	driveby	mixed	2005	2016	eh
+verdict_short_mixed	driveby	mixed	2005	2016	its whatever
+verdict_short_mixed	driveby	mixed	2005	2016	fine for a sale
+verdict_short_mixed	driveby	mixed	2005	2016	5/10
+verdict_short_neg	driveby	neg	2005	2016	skip it
+verdict_short_neg	driveby	neg	2005	2016	nope
+verdict_short_neg	driveby	neg	2005	2016	0/10
+verdict_short_neg	driveby	neg	2005	2016	refund incoming
+verdict_short_neg	driveby	neg	2005	2016	waste
+verdict_short_neg	driveby	neg	2005	2016	hard pass
+verdict_short_neg	driveby	neg	2005	2016	avoid
+verdict_short_neg	driveby	neg	2005	2016	bad
+verdict_short_neg	driveby	neg	2005	2016	sold it
+verdict_short_neg	driveby	neg	2005	2016	2/10 would not
+verdict_short_neg	driveby	neg	2005	2016	dropped it
+verdict_short_neg	driveby	neg	2005	2016	boring
+verdict_long	essayist	pos	2005	2016	In conclusion: flawed, essential, and already back on my shelf. Five stars.
+verdict_long	essayist	pos	2005	2016	To sum a thousand words: it earned every hour and I'd give it more.
+verdict_long	essayist	pos	2005	2016	Final word — buy it, finish it, then find someone to argue with about the ending.
+verdict_long	essayist	pos	2005	2016	The verdict is simple even if the game isn't: this is the one to beat this year.
+verdict_long	essayist	pos	2005	2016	I judge games by what they leave behind. This left a lot. Five stars, no hesitation.
+verdict_long	essayist	pos	2005	2016	So: not for everyone, but everyone should try it once. That's my whole thesis.
+verdict_long	essayist	pos	2005	2016	It'll be on best-of lists in a decade. Get ahead of the crowd.
+verdict_long	essayist	pos	2005	2016	Rarely do I finish a game and immediately want to start again. This is one.
+verdict_neg	any	neg	2005	2016	Save the money and buy the good one from three years ago.
+verdict_neg	any	neg	2005	2016	Wait for it to be free, then wait a bit longer.
+verdict_neg	any	neg	2005	2016	Return it while you still can. I couldn't, and here we are.
+verdict_neg	any	neg	2005	2016	There are better ways to be disappointed for less money.
+verdict_neg	any	neg	2005	2016	Skip it, tell a friend to skip it, form a small community around skipping it.
+verdict_neg	any	neg	2005	2016	Two stars would be generous and I am not feeling generous.
+verdict_neg	any	neg	2005	2016	Buy literally anything else on this shelf.
+verdict_neg	any	neg	2005	2016	The kindest thing I can say is that it ends.
+verdict_neg	any	neg	2005	2016	File under 'maybe on a deep, deep sale.'
+verdict_neg	any	neg	2005	2016	One star, and that's for the loading-screen art, which slaps.
+verdict_mixed	any	mixed	2005	2016	A solid rental in the old money. Try before you commit.
+verdict_mixed	any	mixed	2005	2016	Three stars: better than its worst hour, worse than its best.
+verdict_mixed	any	mixed	2005	2016	Worth it on sale, forgettable at full price.
+verdict_mixed	any	mixed	2005	2016	Good bones, rough everything else. Wait for the patches.
+verdict_mixed	any	mixed	2005	2016	I liked it and I can't fully recommend it. Both are true.
+verdict_mixed	any	mixed	2005	2016	Borrow it, beat it, move on with no regrets and no strong feelings.
+verdict_mixed	any	mixed	2005	2016	It's a seven that thinks it's a nine, priced like a ten.
+verdict_mixed	any	mixed	2005	2016	Fine. Genuinely fine. Damning with faint praise, I know.
+verdict_fan	superfan	pos	2005	2016	Best in the series and I've played them all twice. Day-one worth it.
+verdict_fan	superfan	pos	2005	2016	The one we were promised. Finally.
+verdict_fan	superfan	pos	2005	2016	Five stars and I'd tattoo the logo. Slightly kidding.
+verdict_fan	superfan	pos	2005	2016	This is why I never gave up on them. Vindicated.
+verdict_neg_fan	superfan	neg	2005	2016	It hurts to rate a game from this series this low. But here we are.
+verdict_neg_fan	superfan	neg	2005	2016	Two stars, both of them nostalgia. The game earned neither.
+verdict_neg_fan	superfan	neg	2005	2016	I'll still buy the next one. That's not praise, it's a diagnosis.
+time_ago	any	any	2005	2016	on a whim last month
+time_ago	any	any	2005	2016	the day it dropped
+time_ago	any	any	2005	2016	during the summer drought
+time_ago	any	any	2005	2016	after ignoring it for a year
+time_ago	any	any	2005	2016	the moment it hit the sale
+time_ago	any	any	2005	2016	two paydays ago
+kid_word	any	any	2005	2016	twins
+kid_word	any	any	2005	2016	stepson
+kid_word	any	any	2005	2016	goddaughter
+kid_word	any	any	2005	2016	little one
+kid_word	any	any	2005	2016	teenager
+staff_detail	any	any	2005	2016	remembered my name and my backlog
+staff_detail	any	any	2005	2016	let me hear it running before I bought
+staff_detail	any	any	2005	2016	threw in a used controller for the trouble
+staff_detail	any	any	2005	2016	walked a nervous first-time parent through the whole thing
+praise_verb	any	any	2005	2016	knew the release calendar better than the publisher
+praise_verb	any	any	2005	2016	sorted me out without any fuss
+praise_verb	any	any	2005	2016	saved me from buying the wrong edition twice
+
+# ---- TRANCHE 2b: mid-body + archetype-specific slots (2026-07-19) ----
+spec_detail	technerd	any	2005	2016	Native res is below the box's claim; I counted the jaggies so you don't have to.
+spec_detail	technerd	any	2005	2016	Audio is compressed harder than it should be — cymbals turn to static in busy scenes.
+spec_detail	technerd	any	2005	2016	The 30fps cap is fine; the 30fps cap that dips to 22 in cutscenes is not.
+spec_detail	technerd	any	2005	2016	Install footprint is double the box quote once the day-one data lands.
+spec_detail	technerd	any	2005	2016	Controller latency measured at the pad, not the panel: adds ~2 frames over last gen.
+spec_detail	technerd	any	2005	2016	Draw distance pops in about forty feet out. Noticeable on the vehicle sections.
+spec_detail	technerd	any	2005	2016	The 'widescreen' mode is a stretched 4:3 buffer. Look at the HUD circles and weep.
+spec_detail	technerd	any	2005	2016	Anti-aliasing is doing nothing at this resolution; verify with a still and a magnifier.
+spec_detail	technerd	any	2005	2016	Texture streaming stutters on the stock drive; the swap fixed 80% of it.
+spec_detail	technerd	any	2005	2016	Color banding in the dark scenes screams 6-bit panel handling. Yours may vary.
+spec_detail	technerd	any	2005	2016	The framerate graph is a saw blade, not a line. I have the capture if anyone doubts it.
+spec_detail	technerd	any	2005	2016	Region-locked at the disc level, not the menu, before anyone asks the obvious.
+flaw_tech	technerd	any	2005	2016	Screen tearing with vsync OFF I expect; screen tearing with vsync ON is a bug.
+flaw_tech	technerd	any	2005	2016	It ignores the console's display settings entirely and forces its own gamma.
+flaw_tech	technerd	any	2005	2016	The netcode is peer-to-peer with no host migration. In 2011. Inexcusable.
+flaw_tech	technerd	any	2005	2016	Load-to-menu is 40 seconds, menu-to-game another 30. A minute of logo screens.
+flaw_tech	technerd	any	2005	2016	It doesn't buffer inputs during the animation, so combos drop for no reason.
+flaw_tech	technerd	any	2005	2016	The 'HD remaster' is the same assets at a higher output res. Upscale, not remaster.
+flaw_tech	technerd	any	2005	2016	Frame pacing is uneven even at a locked framerate — the judder is the tell.
+flaw_tech	technerd	any	2005	2016	It renders the UI at native but the world at 60% and never tells you.
+flaw_tech	technerd	any	2005	2016	Dolby on the box, stereo in practice. I checked the bitstream.
+flaw_tech	technerd	any	2005	2016	The patch that 'fixed' the framerate just lowered the resolution. I measured both.
+flaw_tech	technerd	any	2005	2016	Motion blur is masking the framerate, not enhancing the look. Turn it off and see.
+flaw_tech	technerd	any	2005	2016	It crashes on save if the card is over 80% full. Reproduced three times.
+methodology	technerd	any	2005	2016	Test rig and full numbers are in my profile, as always.
+methodology	technerd	any	2005	2016	Every figure here is a worst-case across three runs, not a cherry-picked best.
+methodology	technerd	any	2005	2016	I disabled every enhancement setting to measure the game, not my TV.
+methodology	technerd	any	2005	2016	Same disc, same console, cold boot each time — controlled as I can make it at home.
+methodology	technerd	any	2005	2016	Numbers taken with a frame counter overlay, not eyeballed. Eyeballing is how people get fooled.
+methodology	technerd	any	2005	2016	I benched launch and post-patch so the deltas are apples to apples.
+methodology	technerd	any	2005	2016	Measured on a CRT and a calibrated flat panel to separate game from display.
+experience_loud	capslock	any	2005	2011	didnt eat didnt sleep just PLAYED
+experience_loud	capslock	any	2005	2011	called in 'sick' the next day WORTH IT
+experience_loud	capslock	any	2005	2011	my thumb has a blister and i regret NOTHING
+experience_loud	capslock	any	2005	2011	finished it then IMMEDIATELY started new game plus
+praise_loud	capslock	pos	2005	2011	the FINAL BOSS had me standing up out of my chair
+praise_loud	capslock	pos	2005	2011	the soundtrack is on my MP3 PLAYER right now no joke
+praise_loud	capslock	pos	2005	2011	every level is a HIGHLIGHT i mean it
+praise_loud	capslock	pos	2005	2011	my friends dont believe the graphics are REAL TIME
+flaw_loud	capslock	any	2005	2011	WHY is there no save point before the boss WHY
+flaw_loud	capslock	any	2005	2011	50 dollars and it CRASHED on the last level i cried
+flaw_loud	capslock	any	2005	2011	the online is UNPLAYABLE dont even try
+condition_note	collector	any	2005	2016	Spine card intact, which for this title is basically a miracle.
+condition_note	collector	any	2005	2016	Manual has one dog-eared corner; everything else is museum-grade.
+condition_note	collector	any	2005	2016	Cart contacts a little tarnished but a pencil eraser sorted that in a minute.
+condition_note	collector	any	2005	2016	Case hinge cracked in transit — not the shop's fault, but noting it for the grade.
+condition_note	collector	any	2005	2016	Original receipt was still tucked in the manual. Previous owner, respect.
+condition_note	collector	any	2005	2016	Disc is flawless, artwork is sun-faded. A fair trade at this price.
+condition_note	collector	any	2005	2016	Shrink-wrap intact but I opened it, because a game is for playing.
+condition_note	collector	any	2005	2016	Comes with the pre-order pin nobody kept. That's the real find here.
+grading_gripe	collector	neg	2005	2016	'Complete' apparently no longer includes the manual. Since when?
+grading_gripe	collector	neg	2005	2016	Graded 'Like New' with a price sticker melted into the front. Do better.
+grading_gripe	collector	neg	2005	2016	There's a rental-store label under the shrink. So it's NOT sealed, is it.
+grading_gripe	collector	neg	2005	2016	Someone wrote their name on the cart in marker. That's 'Used - Vandalised.'
+grading_gripe	collector	neg	2005	2016	The disc rattled in the case the whole way here. Zero padding.
+launch_story	superfan	any	2005	2013	Queued in the rain for this. The rain lost.
+launch_story	superfan	any	2005	2013	The whole line broke into the theme song at midnight. I'm not crying, you are.
+launch_story	superfan	any	2005	2013	Store ran out; the manager sold me the display copy off the wall. Legend.
+launch_story	superfan	any	2005	2013	Drove two towns over because my local didn't do a midnight. No regrets.
+launch_story	superfan	any	2005	2013	Met three people in that queue I still play with online. That's the series to me.
+loyalty_note	superfan	any	2005	2016	I'll be first in line for the next one regardless. You know this.
+loyalty_note	superfan	any	2005	2016	Twenty years in and they've earned the benefit of the doubt. This time.
+loyalty_note	superfan	any	2005	2016	This series raised me. I'm allowed to be a little biased about it.
+refund_story	bucks_victim	any	2015	2016	Disc was cracked out of the shrink-wrap. Not a scratch — a crack. Took it straight back.
+refund_story	bucks_victim	any	2015	2016	Wrong region entirely. Sealed, sold to me anyway, and then the 'refund' began.
+refund_story	bucks_victim	any	2015	2016	The console died in nine days. Nine. Within every warranty they advertise.
+refund_story	bucks_victim	any	2015	2016	Bought the wrong version by their own mislabeling and tried to return it same day.
+bucks_rage	bucks_victim	any	2015	2016	So my cash becomes 'Bucks,' the Bucks have an expiry, and the shops have an expiry. Cute.
+bucks_rage	bucks_victim	any	2015	2016	I asked for the manager. The manager also had EmporiumBucks and looked just as trapped.
+bucks_rage	bucks_victim	any	2015	2016	It's my money with a leash on it and the leash is nailed to a sinking ship.
+bucks_rage	bucks_victim	any	2015	2016	They call it store credit. I call it a coupon for a store that won't exist.
+closure_ref	any	neg	2013	2016	Three of the four stores I grew up with are shuttered now. You feel it walking in.
+closure_ref	any	neg	2013	2016	The staff are lovely and clearly know they're being wound down. It's grim.
+closure_ref	any	neg	2013	2016	Half the shelves are empty and the other half are 70% off. Read the room, it says.
+price_note	dealhunter	pos	2005	2016	Cost me less than the DLC costs the people who paid launch. Poetry.
+price_note	dealhunter	pos	2005	2016	At this price I'd forgive a lot, and happily I don't have to.
+price_note	dealhunter	pos	2005	2016	Cheaper than the strategy guide, and it IS the strategy guide, essentially.
+price_note	dealhunter	pos	2005	2016	Pound for pound the best thing in the bargain bin this quarter.
+price_gripe	dealhunter	neg	2005	2016	Even free would be steep once you count the hours it wasted.
+price_gripe	dealhunter	neg	2005	2016	Half price and still overpriced. That's a talent, really.
+price_gripe	dealhunter	neg	2005	2016	I've found better in the 'four for a fiver' box, and that box has standards.
+bait_line	troll	any	2006	2016	The graphics are carrying a corpse and you're applauding the pallbearer.
+bait_line	troll	any	2006	2016	Name one original idea in it. I'll wait. I've got all the time you spent defending it.
+bait_line	troll	any	2006	2016	'It gets good after 20 hours' is the funniest sentence in this hobby.
+bait_line	troll	any	2006	2016	Nostalgia is not a game mechanic, no matter how hard you review-bomb this.
+bait_line	troll	any	2006	2016	You didn't like the game, you liked being fourteen. Understandable. Still one star.
+bait_line	troll	any	2006	2016	Every fanbase gets the review it deserves. Say hi.
+bait_line	troll	any	2006	2016	I'm not saying you have no taste. The rating is saying it for me.
+bait_line	troll	any	2006	2016	Bold of a game this derivative to charge full price and bolder of you to pay it.
+dismiss_classic	troll	neg	2006	2016	Take away the theme song and you've got a tech demo with a fanbase.
+dismiss_classic	troll	neg	2006	2016	It's held up the way a museum piece holds up: behind glass, don't touch, don't question.
+dismiss_classic	troll	neg	2006	2016	Groundbreaking in its day, sure. It is no longer its day.
+dismiss_classic	troll	neg	2006	2016	The 'best game ever' according to people who stopped playing games that same year.
+minor_flaw	any	any	2005	2016	Docking half a star for the checkpoint before the final boss. You'll understand.
+minor_flaw	any	any	2005	2016	The map screen is a mess, but you memorise it eventually and stop caring.
+minor_flaw	any	any	2005	2016	One song on the soundtrack loops too short and now I can't unhear it.
+minor_flaw	any	any	2005	2016	The inventory limit is annoying but arguably keeps you honest.
+minor_flaw	any	any	2005	2016	A couple of difficulty spikes feel unplaytested, though nothing fatal.
+minor_flaw	any	any	2005	2016	The fast-travel unlocks about ten hours too late. Minor, but felt.
+minor_flaw	any	any	2005	2016	Some of the voice acting is rough; the lead carries it though.
+minor_flaw	any	any	2005	2016	The photo mode is bad, which shouldn't matter and somehow does.
+praise_grudging	grouch	any	2005	2016	I'll concede the boss design is smarter than the genre deserves.
+praise_grudging	grouch	any	2005	2016	The ending, and only the ending, justified the slog. Barely.
+praise_grudging	grouch	any	2005	2016	Against my nature, I have to admit the co-op is a good time.
+praise_grudging	grouch	any	2005	2016	Fine — the world is beautifully made. My quota of kindness is spent.
+praise_grudging	grouch	any	2005	2016	It does one thing right and it does it often enough that I finished it.
+weigh_up	any	mixed	2005	2016	So do the highs outweigh the lows? On alternating days, yes.
+weigh_up	any	mixed	2005	2016	It's a game I respect more than I enjoyed, if that distinction means anything.
+weigh_up	any	mixed	2005	2016	I'd tell a friend to play it and warn them in the same breath.
+comparison	any	any	2005	2016	It's the second-best game in its own series, which is either praise or a warning.
+comparison	any	any	2005	2016	Think of the good one, subtract the confidence, add a year of delay. That's this.
+comparison	any	any	2005	2016	If you bounced off the last one, this won't win you back.
+signoff	any	any	2005	2016	Anyway. Stars above, take them or leave them.
+signoff	any	any	2005	2016	That's my two cents, adjusted for inflation.
+signoff	any	any	2005	2016	Do with this what you will; I've said my piece.
+signoff	any	any	2005	2016	Off to play something else now. Probably.
+postscript	any	any	2005	2016	EDIT: the patch helped. Bumping half a star I can't actually give in stars.
+postscript	any	any	2005	2016	EDIT: yes I finished it before reviewing, unlike some.
+postscript	any	any	2005	2016	EDIT: to the people in my inbox — no.

@@ -1,0 +1,46 @@
+# NGE V1.26 — Korean review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	드디어 해봤는데 정말 좋았다.
+opener_pos	any	any	2005	2016	오래 기다린 보람이 있었다.
+opener_pos	any	any	2005	2016	이건 물건이다.
+opener_pos	any	any	2005	2016	기분 좋게 놀랐다.
+opener_neg	any	any	2005	2016	정말 좋아하고 싶었다.
+opener_neg	any	any	2005	2016	돈 아깝다.
+opener_neg	any	any	2005	2016	실망스럽다.
+opener_neg	any	any	2005	2016	어디서부터 말해야 할지.
+opener_mixed	any	any	2005	2016	평가가 애매한 작품.
+opener_mixed	any	any	2005	2016	발상은 좋은데 마무리가 아쉽다.
+opener_mixed	any	any	2005	2016	무난하다, 그 이상은 아니다.
+experience	any	any	2005	2016	초반 몇 시간은 지루하지만 그 뒤로 좋아진다.
+experience	any	any	2005	2016	주말이 통째로 사라졌다.
+experience	any	any	2005	2016	두 번 깼다. 그럴 만했다.
+praise	any	any	2005	2016	음악이 훌륭하다.
+praise	any	any	2005	2016	{platform}에서 그래픽이 제일 좋다.
+praise	any	any	2005	2016	조작감이 완벽하다.
+praise	any	any	2005	2016	디테일까지 정성이 느껴진다.
+flaw	any	any	2005	2016	로딩이 너무 길어서 못 참겠다.
+flaw	any	any	2005	2016	출시 초기 버그가 너무 많다.
+flaw	any	any	2005	2016	카메라가 제멋대로다.
+flaw	any	any	2005	2016	가격에 비해 너무 짧다.
+verdict_pos	any	any	2005	2016	무조건 사라. 별 다섯.
+verdict_pos	any	any	2005	2016	{platform} 유저라면 필수.
+verdict_pos	any	any	2005	2016	내 기준 만점이다.
+verdict_neg	any	any	2005	2016	사지 마라, 돈 아깝다.
+verdict_neg	any	any	2005	2016	세일이면 한 번쯤 볼 만.
+verdict_neg	any	any	2005	2016	별 하나, 그것도 후하다.
+verdict_mixed	any	any	2005	2016	세일이면 몰라도 아니면 비추.
+verdict_mixed	any	any	2005	2016	별 셋, 그게 최선이다.
+verdict_mixed	any	any	2005	2016	가격 떨어질 때까지 기다려라.
+short_pos	any	any	2005	2016	최고.
+short_pos	any	any	2005	2016	강추.
+short_pos	any	any	2005	2016	아주 좋다.
+short_pos	any	any	2005	2016	만족.
+short_neg	any	any	2005	2016	실망.
+short_neg	any	any	2005	2016	사지 마라.
+short_neg	any	any	2005	2016	아쉽다.
+short_neg	any	any	2005	2016	비추.
+short_mixed	any	any	2005	2016	그저 그렇다.
+short_mixed	any	any	2005	2016	평범.
+short_mixed	any	any	2005	2016	할 만은 하다.
+short_mixed	any	any	2005	2016	특별할 건 없다.

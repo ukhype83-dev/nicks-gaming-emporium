@@ -1,0 +1,85 @@
+# NGE V1.26 — username word banks (design §2)
+# Engine composes per account-creation-era style; collisions get digit suffixes.
+# Styles: dialup (2001-2003, lowercase, 1-2 short words) · xx_era (2004-2008,
+# xX{core}Xx / {core}{digits}, leet swaps at low rate) · underscore (2009-2012,
+# {first}_{second}) · modern (2013-2016, {first}{second} pun-adjacent).
+# firstname_year style (~28%, all eras) is built by the ENGINE from
+# customers.first_name + birth/signup year — no bank needed (anomaly A5).
+style	part	text
+dialup	word	gamefan
+dialup	word	sonicnut
+dialup	word	mrblister
+dialup	word	n64kid
+dialup	word	warpzone
+dialup	word	pixelpaul
+dialup	word	discdoctor
+dialup	word	cartblower
+dialup	word	polygon
+dialup	word	rumblepak
+dialup	word	savepoint
+dialup	word	modemburner
+dialup	word	staticky
+dialup	word	tvtuner
+dialup	word	joyport
+dialup	word	segata
+dialup	word	bitcrusher
+dialup	word	crtking
+xx_era	core	ShadowLink
+xx_era	core	Sephiroth
+xx_era	core	DarkWolf
+xx_era	core	MasterChief
+xx_era	core	Reptile
+xx_era	core	Vercetti
+xx_era	core	SnakeEater
+xx_era	core	Zer0
+xx_era	core	Pwnage
+xx_era	core	Fr4gger
+xx_era	core	ClutchTime
+xx_era	core	NoScope
+xx_era	core	BladeRunner
+xx_era	core	OmegaRed
+underscore	first	Retro
+underscore	first	Dpad
+underscore	first	Pixel
+underscore	first	Combo
+underscore	first	Turbo
+underscore	first	Analog
+underscore	first	Cartridge
+underscore	first	Checkpoint
+underscore	first	First_Person
+underscore	first	Couch
+underscore	second	Rick
+underscore	second	Dave
+underscore	second	Susan
+underscore	second	Wizard
+underscore	second	Gran
+underscore	second	Hermit
+underscore	second	Doctor
+underscore	second	Bandit
+underscore	second	Mum
+underscore	second	Cadet
+modern	first	Pixel
+modern	first	Save
+modern	first	Ctrl
+modern	first	Cart
+modern	first	Backlog
+modern	first	Framerate
+modern	first	Achievement
+modern	first	Respawn
+modern	first	Loading
+modern	first	Sidequest
+modern	second	Hoarder
+modern	second	StateSally
+modern	second	AltDefeat
+modern	second	Archivist
+modern	second	Apologist
+modern	second	Widow
+modern	second	Unlocked
+modern	second	Screen
+modern	second	Enjoyer
+modern	second	Goblin
+troll_flavor	any	LordDialUp
+troll_flavor	any	DevilsAdvocaat
+troll_flavor	any	RatioKing
+troll_flavor	any	WellActually
+troll_flavor	any	OpinionHaver

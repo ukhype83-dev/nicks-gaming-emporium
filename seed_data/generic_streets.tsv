@@ -1,0 +1,481 @@
+country_code	street_name	num_cities
+AU	Victoria Street	20
+AU	William Street	16
+AU	High Street	15
+AU	George Street	15
+AU	Elizabeth Street	13
+AU	Church Street	12
+AU	Park Street	10
+AU	Arthur Street	10
+AU	Albert Street	10
+AU	Station Street	9
+AU	Charles Street	9
+AU	Main Street	8
+AU	King Street	8
+AU	Flinders Street	8
+AU	Fitzroy Street	8
+AU	Bridge Street	8
+AU	York Street	7
+AU	Wellington Street	7
+AU	Smith Street	7
+AU	Russell Street	7
+AU	Racecourse Road	7
+AU	Queen Street	7
+AU	Mary Street	7
+AU	Hill Street	7
+AU	Gordon Street	7
+AU	Bourke Street	7
+AU	Boundary Road	7
+AU	Young Street	6
+AU	Stanley Street	6
+AU	Princes Highway	6
+BR	Rua A	21
+BR	Rua B	19
+BR	Rua 1	16
+BR	Rua D	15
+BR	Rua C	15
+BR	Avenida Brasil	15
+BR	Rua 4	14
+BR	Rua 3	14
+BR	Rua 2	14
+BR	Rua da Paz	13
+BR	Rua E	13
+BR	Rua Um	12
+BR	Rua São José	12
+BR	Rua Santo Antônio	12
+BR	Rua Dois	12
+BR	Rua 5	12
+BR	Rua São João	11
+BR	Rua Cinco	11
+BR	Avenida Presidente Kennedy	11
+BR	Avenida Getúlio Vargas	11
+BR	Rua São Paulo	10
+BR	Rua Santa Luzia	10
+BR	Rua Quatro	10
+BR	Rua F	10
+BR	Rua 6	10
+BR	Rodovia Governador Mário Covas	10
+BR	Avenida Santos Dumont	10
+BR	Avenida Presidente Castelo Branco	10
+BR	Avenida Duque de Caxias	10
+BR	Rua Três	9
+CA	Dundas Street East	7
+CA	Queen Elizabeth Way	6
+CA	Main Street	6
+CA	Highway 407	6
+CA	Dundas Street West	6
+CA	North Service Road	5
+CA	King Street	5
+CA	Boulevard Pie-IX	5
+CA	Albert Street	5
+CA	Yonge Street	4
+CA	Woodbine Avenue	4
+CA	Victoria Avenue	4
+CA	Trans-Canada Highway	4
+CA	Rue Saint-Louis	4
+CA	Rue Saint-Hubert	4
+CA	Rue Saint-Denis	4
+CA	Rue Montcalm	4
+CA	Riverside Drive	4
+CA	River Road	4
+CA	Ring Road	4
+CA	Queen Street	4
+CA	Oxford Street	4
+CA	Ontario Street	4
+CA	Mary Street	4
+CA	King Street West	4
+CA	King Street East	4
+CA	Kennedy Road	4
+CA	Highway 7	4
+CA	Highway 403	4
+CA	Highway 401	4
+CH	Bahnhofstrasse	26
+CH	Dorfstrasse	22
+CH	Schulstrasse	17
+CH	Industriestrasse	17
+CH	Haldenstrasse	16
+CH	Zürcherstrasse	14
+CH	Poststrasse	14
+CH	Hauptstrasse	14
+CH	Bergstrasse	14
+CH	Stationsstrasse	12
+CH	Schulhausstrasse	11
+CH	Allmendstrasse	11
+CH	Seestrasse	10
+CH	Oberdorfstrasse	10
+CH	Bahnhofplatz	10
+CH	Weststrasse	9
+CH	Schützenstrasse	9
+CH	Rütistrasse	9
+CH	Rainstrasse	9
+CH	Gartenstrasse	9
+CH	Feldstrasse	9
+CH	Bachstrasse	9
+CH	Zürichstrasse	8
+CH	Winterthurerstrasse	8
+CH	Kirchstrasse	8
+CH	Kirchgasse	8
+CH	Weinbergstrasse	7
+CH	Weidstrasse	7
+CH	Talstrasse	7
+CH	Sonnenbergstrasse	7
+CZ	Okružní	24
+CZ	Nádražní	23
+CZ	Pražská	22
+CZ	Žižkova	16
+CZ	Zahradní	16
+CZ	Tyršova	16
+CZ	Husova	16
+CZ	Polní	15
+CZ	Palackého	15
+CZ	Dlouhá	15
+CZ	Sadová	14
+CZ	Lidická	14
+CZ	Komenského	14
+CZ	17. listopadu	14
+CZ	Luční	13
+CZ	Družstevní	13
+CZ	5. května	13
+CZ	Sokolská	12
+CZ	Průmyslová	12
+CZ	Lesní	11
+CZ	Hlavní	11
+CZ	Vrchlického	10
+CZ	Sportovní	10
+CZ	Horní	10
+CZ	Havlíčkova	10
+CZ	Dukelská	10
+CZ	Bezručova	10
+CZ	Školní	9
+CZ	Smetanova	9
+CZ	Ruská	9
+DE	Hauptstraße	26
+DE	Bahnhofstraße	25
+DE	Berliner Straße	19
+DE	Friedrich-Ebert-Straße	18
+DE	Bismarckstraße	14
+DE	Waldstraße	11
+DE	Kaiserstraße	11
+DE	Hafenstraße	11
+DE	Gartenstraße	11
+DE	Südring	10
+DE	Leipziger Straße	10
+DE	Königstraße	10
+DE	Friedrichstraße	10
+DE	Wilhelmstraße	9
+DE	Hansastraße	9
+DE	Rheinstraße	8
+DE	Hans-Böckler-Straße	8
+DE	Dorfstraße	8
+DE	Breslauer Straße	8
+DE	Universitätsstraße	7
+DE	Schulstraße	7
+DE	Ringstraße	7
+DE	Kurt-Schumacher-Straße	7
+DE	Industriestraße	7
+DE	Hamburger Straße	7
+DE	Frankfurter Straße	7
+DE	Bergstraße	7
+DE	Zeppelinstraße	6
+DE	Theodor-Heuss-Straße	6
+DE	Schützenstraße	6
+DK	Strandvejen	10
+DK	Vestergade	9
+DK	Roskildevej	9
+DK	Østergade	8
+DK	Viborgvej	8
+DK	Jernbanegade	8
+DK	Vesterbrogade	7
+DK	Nørrebrogade	7
+DK	Nordre Ringvej	7
+DK	Frejasvej	7
+DK	Bygaden	7
+DK	Søndre Ringvej	6
+DK	Parkvej	6
+DK	Motorring 3	6
+DK	Holbækmotorvejen	6
+DK	Havnegade	6
+DK	Godthåbsvej	6
+DK	Frederiksborgvej	6
+DK	Østre Ringvej	5
+DK	Østerbrogade	5
+DK	Århusvej	5
+DK	Vestre Ringvej	5
+DK	Vejlevej	5
+DK	Strandgade	5
+DK	Skovvej	5
+DK	Skolegade	5
+DK	Sjællandsgade	5
+DK	Silkeborgvej	5
+DK	Nørregade	5
+DK	Kystvejen	5
+ES	Avenida de Europa	11
+ES	Avenida de Pablo Iglesias	7
+ES	Avenida de Madrid	7
+ES	Calle Real	6
+ES	Calle Mayor	6
+ES	Carrer de València	5
+ES	Carrer d'Aragó	5
+ES	Calle Juan Ramón Jiménez	5
+ES	Avenida de la Libertad	5
+ES	Avenida de América	5
+ES	Autovía del Sur	5
+ES	Ronda de Dalt	4
+ES	Ronda Sur	4
+ES	Ronda Litoral	4
+ES	Plaça d'Espanya	4
+ES	Carrer del Rosselló	4
+ES	Carrer de Mallorca	4
+ES	Carrer de Balmes	4
+ES	Carrer Major	4
+ES	Calle Severo Ochoa	4
+ES	Calle Madrid	4
+ES	Calle 30	4
+ES	Avinguda de la Generalitat	4
+ES	Avinguda Diagonal	4
+ES	Avenida del Mediterráneo	4
+ES	Avenida de la Paz	4
+ES	Avenida de la Industria	4
+ES	Avenida de la Constitución	4
+ES	Avenida de España	4
+ES	Avenida de Andalucía	4
+FR	Avenue Jean Jaurès	23
+FR	Avenue du Général de Gaulle	20
+FR	Rue de la République	18
+FR	Avenue de la République	18
+FR	Rue Pasteur	17
+FR	Rue Victor Hugo	16
+FR	Rue Jean Jaurès	16
+FR	Avenue de l'Europe	16
+FR	Avenue du Général Leclerc	14
+FR	Rue de Verdun	13
+FR	Avenue de Verdun	13
+FR	Rue de Paris	12
+FR	Rue Anatole France	12
+FR	Rue Émile Zola	11
+FR	Rue du Général de Gaulle	10
+FR	Boulevard Périphérique Intérieur	10
+FR	Boulevard Périphérique Extérieur	10
+FR	Boulevard Charles de Gaulle	10
+FR	Avenue du Maréchal de Lattre de Tassigny	10
+FR	Avenue Victor Hugo	10
+FR	Avenue Georges Clemenceau	10
+FR	Rue de la Gare	9
+FR	Rue Gabriel Péri	9
+FR	Avenue Henri Barbusse	9
+FR	Rue du Général Leclerc	8
+FR	Rue du 8 Mai 1945	8
+FR	Rue Jules Ferry	8
+FR	Rue Jean Moulin	8
+FR	Rue Henri Barbusse	8
+FR	Rue Gambetta	8
+GB	Station Road	33
+GB	High Street	27
+GB	London Road	22
+GB	Church Road	22
+GB	Church Street	18
+GB	Park Road	15
+GB	Green Lane	15
+GB	Victoria Road	13
+GB	Mill Lane	13
+GB	West Street	11
+GB	Kingsway	11
+GB	Park Lane	10
+GB	Church Lane	10
+GB	Bridge Street	10
+GB	The Avenue	9
+GB	King Street	9
+GB	Queen Street	8
+GB	Manchester Road	8
+GB	George Street	8
+GB	The Green	7
+GB	North Street	7
+GB	Main Road	7
+GB	Liverpool Road	7
+GB	Broadway	7
+GB	Wood Lane	6
+GB	Wellington Road	6
+GB	Queen's Road	6
+GB	Park Street	6
+GB	Main Street	6
+GB	Long Lane	6
+IT	Via Roma	24
+IT	Via Guglielmo Marconi	13
+IT	Via Giosuè Carducci	13
+IT	Via Antonio Gramsci	13
+IT	Viale Europa	12
+IT	Via Cristoforo Colombo	12
+IT	Via Alessandro Manzoni	12
+IT	Via Torino	11
+IT	Via Leonardo da Vinci	11
+IT	Via Giuseppe Verdi	11
+IT	Via Emilia	11
+IT	Via Cesare Battisti	11
+IT	Via Aldo Moro	11
+IT	Via Galileo Galilei	10
+IT	Via Enrico Fermi	10
+IT	Via Dante Alighieri	10
+IT	Via Vittorio Veneto	9
+IT	Via Venticinque Aprile	9
+IT	Via Giuseppe Mazzini	9
+IT	Via Giuseppe Garibaldi	9
+IT	Via Giacomo Matteotti	9
+IT	Tangenziale Sud	9
+IT	Corso Italia	9
+IT	Autostrada Serenissima	9
+IT	Via Trento	8
+IT	Via Alessandro Volta	8
+IT	Autostrada del Sole	8
+IT	Via Venti Settembre	7
+IT	Via Quattro Novembre	7
+IT	Via Po	7
+NL	Rijksstraatweg	13
+NL	Dorpsstraat	13
+NL	Provincialeweg	12
+NL	Stationsweg	9
+NL	Sportlaan	9
+NL	Schoolstraat	9
+NL	Rijksweg	9
+NL	Kerkstraat	9
+NL	Kanaaldijk	9
+NL	Industrieweg	9
+NL	Molenstraat	8
+NL	Europaweg	8
+NL	Stationsstraat	7
+NL	Hoogstraat	7
+NL	Hoofdstraat	7
+NL	President Kennedylaan	6
+NL	Parkweg	6
+NL	Parallelweg	6
+NL	Nieuwstraat	6
+NL	Europalaan	6
+NL	Zuiderweg	5
+NL	Willem de Zwijgerlaan	5
+NL	Thorbeckelaan	5
+NL	Stationsplein	5
+NL	Spoorstraat	5
+NL	Singel	5
+NL	Schipholweg	5
+NL	Rotterdamseweg	5
+NL	Rembrandtlaan	5
+NL	Randweg	5
+NO	Storgata	18
+NO	Kirkegata	13
+NO	Strandgata	10
+NO	Kongens gate	10
+NO	Jernbanegata	10
+NO	Elvegata	9
+NO	Torggata	8
+NO	Strandveien	8
+NO	Kirkeveien	8
+NO	Skippergata	7
+NO	Ringvegen	7
+NO	Skolegata	6
+NO	Sjøgata	6
+NO	Gamleveien	6
+NO	Fjellveien	6
+NO	Tollbugata	5
+NO	Strandpromenaden	5
+NO	Skogvegen	5
+NO	Rådhusgata	5
+NO	Parkgata	5
+NO	Nordbyveien	5
+NO	Møllebakken	5
+NO	Industriveien	5
+NO	Havnegata	5
+NO	Gamle kongevei	5
+NO	Fagerlivegen	5
+NO	Dronningens gate	5
+NO	Åsveien	4
+NO	Åsvegen	4
+NO	Vesterveien	4
+PL	Tadeusza Kościuszki	23
+PL	Warszawska	22
+PL	Henryka Sienkiewicza	19
+PL	Dworcowa	18
+PL	Adama Mickiewicza	18
+PL	Leśna	17
+PL	3 Maja	16
+PL	1 Maja	16
+PL	Krakowska	15
+PL	Grunwaldzka	15
+PL	Armii Krajowej	15
+PL	Wojska Polskiego	14
+PL	Marszałka Józefa Piłsudskiego	14
+PL	Długa	14
+PL	Aleja Jana Pawła II	14
+PL	Piastowska	13
+PL	Wincentego Witosa	12
+PL	Słoneczna	12
+PL	Stefana Żeromskiego	12
+PL	Polna	12
+PL	Parkowa	12
+PL	Ogrodowa	12
+PL	Kolejowa	12
+PL	Bolesława Chrobrego	12
+PL	11 Listopada	12
+PL	Wrocławska	11
+PL	Wiejska	11
+PL	Przemysłowa	11
+PL	Nowa	11
+PL	Księdza Jerzego Popiełuszki	11
+SE	Kungsgatan	22
+SE	Storgatan	18
+SE	Drottninggatan	13
+SE	Nygatan	12
+SE	Järnvägsgatan	11
+SE	Skolgatan	10
+SE	Hamngatan	10
+SE	Strandgatan	9
+SE	Stockholmsvägen	9
+SE	Kyrkogatan	9
+SE	Vasagatan	8
+SE	Ringvägen	8
+SE	Engelbrektsgatan	8
+SE	Torggatan	7
+SE	Linnégatan	7
+SE	Köpmangatan	7
+SE	Kyrkvägen	7
+SE	Göteborgsvägen	7
+SE	Österleden	6
+SE	Västerleden	6
+SE	Valhallavägen	6
+SE	Trädgårdsgatan	6
+SE	Tegnérgatan	6
+SE	Sveavägen	6
+SE	Sturegatan	6
+SE	Strandvägen	6
+SE	Stationsgatan	6
+SE	Magasinsgatan	6
+SE	Lasarettsvägen	6
+SE	Fredsgatan	6
+US	Main Street	12
+US	Broadway	12
+US	Central Avenue	8
+US	Washington Street	7
+US	Washington Avenue	7
+US	Riverside Drive	7
+US	Park Avenue	7
+US	East 8th Street	7
+US	South Main Street	6
+US	East 4th Street	6
+US	Atlantic Avenue	6
+US	Washington Boulevard	5
+US	Walnut Street	5
+US	South Central Avenue	5
+US	Madison Avenue	5
+US	East 7th Street	5
+US	East 1st Street	5
+US	East 12th Street	5
+US	East 10th Street	5
+US	5th Avenue	5
+US	3rd Street	5
+US	3rd Avenue	5
+US	2nd Avenue	5
+US	1st Avenue	5
+US	16th Street	5
+US	West Broadway	4
+US	West 8th Street	4
+US	West 10th Street	4
+US	South Freeway	4
+US	South 7th Street	4

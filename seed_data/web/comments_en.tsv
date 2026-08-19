@@ -1,0 +1,193 @@
+# NGE V1.26 — English comment bank (design §4, comments engine)
+# kind: the conversational move. parent_sent: sentiment of the PARENT REVIEW
+# (pos/neg/mixed/any). The engine chains moves so threads read as arguments:
+# hot threads alternate defend/dunk; troll bait raises reply probability 5x.
+# Micro-slots as in phrases_en.tsv; {parent_user} = the review's username,
+# {prev_user} = previous commenter (engine-filled).
+kind	archetype	parent_sent	era_from	era_to	text
+agree	any	pos	2008	2016	This. Exactly this.
+agree	any	pos	2008	2016	Came here to say the same, saved me typing it. Good review.
+agree	any	pos	2008	2016	Can confirm, same experience down to the load times.
+agree	superfan	pos	2008	2016	The only review on this page written by someone who actually finished it.
+agree	any	neg	2008	2016	Glad it's not just me. Thought my copy was faulty.
+agree	grouch	neg	2008	2016	Correct on every count, and I say that rarely.
+disagree	any	pos	2008	2016	Wildly generous. Did we play the same game?
+disagree	any	neg	2008	2016	Harsh. It has problems but nothing five patches won't fix.
+disagree	superfan	neg	2008	2016	Skill issue, respectfully. It clicks around hour three, you quit at two.
+disagree	technerd	any	2008	2016	Your numbers are off — it's the display chain, not the game. Happy to explain.
+disagree	grouch	pos	2008	2016	Everyone said the same about the last one and we all know how that aged.
+question	any	any	2008	2016	Does anyone know if the {platform} version has the same issue?
+question	parent	any	2008	2016	Sorry to piggyback — is this suitable for a 9 year old? The box says yes but boxes lie.
+question	any	any	2008	2016	Is the used copy worth it or do the save batteries die on these?
+question	dealhunter	any	2008	2016	Anyone seen it cheaper than {price}? Asking for me.
+answer	any	any	2008	2016	@{prev_user} yes, but only after the patch. Before that, avoid.
+answer	technerd	any	2008	2016	@{prev_user} tested this last month — short answer yes, long answer in my profile.
+answer	parent	any	2008	2016	@{prev_user} we have a 9 year old and it was fine, just turn the chat off.
+anecdote	any	any	2008	2016	The {city} store had a queue round the corner for this one. Different times.
+anecdote	any	any	2008	2013	Staff at my local put one aside for me without being asked. That's why I keep going back.
+anecdote	collector	any	2008	2016	Found a sealed copy in the used bin priced as loose once. Still my greatest victory.
+dunk	any	any	2008	2016	That one word is doing a lot of heavy lifting in this review.
+dunk	troll	pos	2008	2016	Imagine writing six paragraphs about a {genre} game. Touch grass. (Good review though.)
+dunk	troll	any	2008	2016	The ratio on this review is going to be studied one day.
+dunk	any	any	2008	2016	Sir this is a review section for a children's game.
+defend	superfan	any	2008	2016	@{prev_user} being right and being annoying about it are different things.
+defend	any	any	2008	2016	@{prev_user} account created last week, first activity is this. Sure.
+defend	grouch	any	2008	2016	I've complained about this company for eight years and even I think you're reaching.
+troll_reply	troll	any	2008	2016	Found the {publisher} defence force.
+troll_reply	troll	any	2008	2016	Cope. The rating stays.
+troll_reply	troll	any	2008	2016	@{prev_user} I accept your surrender.
+mod_note	any	any	2008	2016	[Comment removed by The Counter team — see house rules]
+mod_note	any	any	2008	2016	[Thread locked — everybody go outside for a bit. — The Counter team]
+bomb_callout	any	neg	2012	2012	Account created last Tuesday, zero purchases, identical wording to 30 other "reviews" tonight. Reported.
+bomb_callout	any	neg	2012	2012	voted unhelpful. whoever's coordinating these isn't even changing the wording
+bomb_callout	any	neg	2012	2012	The filings are public, sure. Doesn't make you not a plant.
+bomb_defend	any	neg	2012	2012	bro the filings are real tho?? like he's not wrong??
+bomb_defend	any	neg	2012	2012	My store's still packed on Saturdays. Buying the Christmas haul there same as every year.
+goodbye	any	any	2016	2016	Made an account after ten years of lurking just to say thanks.
+goodbye	any	any	2016	2016	See you all at whatever comes next. Somebody keep the reviews archived.
+goodbye	any	any	2016	2016	I met my wife in the {city} store queue in 2007. That's it, that's the comment.
+goodbye	any	any	2016	2016	Last day is Friday. If you're near the {city} store, the staff deserve a thank-you.
+goodbye	grouch	any	2016	2016	Eight years of complaints on this account. I'd give anything for something new to complain about.
+goodbye	any	any	2016	2016	o7
+
+# ---- TRANCHE 2b: comment variety (2026-07-19) ----
+agree	any	pos	2008	2016	Finally someone said it properly.
+agree	any	pos	2008	2016	Saving this to link every time the argument comes up.
+agree	any	pos	2008	2016	Word for word what I'd have written, so thanks for the effort.
+agree	any	pos	2008	2016	The verified badge on this one means something. Listen to it.
+agree	any	pos	2008	2016	Yep. Bought it on this review, no regrets.
+agree	any	pos	2008	2016	This aged well. Came back a year later to say so.
+agree	any	neg	2008	2016	Thank you. Thought I was going mad reading the five-star ones.
+agree	any	neg	2008	2016	Same issue, same disappointment, same shelf it's sitting on now.
+agree	any	neg	2008	2016	Wish I'd read this before I paid full price.
+agree	any	neg	2008	2016	Finally an honest one. The rest of this page is a marketing meeting.
+disagree	any	pos	2008	2016	Respectfully, this reads like you played the first hour and stopped.
+disagree	any	pos	2008	2016	Generous doesn't begin to cover it. Did we buy the same game?
+disagree	any	pos	2008	2016	Hard disagree, but at least you explained yourself. Rare here.
+disagree	any	neg	2008	2016	Skill issue with a thesaurus, but go off.
+disagree	any	neg	2008	2016	It's not the game, it's your setup. Half these problems are your TV.
+disagree	any	neg	2008	2016	Every complaint here was patched months ago. Update your review.
+disagree	any	neg	2008	2016	You reviewed the launch build and it shows. This is unfair now.
+question	any	any	2008	2016	Does the physical copy still need the download or is the disc complete?
+question	any	any	2008	2016	Anyone know if this runs okay on the older model, or do I need the slim?
+question	any	any	2008	2016	Is the co-op local or online only? The box is vague.
+question	any	any	2008	2016	Worth grabbing the special edition or is the base game enough?
+answer	any	any	2008	2016	@{prev_user} disc is complete, no download needed. You're good.
+answer	any	any	2008	2016	@{prev_user} local co-op yes, online was added in a patch later.
+answer	any	any	2008	2016	@{prev_user} runs fine on the old model, just longer loads. Nothing fatal.
+answer	any	any	2008	2016	@{prev_user} base game's plenty. The special edition is a keychain and regret.
+dunk	any	any	2008	2016	Six paragraphs to say 'I liked it.' Incredible stamina.
+dunk	any	any	2008	2016	This review has a word count and a body count.
+dunk	any	any	2008	2016	Bookmarking this to feel superior about later.
+dunk	any	any	2008	2016	The confidence-per-fact ratio here is astonishing.
+defend	any	any	2008	2016	@{prev_user} the reviewer literally addressed this in the second paragraph.
+defend	any	any	2008	2016	@{prev_user} imagine being this pressed about a stranger's star rating.
+defend	any	any	2008	2016	Leave them alone, they bought the thing, they get an opinion.
+troll_reply	troll	any	2008	2016	Ratio incoming, screenshot this.
+troll_reply	troll	any	2008	2016	Mad? In THIS economy? Couldn't be me.
+troll_reply	troll	any	2008	2016	Every reply is a rent payment. Keep them coming.
+troll_reply	troll	any	2008	2016	@{prev_user} your paragraph, my one line. Efficiency.
+anecdote	any	any	2008	2016	My local store had a midnight launch for this. Twelve people and a card table of pizza.
+anecdote	any	any	2008	2016	Traded three games toward it and the clerk still shook his head at me.
+anecdote	any	any	2008	2016	Bought it the week my kid was born. Didn't touch it for a year. Worth the wait.
+goodbye	any	any	2016	2016	Logged in after five years just to say it here. Thanks, everyone.
+goodbye	any	any	2016	2016	The store where I bought my first console is boarded up now. Weird to type that.
+goodbye	any	any	2016	2016	See you in whatever forum inherits this crowd. Bring the arguments.
+
+# ---- TRANCHE 2c: comment randomness — short era-tagged reactions (2026-07-19) ----
+agree	any	pos	2008	2012	+1
+agree	any	pos	2008	2012	QFT
+agree	any	pos	2008	2012	this
+agree	any	pos	2008	2012	seconded
+agree	any	pos	2008	2012	cosigned
+agree	any	pos	2008	2012	well said
+agree	any	pos	2008	2012	spot on
+agree	any	pos	2008	2012	word
+agree	any	pos	2008	2012	yep
+agree	any	pos	2008	2012	exactly this
+agree	any	pos	2008	2012	co-sign
+agree	any	pos	2008	2012	couldn't agree more
+agree	any	pos	2013	2016	this so much
+agree	any	pos	2013	2016	hard agree
+agree	any	pos	2013	2016	facts
+agree	any	pos	2013	2016	nailed it
+agree	any	pos	2013	2016	preach
+agree	any	pos	2013	2016	100%
+agree	any	pos	2013	2016	this is the one
+agree	any	pos	2013	2016	big agree
+agree	any	pos	2013	2016	yes exactly
+agree	any	pos	2013	2016	said what needed saying
+agree	any	neg	2008	2016	thank you
+agree	any	neg	2008	2016	finally someone
+agree	any	neg	2008	2016	same here
+agree	any	neg	2008	2016	glad it's not just me
+agree	any	neg	2008	2016	this needed saying
+agree	any	neg	2008	2016	exactly my experience
+agree	any	neg	2008	2016	couldn't have said it better
+agree	any	neg	2008	2016	yep, refunded mine too
+disagree	any	pos	2008	2012	hard no
+disagree	any	pos	2008	2012	did we play the same game
+disagree	any	pos	2008	2012	not even close
+disagree	any	pos	2008	2012	overselling it
+disagree	any	pos	2008	2012	respectfully, no
+disagree	any	pos	2013	2016	L take
+disagree	any	pos	2013	2016	this ain't it
+disagree	any	pos	2013	2016	cope
+disagree	any	pos	2013	2016	big if true
+disagree	any	pos	2013	2016	nah
+disagree	any	pos	2013	2016	we did not play the same game
+disagree	any	neg	2008	2012	too harsh
+disagree	any	neg	2008	2012	skill issue
+disagree	any	neg	2008	2012	update your review
+disagree	any	neg	2008	2012	it's your setup not the game
+disagree	any	neg	2008	2012	patched ages ago
+disagree	any	neg	2013	2016	skill issue tbh
+disagree	any	neg	2013	2016	this you? *points at settings*
+disagree	any	neg	2013	2016	harsh but ok
+disagree	any	neg	2013	2016	touch grass, it's fine now
+disagree	any	neg	2013	2016	the patch exists you know
+dunk	any	any	2008	2012	cool story
+dunk	any	any	2008	2012	/thread
+dunk	any	any	2008	2012	nobody asked but ok
+dunk	any	any	2008	2012	way to go genius
+dunk	any	any	2008	2012	the effort though
+dunk	any	any	2013	2016	we get it
+dunk	any	any	2013	2016	ok essay
+dunk	any	any	2013	2016	not the manifesto
+dunk	any	any	2013	2016	the confidence is something
+dunk	any	any	2013	2016	big yikes
+dunk	any	any	2013	2016	and yet
+dunk	troll	any	2008	2016	L
+dunk	troll	any	2008	2016	ratio in progress
+dunk	troll	any	2008	2016	couldn't be me
+dunk	troll	any	2008	2016	imagine
+dunk	troll	any	2008	2016	and? still one star
+question	any	any	2008	2016	does it have local co-op?
+question	any	any	2008	2016	runs ok on the old model?
+question	any	any	2008	2016	disc complete or download?
+question	any	any	2008	2016	worth it on sale?
+question	any	any	2008	2016	how long is it roughly?
+question	any	any	2008	2016	is the online still up?
+answer	any	any	2008	2016	@{prev_user} yep, complete on disc.
+answer	any	any	2008	2016	@{prev_user} online's dead now, single player's fine.
+answer	any	any	2008	2016	@{prev_user} about 12 hours if you rush it.
+answer	any	any	2008	2016	@{prev_user} local only, sadly.
+answer	any	any	2008	2016	@{prev_user} wait for the sale, always.
+defend	any	any	2008	2016	let them have an opinion
+defend	any	any	2008	2016	they bought it, they get to talk
+defend	any	any	2008	2016	@{prev_user} it's a star rating, breathe
+defend	any	any	2008	2016	the review's fair actually
+troll_reply	troll	any	2008	2016	mald
+troll_reply	troll	any	2008	2016	stay mad
+troll_reply	troll	any	2008	2016	keep replying
+troll_reply	troll	any	2008	2016	seethe
+troll_reply	troll	any	2008	2016	every reply feeds me
+troll_reply	troll	any	2008	2016	rent free
+anecdote	any	any	2008	2016	Still have my launch-day receipt for this somewhere. Sappy, I know.
+anecdote	any	any	2008	2016	My little brother and I split the cost of this. He never paid me back.
+anecdote	any	any	2008	2016	Bought this the day I got my first paycheck. Priorities.
+anecdote	any	any	2008	2016	The clerk talked me into the used copy and saved me a tenner. Good man.
+goodbye	any	any	2016	2016	o7 to everyone who argued with me on here for a decade
+goodbye	any	any	2016	2016	last one out, turn off the CRT
+goodbye	any	any	2016	2016	thanks for the memories, genuinely
+goodbye	any	any	2016	2016	well. that's that then.

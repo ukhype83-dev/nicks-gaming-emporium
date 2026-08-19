@@ -1,0 +1,46 @@
+# NGE V1.26 — Polish review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	W końcu zagrałem i jestem zachwycony.
+opener_pos	any	any	2005	2016	Długo czekałem, ale warto było.
+opener_pos	any	any	2005	2016	Co za gra.
+opener_pos	any	any	2005	2016	Miło zaskoczony.
+opener_neg	any	any	2005	2016	Naprawdę chciałem to polubić.
+opener_neg	any	any	2005	2016	Szkoda pieniędzy.
+opener_neg	any	any	2005	2016	Rozczarowanie.
+opener_neg	any	any	2005	2016	Nie wiem, od czego zacząć.
+opener_mixed	any	any	2005	2016	Mieszane uczucia co do tego tytułu.
+opener_mixed	any	any	2005	2016	Dobry pomysł, wykonanie średnie.
+opener_mixed	any	any	2005	2016	W porządku, ale bez rewelacji.
+experience	any	any	2005	2016	Pierwsze godziny się wleką, potem jest lepiej.
+experience	any	any	2005	2016	Zniknął mi cały weekend.
+experience	any	any	2005	2016	Przeszedłem dwa razy, warto było.
+praise	any	any	2005	2016	Ścieżka dźwiękowa jest znakomita.
+praise	any	any	2005	2016	Graficznie najlepsze na {platform}.
+praise	any	any	2005	2016	Sterowanie jest idealne.
+praise	any	any	2005	2016	Dopracowane w każdym detalu.
+flaw	any	any	2005	2016	Czasy ładowania są nie do zniesienia.
+flaw	any	any	2005	2016	Zbyt dużo błędów na premierę.
+flaw	any	any	2005	2016	Kamera robi, co chce.
+flaw	any	any	2005	2016	Za krótkie jak na tę cenę.
+verdict_pos	any	any	2005	2016	Zdecydowanie polecam. Pięć gwiazdek.
+verdict_pos	any	any	2005	2016	Obowiązkowa pozycja na {platform}.
+verdict_pos	any	any	2005	2016	Ode mnie najwyższa ocena.
+verdict_neg	any	any	2005	2016	Odpuśćcie sobie, szkoda pieniędzy.
+verdict_neg	any	any	2005	2016	Na promocji może warto zerknąć.
+verdict_neg	any	any	2005	2016	Jedna gwiazdka i to na wyrost.
+verdict_mixed	any	any	2005	2016	Na promocji może, poza tym nie.
+verdict_mixed	any	any	2005	2016	Trzy gwiazdki i tyle.
+verdict_mixed	any	any	2005	2016	Poczekajcie, aż stanieje.
+short_pos	any	any	2005	2016	Super.
+short_pos	any	any	2005	2016	Polecam.
+short_pos	any	any	2005	2016	Bardzo dobre.
+short_pos	any	any	2005	2016	Rewelacja.
+short_neg	any	any	2005	2016	Rozczarowanie.
+short_neg	any	any	2005	2016	Nie kupujcie.
+short_neg	any	any	2005	2016	Szkoda.
+short_neg	any	any	2005	2016	Nie.
+short_mixed	any	any	2005	2016	Może być.
+short_mixed	any	any	2005	2016	Przeciętne.
+short_mixed	any	any	2005	2016	Da się grać.
+short_mixed	any	any	2005	2016	Nic specjalnego.

@@ -1,0 +1,46 @@
+# NGE V1.26 — Portuguese (BR) review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	Finalmente joguei, e adorei.
+opener_pos	any	any	2005	2016	Esperei muito, mas valeu a pena.
+opener_pos	any	any	2005	2016	Que jogo.
+opener_pos	any	any	2005	2016	Positivamente surpreso.
+opener_neg	any	any	2005	2016	Eu queria muito gostar.
+opener_neg	any	any	2005	2016	Que desperdício de dinheiro.
+opener_neg	any	any	2005	2016	Uma decepção.
+opener_neg	any	any	2005	2016	Nem sei por onde começar.
+opener_mixed	any	any	2005	2016	Sentimentos divididos sobre esse título.
+opener_mixed	any	any	2005	2016	Boa ideia, execução mediana.
+opener_mixed	any	any	2005	2016	Razoável, nada além disso.
+experience	any	any	2005	2016	As primeiras horas se arrastam, depois melhora.
+experience	any	any	2005	2016	Perdi um fim de semana inteiro nisso.
+experience	any	any	2005	2016	Terminei duas vezes, valeu a pena.
+praise	any	any	2005	2016	A trilha sonora é excepcional.
+praise	any	any	2005	2016	O melhor graficamente no {platform}.
+praise	any	any	2005	2016	Os controles são perfeitos.
+praise	any	any	2005	2016	Caprichado em cada detalhe.
+flaw	any	any	2005	2016	Os tempos de carregamento são insuportáveis.
+flaw	any	any	2005	2016	Bugs demais no lançamento.
+flaw	any	any	2005	2016	A câmera faz o que quer.
+flaw	any	any	2005	2016	Curto demais pelo preço.
+verdict_pos	any	any	2005	2016	Compra obrigatória. Cinco estrelas.
+verdict_pos	any	any	2005	2016	Imperdível para quem tem {platform}.
+verdict_pos	any	any	2005	2016	Nota máxima da minha parte.
+verdict_neg	any	any	2005	2016	Nem chegue perto, guarde seu dinheiro.
+verdict_neg	any	any	2005	2016	Em promoção, talvez.
+verdict_neg	any	any	2005	2016	Uma estrela, e olhe lá.
+verdict_mixed	any	any	2005	2016	Em promoção quem sabe, senão não.
+verdict_mixed	any	any	2005	2016	Três estrelas e olhe lá.
+verdict_mixed	any	any	2005	2016	Espere baixar de preço.
+short_pos	any	any	2005	2016	Ótimo.
+short_pos	any	any	2005	2016	Compre.
+short_pos	any	any	2005	2016	Muito bom.
+short_pos	any	any	2005	2016	Amei.
+short_neg	any	any	2005	2016	Decepcionante.
+short_neg	any	any	2005	2016	Não compre.
+short_neg	any	any	2005	2016	Que pena.
+short_neg	any	any	2005	2016	Não.
+short_mixed	any	any	2005	2016	Mais ou menos.
+short_mixed	any	any	2005	2016	Mediano.
+short_mixed	any	any	2005	2016	Dá pra jogar.
+short_mixed	any	any	2005	2016	Nada demais.

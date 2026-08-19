@@ -1,0 +1,119 @@
+hardware_id	model_name	platform	kind	manufacturer	model_number	release_na	release_jp	release_eu	launch_usd	revision_of	source_url	notes
+1	PlayStation	PlayStation	console	Sony	SCPH-1001	1995-09-09	1994-12-03	1995-09-29	299	-	https://en.wikipedia.org/wiki/PlayStation_models	Original "PS1"; NA launch model
+2	PSone	PlayStation	console	Sony	SCPH-101	2000-09-19	2000-07-07	2000-09-29	99	1	https://en.wikipedia.org/wiki/PlayStation_models	Slimline late-life redesign
+3	PlayStation 2	PlayStation 2	console	Sony	SCPH-30001	2000-10-26	2000-03-04	2000-11-24	299	-	https://en.wikipedia.org/wiki/PlayStation_2_models	Original "fat"
+4	PlayStation 2 Slim	PlayStation 2	console	Sony	SCPH-70000	2004-11-01	2004-11-03	2004-11-19	149	3	https://en.wikipedia.org/wiki/PlayStation_2_models	Slim redesign
+5	PlayStation 3 (60GB)	PlayStation 3	console	Sony	CECHA01	2006-11-17	2006-11-11	2007-03-23	599	-	https://en.wikipedia.org/wiki/PlayStation_3_models	Launch 60GB; 20GB variant was $499
+6	PlayStation 3 Slim	PlayStation 3	console	Sony	CECH-2000	2009-09-01	2009-09-03	2009-09-01	299	5	https://en.wikipedia.org/wiki/PlayStation_3_models	120GB slim
+7	PlayStation 3 Super Slim	PlayStation 3	console	Sony	CECH-4000	2012-09-25	2012-10-04	2012-09-28	269	5	https://en.wikipedia.org/wiki/PlayStation_3_models	Second redesign
+8	PlayStation 4	PlayStation 4	console	Sony	CUH-1000	2013-11-15	2014-02-22	2013-11-29	399	-	https://en.wikipedia.org/wiki/PlayStation_4	Original
+9	PlayStation 4 Slim	PlayStation 4	console	Sony	CUH-2000	2016-09-15	2016-09-15	2016-09-15	299	8	https://en.wikipedia.org/wiki/PlayStation_4	Slim redesign
+10	PlayStation 4 Pro	PlayStation 4	console	Sony	CUH-7000	2016-11-10	2016-11-10	2016-11-10	399	8	https://en.wikipedia.org/wiki/PlayStation_4	4K/HDR mid-gen
+11	PlayStation Portable (PSP-1000)	PlayStation Portable	handheld	Sony	PSP-1000	2005-03-24	2004-12-12	2005-09-01	249	-	https://en.wikipedia.org/wiki/PlayStation_Portable	Original
+12	PSP Slim & Lite (PSP-2000)	PlayStation Portable	handheld	Sony	PSP-2000	2007-09-05	2007-09-20	2007-09-05	169	11	https://en.wikipedia.org/wiki/PlayStation_Portable	Slimmer revision
+13	PSP-3000	PlayStation Portable	handheld	Sony	PSP-3000	2008-10-14	2008-10-16	2008-10-15	169	11	https://en.wikipedia.org/wiki/PlayStation_Portable	Improved screen
+14	PSP Go	PlayStation Portable	handheld	Sony	PSP-N1000	2009-10-01	2009-11-01	2009-10-01	249	11	https://en.wikipedia.org/wiki/PlayStation_Portable	Digital-only, sliding form
+15	PlayStation Vita (OLED)	PlayStation Vita	handheld	Sony	PCH-1000	2012-02-22	2011-12-17	2012-02-22	249	-	https://en.wikipedia.org/wiki/PlayStation_Vita	Wi-Fi $249 / 3G $299
+16	PlayStation Vita Slim	PlayStation Vita	handheld	Sony	PCH-2000	2014-05-06	2013-10-10	2014-02-07	199	15	https://en.wikipedia.org/wiki/PlayStation_Vita	LCD redesign
+17	Game Boy	Game Boy	handheld	Nintendo	DMG-01	1989-07-31	1989-04-21	1990-09-28	90	-	https://en.wikipedia.org/wiki/Game_Boy	Original
+18	Game Boy Pocket	Game Boy	handheld	Nintendo	MGB-001	1996-09-02	1996-07-21	1997-01-01	70	17	https://en.wikipedia.org/wiki/Game_Boy	Smaller redesign
+19	Game Boy Color	Game Boy Color	handheld	Nintendo	CGB-001	1998-11-18	1998-10-21	1998-11-23	70	-	https://en.wikipedia.org/wiki/Game_Boy_Color	Colour-screen handheld
+20	Game Boy Advance	Game Boy Advance	handheld	Nintendo	AGB-001	2001-06-11	2001-03-21	2001-06-22	100	-	https://en.wikipedia.org/wiki/Game_Boy_Advance	Original
+21	Game Boy Advance SP	Game Boy Advance	handheld	Nintendo	AGS-001	2003-03-23	2003-02-14	2003-03-28	100	20	https://en.wikipedia.org/wiki/Game_Boy_Advance	Clamshell, frontlit (later backlit)
+22	Game Boy Micro	Game Boy Advance	handheld	Nintendo	OXY-001	2005-09-19	2005-09-13	2005-11-04	100	20	https://en.wikipedia.org/wiki/Game_Boy_Advance	Ultra-compact
+23	Nintendo DS	Nintendo DS	handheld	Nintendo	NTR-001	2004-11-21	2004-12-02	2005-03-11	150	-	https://en.wikipedia.org/wiki/Nintendo_DS	Original
+24	Nintendo DS Lite	Nintendo DS	handheld	Nintendo	USG-001	2006-06-11	2006-03-02	2006-06-23	130	23	https://en.wikipedia.org/wiki/Nintendo_DS_Lite	Brighter, slimmer redesign
+25	Nintendo DSi	Nintendo DS	handheld	Nintendo	TWL-001	2009-04-05	2008-11-01	2009-04-03	170	23	https://en.wikipedia.org/wiki/Nintendo_DSi	Cameras, DSiWare
+26	Nintendo DSi XL	Nintendo DS	handheld	Nintendo	UTL-001	2010-03-28	2009-11-21	2010-03-05	190	23	https://en.wikipedia.org/wiki/Nintendo_DSi	Larger screens
+27	Nintendo 3DS	Nintendo 3DS	handheld	Nintendo	CTR-001	2011-03-27	2011-02-26	2011-03-25	250	-	https://en.wikipedia.org/wiki/Nintendo_3DS	Glasses-free 3D
+28	Nintendo 3DS XL	Nintendo 3DS	handheld	Nintendo	SPR-001	2012-08-19	2012-07-28	2012-07-28	200	27	https://en.wikipedia.org/wiki/Nintendo_3DS_XL	Larger screens
+29	Nintendo 2DS	Nintendo 3DS	handheld	Nintendo	FTR-001	2013-10-12	2016-02-27	2013-10-12	130	27	https://en.wikipedia.org/wiki/Nintendo_2DS	Entry model, no 3D
+30	New Nintendo 3DS XL	Nintendo 3DS	handheld	Nintendo	RED-001	2015-02-13	2014-10-11	2015-02-13	200	27	https://en.wikipedia.org/wiki/New_Nintendo_3DS	Faster CPU, C-stick
+31	Xbox	Xbox	console	Microsoft	-	2001-11-15	2002-02-22	2002-03-14	299	-	https://en.wikipedia.org/wiki/Xbox_(console)	Original
+32	Xbox 360 Pro	Xbox 360	console	Microsoft	Xenon	2005-11-22	2005-12-10	2005-12-02	399	-	https://en.wikipedia.org/wiki/Xbox_360	Core $299 / Pro $399 at launch
+33	Xbox 360 Elite	Xbox 360	console	Microsoft	Falcon	2007-04-29	2007-11-01	2007-08-24	479	32	https://en.wikipedia.org/wiki/Xbox_360	120GB, HDMI
+34	Xbox 360 S	Xbox 360	console	Microsoft	Trinity	2010-06-14	2010-06-24	2010-06-18	299	32	https://en.wikipedia.org/wiki/Xbox_360	Slim redesign, built-in Wi-Fi
+35	Xbox 360 E	Xbox 360	console	Microsoft	Corona	2013-06-10	2013-06-13	2013-06-14	199	32	https://en.wikipedia.org/wiki/Xbox_360	Final cost-reduced revision
+36	Xbox One	Xbox One	console	Microsoft	-	2013-11-22	2014-09-04	2013-11-22	499	-	https://en.wikipedia.org/wiki/Xbox_One	Launch bundled Kinect
+37	Xbox One S	Xbox One	console	Microsoft	-	2016-08-02	2016-08-02	2016-08-02	299	36	https://en.wikipedia.org/wiki/Xbox_One	4K video, smaller
+38	DualShock 2 Controller	PlayStation 2	accessory	Sony	SCPH-10010	2000-10-26	2000-03-04	2000-11-24	29	-	https://en.wikipedia.org/wiki/DualShock	Sample accessory row
+39	Xbox 360 Wireless Controller	Xbox 360	accessory	Microsoft	-	2005-11-22	2005-12-10	2005-12-02	49	-	https://en.wikipedia.org/wiki/Xbox_360_controller	Sample accessory row
+40	Kinect Sensor	Xbox 360	accessory	Microsoft	-	2010-11-04	2010-11-20	2010-11-10	149	-	https://en.wikipedia.org/wiki/Kinect	Sample accessory/peripheral row
+41	Atari 2600	Atari 2600	console	Atari	CX2600	1977-09-11	-	1980-01-01	199	-	https://en.wikipedia.org/wiki/Atari_2600	Originally "Atari VCS"
+42	Atari 2600 Jr	Atari 2600	console	Atari	CX2600A	1986-01-01	-	1986-01-01	50	41	https://en.wikipedia.org/wiki/Atari_2600	Cost-reduced redesign
+43	Atari 7800	Atari 7800	console	Atari	CX7800	1986-05-01	-	1987-01-01	79	-	https://en.wikipedia.org/wiki/Atari_7800	Backward-compatible with 2600
+44	Atari Jaguar	Atari Jaguar	console	Atari	-	1993-11-23	-	1994-06-01	250	-	https://en.wikipedia.org/wiki/Atari_Jaguar	Marketed as 64-bit
+45	Atari Lynx	Atari Lynx	handheld	Atari	PAG-0100	1989-09-01	-	1990-01-01	180	-	https://en.wikipedia.org/wiki/Atari_Lynx	Colour backlit handheld
+46	Atari Lynx II	Atari Lynx	handheld	Atari	PAG-0401	1991-07-01	-	1991-09-01	99	45	https://en.wikipedia.org/wiki/Atari_Lynx	Smaller, power-saving
+47	ColecoVision	ColecoVision	console	Coleco	-	1982-08-01	-	1983-07-01	175	-	https://en.wikipedia.org/wiki/ColecoVision	Arcade-quality ports
+48	Commodore 64	Commodore 64	computer	Commodore	C64	1982-08-01	-	1982-09-01	595	-	https://en.wikipedia.org/wiki/Commodore_64	Best-selling home computer ever
+49	Commodore 64C	Commodore 64	computer	Commodore	C64C	1986-06-01	-	1986-09-01	150	48	https://en.wikipedia.org/wiki/Commodore_64	Restyled, cost-reduced
+50	Amiga 1000	Commodore Amiga	computer	Commodore	A1000	1985-07-23	-	1986-03-01	1295	-	https://en.wikipedia.org/wiki/Amiga	Original Amiga
+51	Amiga 500	Commodore Amiga	computer	Commodore	A500	1987-10-01	-	1987-05-01	699	50	https://en.wikipedia.org/wiki/Amiga_500	The mass-market gaming Amiga
+52	Amiga 1200	Commodore Amiga	computer	Commodore	A1200	1992-12-01	-	1992-10-21	599	50	https://en.wikipedia.org/wiki/Amiga_1200	AGA chipset
+53	Amiga CD32	Amiga CD32	console	Commodore	-	-	-	1993-09-17	399	-	https://en.wikipedia.org/wiki/Amiga_CD32	32-bit CD console; mostly Europe
+54	Apple II	Apple II	computer	Apple	A2S1	1977-06-10	-	1978-01-01	1298	-	https://en.wikipedia.org/wiki/Apple_II	Original
+55	Apple IIe	Apple II	computer	Apple	A2S2064	1983-01-01	-	1983-06-01	1395	54	https://en.wikipedia.org/wiki/Apple_IIe	Long-lived workhorse
+56	Apple IIc	Apple II	computer	Apple	A2S4000	1984-04-24	-	1984-09-01	1295	54	https://en.wikipedia.org/wiki/Apple_IIc	Compact, semi-portable
+57	Apple IIGS	Apple II	computer	Apple	A2S6000	1986-09-15	-	1986-12-01	999	54	https://en.wikipedia.org/wiki/Apple_IIGS	16-bit graphics/sound
+58	Sega Game Gear	Game Gear	handheld	Sega	2110	1991-04-26	1990-10-06	1991-04-24	150	-	https://en.wikipedia.org/wiki/Game_Gear	Colour handheld rival to Game Boy
+59	Intellivision	Intellivision	console	Mattel	2609	1980-01-01	-	1981-01-01	299	-	https://en.wikipedia.org/wiki/Intellivision	Test-marketed 1979
+60	MSX	MSX	computer	Various	-	-	1983-10-21	1984-01-01	300	-	https://en.wikipedia.org/wiki/MSX	Standard adopted by many makers
+61	MSX2	MSX	computer	Various	-	-	1985-01-01	1986-01-01	400	60	https://en.wikipedia.org/wiki/MSX	Enhanced second generation
+62	Neo Geo AES	Neo Geo	console	SNK	-	1991-07-01	1990-04-26	1991-10-01	649	-	https://en.wikipedia.org/wiki/Neo_Geo_(system)	Premium home cartridge system
+63	Neo Geo CD	Neo Geo	console	SNK	-	1994-12-01	1994-09-09	1995-04-01	399	62	https://en.wikipedia.org/wiki/Neo_Geo_CD	CD format, cheaper games
+64	Nintendo 64	Nintendo 64	console	Nintendo	NUS-001	1996-09-29	1996-06-23	1997-03-01	199	-	https://en.wikipedia.org/wiki/Nintendo_64	Cartridge-based 64-bit
+65	Nintendo Entertainment System	Nintendo Entertainment System	console	Nintendo	NES-001	1985-10-18	1983-07-15	1986-09-01	89	-	https://en.wikipedia.org/wiki/Nintendo_Entertainment_System	Famicom in JP 1983; NES front-loader
+66	NES-101 (top loader)	Nintendo Entertainment System	console	Nintendo	NES-101	1993-10-01	-	-	49	65	https://en.wikipedia.org/wiki/Nintendo_Entertainment_System	Final redesign
+67	Nintendo GameCube	Nintendo GameCube	console	Nintendo	DOL-001	2001-11-18	2001-09-14	2002-05-03	199	-	https://en.wikipedia.org/wiki/GameCube	MiniDVD-based
+68	Nintendo Wii	Nintendo Wii	console	Nintendo	RVL-001	2006-11-19	2006-12-02	2006-12-08	250	-	https://en.wikipedia.org/wiki/Wii	Motion controls; mass-market hit
+69	Wii Family Edition	Nintendo Wii	console	Nintendo	RVL-101	2011-10-23	-	2011-11-04	150	68	https://en.wikipedia.org/wiki/Wii	Drops GameCube compatibility
+70	Wii Mini	Nintendo Wii	console	Nintendo	RVL-201	2012-12-07	-	2013-03-15	99	68	https://en.wikipedia.org/wiki/Wii_Mini	Stripped-down, no online
+71	Wii U	Nintendo Wii U	console	Nintendo	WUP-001	2012-11-18	2012-12-08	2012-11-30	299	-	https://en.wikipedia.org/wiki/Wii_U	Basic 8GB $299 / Deluxe 32GB $349
+72	Philips CD-i	Philips CD-i	console	Philips	CDI-910	1991-12-03	-	1992-04-01	799	-	https://en.wikipedia.org/wiki/CD-i	Multimedia player platform
+73	Sega 32X	Sega 32X	console	Sega	MK-84000	1994-11-21	1994-12-03	1995-01-14	159	-	https://en.wikipedia.org/wiki/32X	Add-on boosting the Genesis
+74	Sega CD	Sega CD	console	Sega	MK-4102	1992-10-15	1991-12-12	1993-04-02	299	-	https://en.wikipedia.org/wiki/Sega_CD	Mega-CD outside NA; Genesis add-on
+75	Sega CD Model 2	Sega CD	console	Sega	MK-4102-50	1993-06-01	1993-04-23	1993-10-01	229	74	https://en.wikipedia.org/wiki/Sega_CD	Top-loading redesign
+76	Sega Dreamcast	Sega Dreamcast	console	Sega	HKT-3020	1999-09-09	1998-11-27	1999-10-14	199	-	https://en.wikipedia.org/wiki/Dreamcast	Sega's final console
+77	Sega Genesis	Sega Genesis	console	Sega	MK-1601	1989-08-14	1988-10-29	1990-11-30	189	-	https://en.wikipedia.org/wiki/Sega_Genesis	Mega Drive outside North America
+78	Sega Genesis Model 2	Sega Genesis	console	Sega	MK-1631	1993-04-01	1993-04-01	1993-05-01	99	77	https://en.wikipedia.org/wiki/Sega_Genesis	Smaller, cost-reduced
+79	Sega Master System	Sega Master System	console	Sega	3010	1986-06-01	1985-10-20	1987-01-01	199	-	https://en.wikipedia.org/wiki/Master_System	Sega Mark III in Japan
+80	Sega Master System II	Sega Master System	console	Sega	3006	1990-01-01	-	1990-06-01	50	79	https://en.wikipedia.org/wiki/Master_System	Budget redesign (big in Brazil/EU)
+81	Sega Saturn	Sega Saturn	console	Sega	MK-80000	1995-05-11	1994-11-22	1995-07-08	399	-	https://en.wikipedia.org/wiki/Sega_Saturn	Surprise early NA launch
+82	Super Nintendo Entertainment System	Super Nintendo Entertainment System	console	Nintendo	SNS-001	1991-08-23	1990-11-21	1992-04-11	199	-	https://en.wikipedia.org/wiki/Super_Nintendo_Entertainment_System	Super Famicom in Japan
+83	SNES Model 2 (Jr)	Super Nintendo Entertainment System	console	Nintendo	SNS-101	1997-10-01	1998-03-27	-	99	82	https://en.wikipedia.org/wiki/Super_Nintendo_Entertainment_System	Cost-reduced redesign
+84	TurboGrafx-16	TurboGrafx-16	console	NEC	TGX-16	1989-08-29	1987-10-30	1990-11-22	189	-	https://en.wikipedia.org/wiki/TurboGrafx-16	PC Engine in Japan
+85	TurboDuo	TurboGrafx-16	console	NEC	-	1992-10-01	1991-09-21	-	299	84	https://en.wikipedia.org/wiki/TurboGrafx-16	Integrated CD-ROM unit
+86	Nintendo Virtual Boy	Virtual Boy	console	Nintendo	VUE-001	1995-08-14	1995-07-21	-	180	-	https://en.wikipedia.org/wiki/Virtual_Boy	Tabletop 3D; commercial failure
+87	ZX Spectrum	ZX Spectrum	computer	Sinclair	-	-	-	1982-04-23	200	-	https://en.wikipedia.org/wiki/ZX_Spectrum	UK home-computer icon
+88	ZX Spectrum 128	ZX Spectrum	computer	Sinclair	-	-	-	1986-01-01	250	87	https://en.wikipedia.org/wiki/ZX_Spectrum	128K with improved sound
+89	ZX Spectrum +2	ZX Spectrum	computer	Amstrad	-	-	-	1986-09-01	200	87	https://en.wikipedia.org/wiki/ZX_Spectrum	Built-in tape deck (Amstrad era)
+90	3DO (Panasonic FZ-1)	3DO Interactive Multiplayer	console	Panasonic	FZ-1	1993-10-04	1994-03-20	1994-06-01	699	-	https://en.wikipedia.org/wiki/3DO_Interactive_Multiplayer	Open standard; $699 launch
+91	PlayStation Controller	PlayStation	accessory	Sony	SCPH-1080	1995-09-09	1994-12-03	1995-09-29	25	-	https://en.wikipedia.org/wiki/PlayStation_Controller	Original digital pad
+92	DualShock (PS1)	PlayStation	accessory	Sony	SCPH-1200	1997-11-01	1997-11-20	1998-05-01	30	-	https://en.wikipedia.org/wiki/DualShock	Analog + rumble
+93	PlayStation Memory Card	PlayStation	accessory	Sony	SCPH-1020	1995-09-09	1994-12-03	1995-09-29	15	-	https://en.wikipedia.org/wiki/PlayStation_(console)	1MB save
+94	PS2 Memory Card (8MB)	PlayStation 2	accessory	Sony	SCPH-10020	2000-10-26	2000-03-04	2000-11-24	25	-	https://en.wikipedia.org/wiki/PlayStation_2	8MB save
+95	DualShock 3	PlayStation 3	accessory	Sony	CECHZC2	2008-04-15	2007-11-11	2008-07-04	55	-	https://en.wikipedia.org/wiki/DualShock	Sixaxis + rumble
+96	DualShock 4	PlayStation 4	accessory	Sony	CUH-ZCT1	2013-11-15	2014-02-22	2013-11-29	60	-	https://en.wikipedia.org/wiki/DualShock	Touchpad
+97	PSP Memory Stick Pro Duo	PlayStation Portable	accessory	Sony	-	2005-03-24	2004-12-12	2005-09-01	30	-	https://en.wikipedia.org/wiki/Memory_Stick	Storage
+98	PS Vita Memory Card	PlayStation Vita	accessory	Sony	-	2012-02-22	2011-12-17	2012-02-22	30	-	https://en.wikipedia.org/wiki/PlayStation_Vita	Proprietary storage
+99	Xbox Controller S	Xbox	accessory	Microsoft	-	2002-03-01	2002-02-22	2002-03-14	30	-	https://en.wikipedia.org/wiki/Xbox_controller	Smaller redesign pad
+100	Xbox 360 Play & Charge Kit	Xbox 360	accessory	Microsoft	-	2005-11-22	2005-12-10	2005-12-02	20	-	https://en.wikipedia.org/wiki/Xbox_360_accessories	Rechargeable battery
+101	Xbox 360 Headset	Xbox 360	accessory	Microsoft	-	2005-11-22	2005-12-10	2005-12-02	20	-	https://en.wikipedia.org/wiki/Xbox_360_accessories	Live chat headset
+102	Xbox One Wireless Controller	Xbox One	accessory	Microsoft	-	2013-11-22	2014-09-04	2013-11-22	60	-	https://en.wikipedia.org/wiki/Xbox_One_controller	Spare/extra pad
+103	Xbox One Chat Headset	Xbox One	accessory	Microsoft	-	2013-11-22	2014-09-04	2013-11-22	25	-	https://en.wikipedia.org/wiki/Xbox_One	Mono chat headset
+104	NES Controller	Nintendo Entertainment System	accessory	Nintendo	NES-004	1985-10-18	1983-07-15	1986-09-01	10	-	https://en.wikipedia.org/wiki/NES_controller	Replacement pad
+105	NES Zapper	Nintendo Entertainment System	accessory	Nintendo	NES-005	1985-10-18	1984-02-15	1987-01-01	15	-	https://en.wikipedia.org/wiki/NES_Zapper	Light gun
+106	SNES Controller	Super Nintendo Entertainment System	accessory	Nintendo	SNS-005	1991-08-23	1990-11-21	1992-04-11	15	-	https://en.wikipedia.org/wiki/Super_NES_controller	Replacement pad
+107	Nintendo 64 Controller	Nintendo 64	accessory	Nintendo	NUS-005	1996-09-29	1996-06-23	1997-03-01	25	-	https://en.wikipedia.org/wiki/Nintendo_64_controller	Trident pad
+108	N64 Controller Pak	Nintendo 64	accessory	Nintendo	NUS-004	1996-09-29	1996-06-23	1997-03-01	15	-	https://en.wikipedia.org/wiki/Controller_Pak	Memory
+109	GameCube Controller	Nintendo GameCube	accessory	Nintendo	DOL-003	2001-11-18	2001-09-14	2002-05-03	25	-	https://en.wikipedia.org/wiki/GameCube_controller	Replacement pad
+110	GameCube Memory Card	Nintendo GameCube	accessory	Nintendo	DOL-008	2001-11-18	2001-09-14	2002-05-03	15	-	https://en.wikipedia.org/wiki/GameCube	Save card
+111	Wii Remote	Nintendo Wii	accessory	Nintendo	RVL-003	2006-11-19	2006-12-02	2006-12-08	40	-	https://en.wikipedia.org/wiki/Wii_Remote	Motion controller
+112	Wii Nunchuk	Nintendo Wii	accessory	Nintendo	RVL-004	2006-11-19	2006-12-02	2006-12-08	20	-	https://en.wikipedia.org/wiki/Nunchuk	Motion add-on
+113	Wii U Pro Controller	Nintendo Wii U	accessory	Nintendo	WUP-005	2012-11-18	2012-12-08	2012-11-30	50	-	https://en.wikipedia.org/wiki/Wii_U_Pro_Controller	Traditional pad
+114	Genesis 6-Button Controller	Sega Genesis	accessory	Sega	MK-1470	1993-08-26	1993-08-26	1993-09-01	20	-	https://en.wikipedia.org/wiki/Sega_Genesis	Fighting-game pad
+115	Dreamcast VMU	Sega Dreamcast	accessory	Sega	HKT-7000	1999-09-09	1998-11-27	1999-10-14	20	-	https://en.wikipedia.org/wiki/VMU	Memory + mini-LCD
+116	Game Boy Link Cable	Game Boy	accessory	Nintendo	DMG-04	1989-07-31	1989-04-21	1990-09-28	10	-	https://en.wikipedia.org/wiki/Game_Boy	Two-player link
+117	Nintendo DS Charger	Nintendo DS	accessory	Nintendo	USG-002	2004-11-21	2004-12-02	2005-03-11	12	-	https://en.wikipedia.org/wiki/Nintendo_DS	AC adapter
+118	Nintendo 3DS Charger	Nintendo 3DS	accessory	Nintendo	WAP-002	2011-03-27	2011-02-26	2011-03-25	12	-	https://en.wikipedia.org/wiki/Nintendo_3DS	AC adapter
