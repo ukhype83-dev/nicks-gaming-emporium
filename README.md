@@ -73,6 +73,25 @@ The `--emit full` pipeline runs end to end:
 A successful run **exits 0**; a validation failure exits non-zero and reports
 which check failed.
 
+## Downloads (prebuilt databases)
+
+Don't want to build a terabyte yourself? Prebuilt database backups for each tier
+are published on the **[Releases page](https://github.com/ukhype83-dev/nicks-gaming-emporium/releases)**.
+
+Each release is tied to the exact generator version that produced it, and lists
+a **SHA-256** for every file so you can verify a large download landed intact.
+Restore a SQL Server backup with:
+
+```sql
+RESTORE DATABASE nge_tiny FROM DISK = 'D:\Downloads\nge_tiny.bak'
+  WITH MOVE 'nge_tiny'     TO 'D:\Data\nge_tiny.mdf',
+       MOVE 'nge_tiny_log' TO 'D:\Log\nge_tiny_log.ldf';
+```
+
+Building from source (above) is always the zero-cost option and produces a
+byte-identical database — the downloads are purely a convenience for the larger
+tiers.
+
 ### Useful flags
 
 | Flag                  | Purpose |
