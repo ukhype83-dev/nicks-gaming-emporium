@@ -9,6 +9,10 @@ trade-ins, an online store, and a full reporting/analytics warehouse.
 Everything is generated from a fixed seed, so the same tier always produces the
 **same database, byte for byte** — on any machine, any number of times.
 
+> 🕹️ There's a companion **fan site** for the (fictional) Emporium — a 1998-era
+> tribute page telling the company's story:
+> [ukhype83-dev.github.io/nge-fansite](https://ukhype83-dev.github.io/nge-fansite/)
+
 ## Tiers
 
 Pick a size with `--tier`. The name is the approximate footprint of the finished
