@@ -89,9 +89,10 @@ RESTORE DATABASE nge_tiny FROM DISK = 'D:\Downloads\nge_tiny.bak'
        MOVE 'nge_tiny_log' TO 'D:\Log\nge_tiny_log.ldf';
 ```
 
-Building from source (above) is always the zero-cost option and produces a
-byte-identical database — the downloads are purely a convenience for the larger
-tiers.
+Building from source (above) is always the zero-cost option. For a given seed
+and `--vusers` it produces a byte-identical database; the data and all aggregate
+results are identical regardless of `--vusers` (only the build-order surrogate
+ids differ). The downloads are purely a convenience for the larger tiers.
 
 ### Useful flags
 
