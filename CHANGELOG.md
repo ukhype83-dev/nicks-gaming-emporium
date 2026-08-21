@@ -12,6 +12,13 @@ of the same tag are equivalent.
 
 ## [Unreleased]
 
+### Fixed
+- HR payroll id determinism: `payroll_run_id` (and the `payroll_lines` foreign
+  key) was assigned while iterating a Go map of countries, so the numbering
+  varied between builds — non-deterministic run-to-run. Now numbered in a stable
+  sorted country order, so payroll ids are reproducible. Also hardened
+  `catalog.Platforms()` to sort internally (output-preserving).
+
 ## [0.1.0] — 2026-08-21
 
 Initial public release (early access — the schema and tiers may still change

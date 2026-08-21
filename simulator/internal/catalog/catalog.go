@@ -162,6 +162,10 @@ func (idx *Index) Platforms() []string {
 	for name := range idx.byPlatform {
 		out = append(out, name)
 	}
+	// Deterministic order (Go map iteration is randomized). Callers already
+	// sort, but sorting here matches hardware.Platforms()'s contract and removes
+	// a latent map-order dependency if a future caller forgets to.
+	sort.Strings(out)
 	return out
 }
 

@@ -16,6 +16,7 @@ package hr
 import (
 	"fmt"
 	"math/rand/v2"
+	"sort"
 	"time"
 
 	"emporium/internal/policy"
@@ -437,8 +438,20 @@ var payrollSchedules = map[string]payrollSchedule{
 func GeneratePayrollRuns(seed uint64, asOf time.Time, shopList []shops.Shop) []PayrollRun {
 	earliestByCountry := earliestShopByCountry(shopList)
 	out := make([]PayrollRun, 0, len(earliestByCountry)*40*26)
+	// Deterministic country order. Go map iteration is randomized, and runID is
+	// assigned sequentially ACROSS countries below, so ranging the map directly
+	// made payroll_run_id (and payroll_lines' FK) non-deterministic — differing
+	// run-to-run, machine-to-machine, and SQL-Server-vs-Postgres. Sort the keys
+	// so the numbering is stable. (Per-country runs were already deterministic;
+	// only the cross-country ordering was not.)
+	countries := make([]string, 0, len(earliestByCountry))
+	for c := range earliestByCountry {
+		countries = append(countries, c)
+	}
+	sort.Strings(countries)
 	var runID int64
-	for country, earliest := range earliestByCountry {
+	for _, country := range countries {
+		earliest := earliestByCountry[country]
 		sched, ok := payrollSchedules[country]
 		if !ok {
 			continue
