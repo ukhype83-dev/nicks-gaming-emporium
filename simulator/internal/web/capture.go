@@ -8,7 +8,7 @@
 package web
 
 import (
-	"math/rand/v2"
+	"math"
 	"sort"
 	"time"
 
@@ -58,12 +58,14 @@ type Purchase struct {
 	Price      float64
 }
 
-// reviewerState holds one reviewer's reservoir + total purchase count (the
-// whale signal) + a private RNG for reservoir replacement.
+// reviewerState holds one reviewer's reservoir (a deterministic bottom-k
+// sample of their purchases) + total purchase count (the whale signal). pri
+// holds the selection-hash priority of each reservoir slot, kept parallel to
+// reservoir so the accumulation hot path never rehashes.
 type reviewerState struct {
 	reservoir []Purchase
+	pri       []uint64
 	count     int
-	rng       *rand.Rand
 }
 
 // SetCatalogs installs the pre-resolved review-context lookups. Call once,
@@ -81,7 +83,7 @@ func (e *Emitter) MarkReviewers() {
 	e.reviewers = make(map[int64]*reviewerState, e.AccountCount()/5)
 	for cid := range e.accountByCustomer {
 		if rng.Derive(e.seed, "web/reviewer/"+itoa(cid)).Float64() < baseReviewerRate {
-			e.reviewers[cid] = &reviewerState{rng: rng.Derive(e.seed, "web/reservoir/"+itoa(cid))}
+			e.reviewers[cid] = &reviewerState{}
 		}
 	}
 }
@@ -89,22 +91,15 @@ func (e *Emitter) MarkReviewers() {
 // CaptureSale records one forward sale line for its customer, IF that
 // customer is a reviewer. Called from the replay callback per qualifying
 // line (forward sales only — no refunds; exactly one of releaseID/hardwareID
-// set). Reservoir sampling (algorithm R) keeps a bounded, deterministic
-// sample when a reviewer has more than reservoirK purchases.
+// set). Keeps a bounded bottom-k-by-hash sample (see reservoirConsider) that
+// is independent of capture order.
 func (e *Emitter) CaptureSale(customerID, releaseID, hardwareID int64, at time.Time, condition string, price float64) {
 	st := e.reviewers[customerID]
 	if st == nil {
 		return
 	}
 	st.count++
-	p := Purchase{ReleaseID: releaseID, HardwareID: hardwareID, At: at, Condition: condition, Price: price}
-	if len(st.reservoir) < reservoirK {
-		st.reservoir = append(st.reservoir, p)
-		return
-	}
-	if j := st.rng.IntN(st.count); j < reservoirK {
-		st.reservoir[j] = p
-	}
+	e.reservoirConsider(st, customerID, Purchase{ReleaseID: releaseID, HardwareID: hardwareID, At: at, Condition: condition, Price: price})
 }
 
 // ReviewerCount is the number of reviewers marked.
@@ -120,10 +115,14 @@ func (e *Emitter) ReviewerCount() int { return len(e.reviewers) }
 //
 // Coherence is preserved: every captured purchase is a real replayed sale, and
 // the per-shop RNG is independent of shard assignment, so the shard split does
-// not change which sales exist. The reservoir CONTENTS differ from the serial
-// pass (a customer's sales can span shards), but that only changes which real
-// purchases a reviewer samples from — never their reality — and the result is
-// identical on every run (fixed worker order + per-customer merge stream).
+// not change which sales exist. The reservoir is a bottom-k-by-hash sample
+// (reservoirConsider), a commutative reduction: each shard keeps its local
+// bottom-k, the merge keeps the global bottom-k, and any globally-bottom-k
+// purchase is bottom-k within its own shard — so the reservoir CONTENTS are
+// identical for ANY worker count, including a serial (1-shard) run. This
+// replaced an algorithm-R reservoir whose RNG stream was consumed in capture
+// order, which silently made the sample — and thus the review/comment/vote
+// counts — depend on the shard count (stable only for a fixed N).
 
 // CaptureShard accumulates one worker's slice of the transaction replay.
 type CaptureShard struct {
@@ -140,58 +139,125 @@ func (e *Emitter) NewCaptureShard(worker int) *CaptureShard {
 }
 
 // CaptureSale records one forward sale line into this shard, if the customer is
-// a reviewer. Mirrors Emitter.CaptureSale but into shard-local state with a
-// per-(worker,customer) reservoir stream.
+// a reviewer. Mirrors Emitter.CaptureSale into shard-local state; the bottom-k
+// sample is order-independent, so the shard's slice order does not matter.
 func (cs *CaptureShard) CaptureSale(customerID, releaseID, hardwareID int64, at time.Time, condition string, price float64) {
 	if cs.e.reviewers[customerID] == nil {
 		return // not a reviewer — concurrent read of a frozen map is safe
 	}
 	st := cs.local[customerID]
 	if st == nil {
-		st = &reviewerState{rng: rng.Derive(cs.e.seed, "web/capshard/"+itoa(int64(cs.worker))+"/"+itoa(customerID))}
+		st = &reviewerState{}
 		cs.local[customerID] = st
 	}
 	st.count++
-	p := Purchase{ReleaseID: releaseID, HardwareID: hardwareID, At: at, Condition: condition, Price: price}
-	if len(st.reservoir) < reservoirK {
-		st.reservoir = append(st.reservoir, p)
-		return
-	}
-	if j := st.rng.IntN(st.count); j < reservoirK {
-		st.reservoir[j] = p
-	}
+	cs.e.reservoirConsider(st, customerID, Purchase{ReleaseID: releaseID, HardwareID: hardwareID, At: at, Condition: condition, Price: price})
 }
 
-// MergeCaptureShards folds worker shards into e.reviewers deterministically:
-// per reviewer, concatenate the shard reservoirs in worker order, sum the
-// purchase counts (the whale signal), and down-sample to reservoirK with a
-// per-customer stream. Call once after all workers finish.
+// MergeCaptureShards folds worker shards into e.reviewers. Per reviewer it sums
+// the purchase counts (the whale signal — partition-independent) and re-runs the
+// bottom-k-by-hash selection over the union of the shards' local bottom-k
+// samples. Since each shard already kept its local bottom-k, that union holds
+// every globally-bottom-k purchase, so the result equals the global bottom-k —
+// identical for any worker count. Call once after all workers finish.
 func (e *Emitter) MergeCaptureShards(shards []*CaptureShard) {
 	for cid, st := range e.reviewers {
-		var pool []Purchase
+		st.reservoir = st.reservoir[:0]
+		st.pri = st.pri[:0]
 		total := 0
-		for _, cs := range shards { // fixed worker order 0..N-1
-			if lst := cs.local[cid]; lst != nil {
-				pool = append(pool, lst.reservoir...)
-				total += lst.count
+		for _, cs := range shards {
+			lst := cs.local[cid]
+			if lst == nil {
+				continue
+			}
+			total += lst.count
+			for _, p := range lst.reservoir {
+				e.reservoirConsider(st, cid, p)
 			}
 		}
 		st.count = total
-		if len(pool) <= reservoirK {
-			st.reservoir = pool
-			continue
-		}
-		mr := rng.Derive(e.seed, "web/capmerge/"+itoa(cid))
-		res := make([]Purchase, 0, reservoirK)
-		for i, p := range pool {
-			if i < reservoirK {
-				res = append(res, p)
-			} else if j := mr.IntN(i + 1); j < reservoirK {
-				res[j] = p
-			}
-		}
-		st.reservoir = res
 	}
+}
+
+// purchasePriority is a deterministic, uniformly-distributed 64-bit selection
+// key for a captured purchase, keyed by the root seed and the reviewer. Its
+// value does not depend on capture order or shard partitioning, so keeping the
+// smallest-priority purchases yields a sample that is identical for any worker
+// count. The leading domain tag isolates this hash stream from other Mix64
+// users.
+func (e *Emitter) purchasePriority(customerID int64, p Purchase) uint64 {
+	return rng.Mix64(e.seed,
+		0x77_65_62_72_65_73_70_6b, // "webrespk"
+		uint64(customerID), uint64(p.ReleaseID), uint64(p.HardwareID),
+		uint64(p.At.Unix()), rng.FoldString(p.Condition), math.Float64bits(p.Price))
+}
+
+// reservoirConsider keeps st.reservoir as the reservoirK purchases with the
+// smallest selection priority (a bottom-k sketch). st.pri is maintained
+// parallel to st.reservoir so the hot path rehashes only the candidate. The
+// total order is (priority asc, then a stable field tuple) so a hash tie
+// between two distinct purchases still resolves the same way on every run.
+func (e *Emitter) reservoirConsider(st *reviewerState, customerID int64, p Purchase) {
+	pr := e.purchasePriority(customerID, p)
+	if len(st.reservoir) < reservoirK {
+		st.reservoir = append(st.reservoir, p)
+		st.pri = append(st.pri, pr)
+		return
+	}
+	worst := 0 // slot with the greatest priority (least likely to belong)
+	for i := 1; i < len(st.pri); i++ {
+		if priGreater(st.pri[i], st.reservoir[i], st.pri[worst], st.reservoir[worst]) {
+			worst = i
+		}
+	}
+	if priGreater(st.pri[worst], st.reservoir[worst], pr, p) { // held worst > candidate → swap in
+		st.reservoir[worst] = p
+		st.pri[worst] = pr
+	}
+}
+
+// priGreater reports whether (aPri,a) ranks after (bPri,b) in the total order
+// (priority ascending, then a stable field tuple to break hash ties).
+func priGreater(aPri uint64, a Purchase, bPri uint64, b Purchase) bool {
+	if aPri != bPri {
+		return aPri > bPri
+	}
+	if !a.At.Equal(b.At) {
+		return a.At.After(b.At)
+	}
+	if a.ReleaseID != b.ReleaseID {
+		return a.ReleaseID > b.ReleaseID
+	}
+	if a.HardwareID != b.HardwareID {
+		return a.HardwareID > b.HardwareID
+	}
+	if a.Condition != b.Condition {
+		return a.Condition > b.Condition
+	}
+	return a.Price > b.Price
+}
+
+// sortPurchases orders a reviewer's reservoir into a canonical (chronological,
+// then stable field tuple) sequence, so review emission — which consumes a
+// per-reviewer RNG stream in slice order — is independent of how the reservoir
+// was accumulated or merged.
+func sortPurchases(ps []Purchase) {
+	sort.Slice(ps, func(i, j int) bool {
+		a, b := ps[i], ps[j]
+		if !a.At.Equal(b.At) {
+			return a.At.Before(b.At)
+		}
+		if a.ReleaseID != b.ReleaseID {
+			return a.ReleaseID < b.ReleaseID
+		}
+		if a.HardwareID != b.HardwareID {
+			return a.HardwareID < b.HardwareID
+		}
+		if a.Condition != b.Condition {
+			return a.Condition < b.Condition
+		}
+		return a.Price < b.Price
+	})
 }
 
 // EmitReviews walks the reviewers in deterministic (ascending customer_id)
@@ -214,6 +280,7 @@ func (e *Emitter) EmitReviews(reviewIDBase int64, emit func(ReviewRecord)) int64
 
 	for _, cid := range cids {
 		st := e.reviewers[cid]
+		sortPurchases(st.reservoir) // canonical order → emission independent of capture/merge order
 		acct := e.acct(cid)
 		rr := rng.Derive(e.seed, "web/reviews/"+itoa(cid))
 

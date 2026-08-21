@@ -31,8 +31,9 @@ func main() {
 	asOfStr := flag.String("as-of", "2025-04-23", "Simulated 'now' date, YYYY-MM-DD")
 	// Tier accepts the user-facing names tiny/small/medium/large or the
 	// canonical tokens 3g/30g/300g/3t (see normalizeTier).
-	emit := flag.String("emit", "shops", "Entity to emit: full | all | shops | customers | hr | transactions | web. "+
-		"'full' runs the whole pipeline in one command: OLTP → indexes → web → DW schema+procs → ETL → validation.")
+	emit := flag.String("emit", "full", "What to build (default 'full' = everything): full | oltp | shops | customers | hr | transactions | web. "+
+		"'full' (alias: 'all') runs the whole pipeline in one command — OLTP → indexes → web → DW schema+procs → ETL → validation. "+
+		"'oltp' builds only the OLTP base (no web/DW). The remaining modes emit a single component.")
 	countOnly := flag.Bool("count-only", false, "Don't emit rows to stdout — only print final count on stderr")
 	postalPath := flag.String("postal-codes", "../seed_data/postal_codes.tsv",
 		"Path to postal_codes.tsv (from build_seed_postal_codes.py)")
@@ -203,7 +204,8 @@ func main() {
 	}
 
 	switch *emit {
-	case "full":
+	// "full" (the default) and its back-compat alias "all" both build EVERYTHING.
+	case "full", "all":
 		if *loadMSSQL == "" {
 			fmt.Fprintf(os.Stderr, "--emit full requires --load-mssql\n")
 			os.Exit(2)
@@ -220,9 +222,10 @@ func main() {
 		loadFullMSSQL(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *loadMSSQL,
 			*indexesFile, *webBanks, *sqlRoot, *initSchema, *validate, *vusers, *clickScale)
 		return
-	case "all":
+	case "oltp":
+		// OLTP base only (no web/DW). This was the old "all"; "all" now aliases "full".
 		if *loadMSSQL == "" {
-			fmt.Fprintf(os.Stderr, "--emit all requires --load-mssql\n")
+			fmt.Fprintf(os.Stderr, "--emit oltp requires --load-mssql\n")
 			os.Exit(2)
 		}
 		if *vusers < 1 {
@@ -250,7 +253,7 @@ func main() {
 		}
 		loadWebMSSQL(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *loadMSSQL, *webBanks, *clickScale, *vusers)
 	default:
-		fmt.Fprintf(os.Stderr, "unknown --emit %q (supports: full | all | shops | customers | hr | transactions | web)\n", *emit)
+		fmt.Fprintf(os.Stderr, "unknown --emit %q (supports: full [default, alias all] | oltp | shops | customers | hr | transactions | web)\n", *emit)
 		os.Exit(2)
 	}
 }

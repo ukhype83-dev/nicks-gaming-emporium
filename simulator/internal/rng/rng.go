@@ -34,3 +34,39 @@ func Derive(rootSeed uint64, namespace string) *rand.Rand {
 	s2 := ^s1 // second seed uncorrelated with first
 	return rand.New(rand.NewPCG(s1, s2))
 }
+
+// Mix64 is a deterministic, allocation-free hash of a root seed and a list of
+// uint64 keys (a splitmix64 chain). The same inputs always yield the same
+// output — on every run and every machine. Use it for an order-INDEPENDENT
+// selection key (e.g. bottom-k sampling), where a full Derive() stream would
+// be order-dependent and too costly to build per element. It is a hash, not a
+// stream: it obeys the "seed everything from rootSeed" rule without an RNG.
+func Mix64(rootSeed uint64, keys ...uint64) uint64 {
+	h := splitmix(rootSeed)
+	for _, k := range keys {
+		h = splitmix(h ^ k)
+	}
+	return h
+}
+
+func splitmix(x uint64) uint64 {
+	x += 0x9e3779b97f4a7c15
+	x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9
+	x = (x ^ (x >> 27)) * 0x94d049bb133111eb
+	return x ^ (x >> 31)
+}
+
+// FoldString folds a string into a uint64 (FNV-1a) for use as a Mix64 key,
+// without allocating.
+func FoldString(s string) uint64 {
+	const (
+		offset = 1469598103934665603
+		prime  = 1099511628211
+	)
+	var h uint64 = offset
+	for i := 0; i < len(s); i++ {
+		h ^= uint64(s[i])
+		h *= prime
+	}
+	return h
+}

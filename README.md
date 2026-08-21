@@ -53,15 +53,16 @@ CREATE DATABASE nge_tiny ON PRIMARY
   (NAME = nge_tiny_log, FILENAME = 'D:\Log\nge_tiny_log.ldf', SIZE = 1024MB, FILEGROWTH = 512MB);
 ```
 
-**3. Build the database** — one command builds everything and validates it:
+**3. Build the database** — one command builds everything and validates it.
+`--emit` defaults to `full` (build the whole thing), so you can leave it off:
 
 ```bash
-./build_emporium --emit full \
+./build_emporium \
   --load-mssql "sqlserver://user:password@host:1433?database=nge_tiny" \
   --init-schema --recovery-simple --tier tiny --vusers 8
 ```
 
-The `--emit full` pipeline runs end to end:
+The full pipeline runs end to end:
 
 1. **OLTP** — shops, catalogue, customers, staff, transactions, payments, trade-ins
 2. **Indexes** — nonclustered indexes (built after load, for speed)
@@ -101,7 +102,7 @@ tiers.
 | `--init-schema`       | apply the table schema before loading (use on an empty database) |
 | `--recovery-simple`   | set SIMPLE recovery for faster bulk load |
 | `--vusers`            | parallel build workers (match to your CPU; 4–16 is typical) |
-| `--emit`              | `full` for everything, or a single layer: `all` / `web` |
+| `--emit`              | defaults to `full` (build everything — omit it for the normal case). `oltp` builds only the OLTP base; or name a single layer, e.g. `web`. (`all` is a back-compat alias for `full`.) |
 | `--validate=false`    | skip the final reconciliation gate |
 
 ## What you get

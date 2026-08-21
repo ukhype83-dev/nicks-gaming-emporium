@@ -94,8 +94,9 @@ func reviewerCounts(e *Emitter) map[int64]int {
 
 // TestCaptureShardsMatchSerialCounts proves the parallel replay sees exactly the
 // same sales as the serial one: every reviewer's total purchase count is
-// identical no matter how many shards partition the shops. (Reservoir CONTENTS
-// may differ by design; the SET and COUNTS may not.)
+// identical no matter how many shards partition the shops. (Counts are the
+// coherence check here; TestCaptureReservoirContentsWorkerInvariant additionally
+// proves the reservoir CONTENTS are worker-invariant.)
 func TestCaptureShardsMatchSerialCounts(t *testing.T) {
 	// Serial baseline.
 	es, custIndex, shopList, cat, hw := preCaptureWorld(t, 42)
@@ -143,6 +144,53 @@ func TestCaptureShardDeterminism(t *testing.T) {
 	for cid, sa := range a {
 		if b[cid] != sa {
 			t.Fatalf("reviewer %d reservoir non-deterministic:\n a=%s\n b=%s", cid, sa, b[cid])
+		}
+	}
+}
+
+// TestCaptureReservoirContentsWorkerInvariant guards the determinism fix: the
+// bottom-k-by-hash reservoir CONTENTS (not merely the counts) must be identical
+// for every worker count, serial included. Before the fix an algorithm-R
+// reservoir consumed its RNG in capture order, so the sample — and thus the
+// review/comment/vote counts — silently tracked the machine's core count.
+func TestCaptureReservoirContentsWorkerInvariant(t *testing.T) {
+	asOf := time.Date(2025, 4, 23, 0, 0, 0, 0, time.UTC)
+
+	// Per-reviewer signature: count + the SORTED reservoir. Sorting mirrors
+	// EmitReviews (which sorts before consuming), so we compare the exact set
+	// the emitter sees, independent of merge/insertion order.
+	sig := func(e *Emitter) map[int64]string {
+		m := make(map[int64]string, len(e.reviewers))
+		for cid, st := range e.reviewers {
+			sortPurchases(st.reservoir)
+			s := fmt.Sprintf("c%d|", st.count)
+			for _, p := range st.reservoir {
+				s += fmt.Sprintf("%d:%d:%d:%s:%.4f;", p.ReleaseID, p.HardwareID, p.At.Unix(), p.Condition, p.Price)
+			}
+			m[cid] = s
+		}
+		return m
+	}
+
+	// Serial baseline (Emitter.CaptureSale over every shop).
+	es, ci0, sl0, c0, h0 := preCaptureWorld(t, 42)
+	if _, err := transactionsGenerate(42, asOf, sl0, c0, h0, ci0, es); err != nil {
+		t.Fatalf("serial capture: %v", err)
+	}
+	base := sig(es)
+
+	for _, workers := range []int{1, 2, 3, 5, 8} {
+		ep, ci, sl, c, h := preCaptureWorld(t, 42)
+		runShardedCapture(ep, ci, sl, c, h, workers, 42)
+		got := sig(ep)
+		if len(got) != len(base) {
+			t.Fatalf("workers=%d: %d reviewers vs serial %d", workers, len(got), len(base))
+		}
+		for cid, want := range base {
+			if got[cid] != want {
+				t.Fatalf("workers=%d: reviewer %d reservoir differs from serial:\n serial=%s\n got   =%s",
+					workers, cid, want, got[cid])
+			}
 		}
 	}
 }
