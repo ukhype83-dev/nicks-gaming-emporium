@@ -102,9 +102,23 @@ ids differ). The downloads are purely a convenience for the larger tiers.
 | `--load-mssql`        | target DSN: `sqlserver://user:pass@host:1433?database=NAME` |
 | `--init-schema`       | apply the table schema before loading (use on an empty database) |
 | `--recovery-simple`   | set SIMPLE recovery for faster bulk load |
-| `--vusers`            | parallel build workers (match to your CPU; 4–16 is typical) |
+| `--vusers`            | parallel data-load workers. See **Build speed** below — more isn't always faster, and it changes id reproducibility. |
 | `--emit`              | defaults to `full` (build everything — omit it for the normal case). `oltp` builds only the OLTP base; or name a single layer, e.g. `web`. (`all` is a back-compat alias for `full`.) |
 | `--validate=false`    | skip the final reconciliation gate |
+
+### Build speed: `--vusers` (your mileage will vary)
+
+`--vusers` sets how many workers load the data in parallel. On a machine with
+plenty of cores, fast disks and RAM, more workers build faster. But parallel
+loading falls back to a slower per-row insert path — single-worker mode
+(`--vusers 1`) uses SQL Server's fast bulk-copy path — so on a modest or shared
+box `--vusers 1` can actually be the **fastest** option. Try a couple of values
+on the `tiny` tier first; your mileage will vary with cores, disk and RAM.
+
+Reproducibility note: surrogate ids (`transaction_id`, `page_view_id`, …) are
+numbered in load order, so different `--vusers` values produce the **same data
+with different id labels**. Build with a fixed `--vusers` (or `--vusers 1`) if
+you need byte-identical reproducibility, ids included.
 
 ## What you get
 
