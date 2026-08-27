@@ -162,16 +162,26 @@ func (b *Banks) renderSlot(r *rand.Rand, slot, archID, sentiment string, year in
 	archOK := func(p Phrase) bool { return p.Archetype == archID || p.Archetype == "any" }
 	eraOK := func(p Phrase) bool { return year >= p.EraFrom && year <= p.EraTo }
 	sentOK := func(p Phrase) bool { return p.Sentiment == sentiment || p.Sentiment == "any" }
+	// reqOK is a HARD gate applied at EVERY rung of the relaxation ladder
+	// (V1.27): a phrase whose `requires` predicate the context fails is never
+	// eligible, so a cart-only line can't land on a disc game even in the final
+	// fallback. Rows with no `requires` always pass, so existing prose is
+	// unchanged. If nothing satisfies requires, the slot renders "" (drop it)
+	// rather than assert something false.
+	reqOK := func(p Phrase) bool { return requiresSatisfied(p.Requires, ctx) }
 
-	cands := pick(func(p Phrase) bool { return archOK(p) && sentOK(p) && eraOK(p) })
+	cands := pick(func(p Phrase) bool { return archOK(p) && sentOK(p) && eraOK(p) && reqOK(p) })
 	if len(cands) == 0 {
-		cands = pick(func(p Phrase) bool { return archOK(p) && eraOK(p) })
+		cands = pick(func(p Phrase) bool { return archOK(p) && eraOK(p) && reqOK(p) })
 	}
 	if len(cands) == 0 {
-		cands = pick(func(p Phrase) bool { return archOK(p) })
+		cands = pick(func(p Phrase) bool { return archOK(p) && reqOK(p) })
 	}
 	if len(cands) == 0 {
-		cands = rows
+		cands = pick(reqOK)
+	}
+	if len(cands) == 0 {
+		return ""
 	}
 	text := cands[r.IntN(len(cands))].Text
 	return b.expand(r, text, archID, sentiment, year, ctx, depth)
@@ -217,6 +227,9 @@ func (b *Banks) GenerateComment(r *rand.Rand, kind string, arch Archetype, paren
 		exact := false
 		for _, c := range rows {
 			if c.Archetype != arch.ID && c.Archetype != "any" {
+				continue
+			}
+			if !requiresSatisfied(c.Requires, ctx) { // V1.27 hard gate
 				continue
 			}
 			if needSent && c.ParentSent != parentSent && c.ParentSent != "any" {
@@ -267,8 +280,9 @@ func (b *Banks) applyQuirks(r *rand.Rand, arch Archetype, s string) string {
 	}
 	words := strings.Split(s, " ")
 	for i, w := range words {
-		// Never corrupt an @mention — the handle must stay joinable.
-		if strings.HasPrefix(w, "@") {
+		// Never corrupt an @mention (the handle must stay joinable) or a
+		// self-censored swear token (V1.27 {censored}: the *'s must survive).
+		if strings.HasPrefix(w, "@") || strings.IndexByte(w, '*') >= 0 {
 			continue
 		}
 		if len(w) > 3 && r.Float64() < typoRate {
@@ -291,3 +305,32 @@ func (b *Banks) applyQuirks(r *rand.Rand, arch Archetype, s string) string {
 }
 
 func isLower(b byte) bool { return b >= 'a' && b <= 'z' }
+
+// requiresSatisfied evaluates a phrase's `requires` predicate list against the
+// review context (V1.27). requires is a comma-separated AND of tokens; a token
+// is satisfied when the context carries the flag key "req:<token>" (any value),
+// which releaseContext sets for the resolved medium class, other-versions and
+// retro age. A leading "!" negates a token. Empty requires is always satisfied
+// (so pre-V1.27 rows and every non-gated phrase are unaffected). Flags are read
+// here only — they are never rendered as {placeholders}.
+func requiresSatisfied(requires string, ctx Context) bool {
+	if requires == "" {
+		return true
+	}
+	for _, tok := range strings.Split(requires, ",") {
+		tok = strings.TrimSpace(tok)
+		if tok == "" {
+			continue
+		}
+		neg := false
+		if strings.HasPrefix(tok, "!") {
+			neg = true
+			tok = tok[1:]
+		}
+		_, present := ctx["req:"+tok]
+		if present == neg {
+			return false
+		}
+	}
+	return true
+}

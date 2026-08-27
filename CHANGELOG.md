@@ -25,6 +25,29 @@ of the same tag are equivalent.
   (`rpt`, `batch`, `loadgen`) remain **SQL Server only** for now — the
   PostgreSQL warehouse port is in progress.
 
+### Changed
+- **Review-engine immersion pass.** Product reviews and comment threads now
+  read truer to the game they are about:
+  - **Physical medium is correct.** A review can no longer describe a cartridge
+    game's "resurfaced disc" or a disc game's "cartridge pins / battery save".
+    The medium is derived per platform, and format-specific lines are gated to
+    it; medium-neutral lines use a generic `{medium}` word. Consoles never get
+    software-medium flavour at all.
+  - **Cross-version claims only when a sibling exists.** Lines like "buy the
+    other version" or "the port renders lower" now appear only for titles that
+    actually shipped on more than one platform, and name a real sibling.
+  - **Old games read as old.** A title reviewed years after release can be
+    framed as a retrospective ("revisiting this 17-year-old RPG…"), never for a
+    recent one.
+  - **More developer / genre / title flavour**, and **sparing, self-censored
+    profanity** (`****`) confined to the angry reviewer voices.
+
+  This changes the canonical review/comment **text** and slightly shifts the
+  generated **counts** (the text engine consumes randomness differently), so a
+  rebuilt database differs from a pre-change one; it remains fully deterministic
+  for a given seed. Correctness fixes are English-first; the other language
+  banks are unaffected (they carry no medium claims).
+
 ### Fixed
 - HR payroll id determinism: `payroll_run_id` (and the `payroll_lines` foreign
   key) was assigned while iterating a Go map of countries, so the numbering

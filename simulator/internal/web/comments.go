@@ -188,7 +188,10 @@ func advanceCommentTime(rr *rand.Rand, cur time.Time, isHot bool) time.Time {
 }
 
 // reviewTargetCtx pulls the platform/publisher/title of whatever a review is
-// about, so comment fragments can reference it.
+// about, so comment fragments can reference it. V1.27: also carries {developer}
+// and the immersion fills + req:* gate flags (via applyReleaseImmersion, keyed
+// on the review's posted year) so comment lines can be medium-/version-/retro-
+// aware exactly like reviews.
 func (e *Emitter) reviewTargetCtx(rev ReviewRecord) Context {
 	ctx := Context{}
 	if rev.ReleaseID != 0 {
@@ -197,12 +200,16 @@ func (e *Emitter) reviewTargetCtx(rev ReviewRecord) Context {
 			ctx["platform"] = orDefault(m.Platform, "console")
 			ctx["publisher"] = orDefault(m.Publisher, "the publisher")
 			ctx["genre"] = orDefault(m.Genre, "game")
+			ctx["developer"] = orDefault(m.Developer, "the studio")
+			applyReleaseImmersion(ctx, m, rev.PostedAt.Year())
 		}
 	} else if rev.HardwareID != 0 {
 		if m, ok := e.hardwareMeta[rev.HardwareID]; ok {
 			ctx["title"] = m.ModelName
 			ctx["platform"] = orDefault(m.Platform, "the system")
 			ctx["publisher"] = orDefault(m.Manufacturer, "the manufacturer")
+			ctx["developer"] = orDefault(m.Manufacturer, "the manufacturer")
+			ctx["medium"] = "unit"
 		}
 	}
 	return ctx

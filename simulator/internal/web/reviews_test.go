@@ -12,6 +12,7 @@ import (
 	"emporium/internal/customers"
 	"emporium/internal/geography"
 	"emporium/internal/hardware"
+	"emporium/internal/policy"
 	"emporium/internal/shops"
 	"emporium/internal/transactions"
 )
@@ -183,16 +184,45 @@ func max1(n int) int {
 	return n
 }
 
+// releaseMetaFrom mirrors dbwriter.buildReleaseMeta so the in-process test
+// world exercises the V1.27 immersion plumbing (medium/other-platforms/year)
+// exactly as the DB load does.
 func releaseMetaFrom(cat *catalog.Index) map[int64]ReleaseMeta {
-	m := make(map[int64]ReleaseMeta, cat.Count())
-	for _, r := range cat.All() {
+	all := cat.All()
+	platformsByTitle := make(map[string]map[string]bool, len(all))
+	for _, r := range all {
+		nt := strings.ToLower(strings.TrimSpace(r.Title))
+		if platformsByTitle[nt] == nil {
+			platformsByTitle[nt] = map[string]bool{}
+		}
+		if r.Platform != "" {
+			platformsByTitle[nt][r.Platform] = true
+		}
+	}
+	m := make(map[int64]ReleaseMeta, len(all))
+	for _, r := range all {
+		nt := strings.ToLower(strings.TrimSpace(r.Title))
+		year := 0
+		if !r.ReleaseDate.IsZero() {
+			year = r.ReleaseDate.Year()
+		}
+		var others []string
+		for p := range platformsByTitle[nt] {
+			if p != r.Platform {
+				others = append(others, p)
+			}
+		}
+		sort.Strings(others)
 		m[r.ReleaseID] = ReleaseMeta{
-			NormTitle: strings.ToLower(strings.TrimSpace(r.Title)),
-			Title:     r.Title,
-			Platform:  r.Platform,
-			Genre:     r.Genre,
-			Publisher: r.Publisher,
-			Developer: r.Developer,
+			NormTitle:      nt,
+			Title:          r.Title,
+			Platform:       r.Platform,
+			Genre:          r.Genre,
+			Publisher:      r.Publisher,
+			Developer:      r.Developer,
+			ReleaseYear:    year,
+			Media:          policy.CanonicalMedia(r.Platform, year),
+			OtherPlatforms: others,
 		}
 	}
 	return m

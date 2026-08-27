@@ -39,6 +39,15 @@ type ReleaseMeta struct {
 	Genre     string
 	Publisher string
 	Developer string
+	// V1.27 review-immersion plumbing, pre-resolved in buildReleaseMeta so
+	// internal/web stays policy-free: ReleaseYear (0 if the date is unknown),
+	// Media (the raw policy.CanonicalMedia string, "" if unknown — classified
+	// into cartridge/disc/… by the review engine), and OtherPlatforms (the
+	// sibling platforms the same title shipped on, sorted, excluding this
+	// release's own platform; nil = single-platform title).
+	ReleaseYear    int
+	Media          string
+	OtherPlatforms []string
 }
 
 type HardwareMeta struct {

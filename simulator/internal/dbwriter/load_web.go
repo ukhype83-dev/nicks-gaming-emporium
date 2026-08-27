@@ -6,6 +6,7 @@ import (
 	"os"
 	"runtime"
 	"runtime/debug"
+	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -15,6 +16,7 @@ import (
 	"emporium/internal/customers"
 	"emporium/internal/geography"
 	"emporium/internal/hardware"
+	"emporium/internal/policy"
 	"emporium/internal/shops"
 	"emporium/internal/transactions"
 	"emporium/internal/web"
@@ -405,15 +407,46 @@ func ensureWebTables(ctx context.Context, w Writer) error {
 }
 
 func buildReleaseMeta(cat *catalog.Index) map[int64]web.ReleaseMeta {
-	m := make(map[int64]web.ReleaseMeta, cat.Count())
-	for _, r := range cat.All() {
+	all := cat.All()
+	// Pass 1: title -> set of platforms it shipped on (there is no by-title
+	// index in the catalog). Keyed by the same normalised title the reception
+	// matcher uses, so re-releases on the same platform collapse to one entry.
+	platformsByTitle := make(map[string]map[string]bool, len(all))
+	for _, r := range all {
+		nt := strings.ToLower(strings.TrimSpace(r.Title))
+		set := platformsByTitle[nt]
+		if set == nil {
+			set = map[string]bool{}
+			platformsByTitle[nt] = set
+		}
+		if r.Platform != "" {
+			set[r.Platform] = true
+		}
+	}
+	m := make(map[int64]web.ReleaseMeta, len(all))
+	for _, r := range all {
+		nt := strings.ToLower(strings.TrimSpace(r.Title))
+		year := 0
+		if !r.ReleaseDate.IsZero() {
+			year = r.ReleaseDate.Year()
+		}
+		var others []string
+		for p := range platformsByTitle[nt] {
+			if p != r.Platform {
+				others = append(others, p)
+			}
+		}
+		sort.Strings(others) // deterministic sibling order
 		m[r.ReleaseID] = web.ReleaseMeta{
-			NormTitle: strings.ToLower(strings.TrimSpace(r.Title)),
-			Title:     r.Title,
-			Platform:  r.Platform,
-			Genre:     r.Genre,
-			Publisher: r.Publisher,
-			Developer: r.Developer,
+			NormTitle:      nt,
+			Title:          r.Title,
+			Platform:       r.Platform,
+			Genre:          r.Genre,
+			Publisher:      r.Publisher,
+			Developer:      r.Developer,
+			ReleaseYear:    year,
+			Media:          policy.CanonicalMedia(r.Platform, year),
+			OtherPlatforms: others,
 		}
 	}
 	return m

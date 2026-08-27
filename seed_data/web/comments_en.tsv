@@ -16,9 +16,9 @@ disagree	any	neg	2008	2016	Harsh. It has problems but nothing five patches won't
 disagree	superfan	neg	2008	2016	Skill issue, respectfully. It clicks around hour three, you quit at two.
 disagree	technerd	any	2008	2016	Your numbers are off — it's the display chain, not the game. Happy to explain.
 disagree	grouch	pos	2008	2016	Everyone said the same about the last one and we all know how that aged.
-question	any	any	2008	2016	Does anyone know if the {platform} version has the same issue?
+question	any	any	2008	2016	Does anyone know if the {other_platform} version has the same issue?	has_other_versions
 question	parent	any	2008	2016	Sorry to piggyback — is this suitable for a 9 year old? The box says yes but boxes lie.
-question	any	any	2008	2016	Is the used copy worth it or do the save batteries die on these?
+question	any	any	2008	2016	Is the used copy worth it or do the save batteries die on these?	media_cartridge
 question	dealhunter	any	2008	2016	Anyone seen it cheaper than {price}? Asking for me.
 answer	any	any	2008	2016	@{prev_user} yes, but only after the patch. Before that, avoid.
 answer	technerd	any	2008	2016	@{prev_user} tested this last month — short answer yes, long answer in my profile.
@@ -68,11 +68,11 @@ disagree	any	neg	2008	2016	Skill issue with a thesaurus, but go off.
 disagree	any	neg	2008	2016	It's not the game, it's your setup. Half these problems are your TV.
 disagree	any	neg	2008	2016	Every complaint here was patched months ago. Update your review.
 disagree	any	neg	2008	2016	You reviewed the launch build and it shows. This is unfair now.
-question	any	any	2008	2016	Does the physical copy still need the download or is the disc complete?
+question	any	any	2008	2016	Does the physical copy still need the download or is the disc complete?	media_disc
 question	any	any	2008	2016	Anyone know if this runs okay on the older model, or do I need the slim?
 question	any	any	2008	2016	Is the co-op local or online only? The box is vague.
 question	any	any	2008	2016	Worth grabbing the special edition or is the base game enough?
-answer	any	any	2008	2016	@{prev_user} disc is complete, no download needed. You're good.
+answer	any	any	2008	2016	@{prev_user} disc is complete, no download needed. You're good.	media_disc
 answer	any	any	2008	2016	@{prev_user} local co-op yes, online was added in a patch later.
 answer	any	any	2008	2016	@{prev_user} runs fine on the old model, just longer loads. Nothing fatal.
 answer	any	any	2008	2016	@{prev_user} base game's plenty. The special edition is a keychain and regret.
@@ -164,11 +164,11 @@ dunk	troll	any	2008	2016	imagine
 dunk	troll	any	2008	2016	and? still one star
 question	any	any	2008	2016	does it have local co-op?
 question	any	any	2008	2016	runs ok on the old model?
-question	any	any	2008	2016	disc complete or download?
+question	any	any	2008	2016	disc complete or download?	media_disc
 question	any	any	2008	2016	worth it on sale?
 question	any	any	2008	2016	how long is it roughly?
 question	any	any	2008	2016	is the online still up?
-answer	any	any	2008	2016	@{prev_user} yep, complete on disc.
+answer	any	any	2008	2016	@{prev_user} yep, complete on disc.	media_disc
 answer	any	any	2008	2016	@{prev_user} online's dead now, single player's fine.
 answer	any	any	2008	2016	@{prev_user} about 12 hours if you rush it.
 answer	any	any	2008	2016	@{prev_user} local only, sadly.

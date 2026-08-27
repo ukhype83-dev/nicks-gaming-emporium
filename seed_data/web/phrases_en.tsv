@@ -25,7 +25,7 @@ context	essayist	any	2005	2016	For context, I have played every {genre} release 
 context	essayist	any	2005	2016	I picked this up {time_ago} on the strength of the previews, going in almost blind.
 context	essayist	any	2005	2016	My history with {developer} goes back a long way, which is exactly why my expectations were where they were.
 context	essayist	any	2005	2016	I ordered this from the {city} store, and the copy arrived exactly as described.
-context	essayist	any	2005	2016	A friend lent me the {platform} version first; I liked it enough to buy my own copy.
+context	essayist	any	2005	2016	A friend lent me the {other_platform} version first; I liked it enough to buy my own copy.	has_other_versions
 experience	any	any	2005	2016	The first hour is slow, but it opens up considerably after that.
 experience	any	any	2005	2016	I sat down for a quick look and lost the entire evening, which tells you most of what you need to know.
 experience	any	any	2005	2016	It took me about a weekend to see everything the game wanted to show me.
@@ -73,9 +73,9 @@ flaw_tech	technerd	any	2005	2016	It does not hold sync on interlaced displays, w
 spec_detail	technerd	any	2005	2016	For reference I am running component out into a calibrated set, so this is not a cabling issue.
 spec_detail	technerd	any	2005	2016	Load times: 41 seconds from menu to gameplay on the stock drive, 28 after the drive swap.
 spec_detail	technerd	any	2005	2016	The manual claims 60fps. It is 60 in menus. In gameplay it is a locked 30, which is fine, but say so.
-spec_detail	technerd	any	2005	2016	Note that the {platform} version renders at a lower internal resolution than its competitors. Details in my profile.
+spec_detail	technerd	any	2005	2016	Note that the {other_platform} version renders at a lower internal resolution than this one. Details in my profile.	has_other_versions
 methodology	technerd	any	2005	2016	Methodology as always: capture card, frame counter, three runs, worst case reported.
-methodology	technerd	any	2005	2016	I tested on two consoles and three discs to rule out hardware, before anyone asks.
+methodology	technerd	any	2005	2016	I tested on two consoles and three copies to rule out hardware, before anyone asks.
 weigh_up	any	mixed	2005	2016	So where does that leave us? Somewhere frustratingly in the middle.
 weigh_up	any	mixed	2005	2016	The good outweighs the bad, but only just, and only if you are patient.
 weigh_up	any	mixed	2005	2016	I keep going back and forth on this one, which is itself a kind of verdict.
@@ -115,7 +115,7 @@ store_gripe	any	neg	2005	2016	Also, the {city} store shelved this under the wron
 store_gripe	any	neg	2005	2016	Sold to me as "{condition_grade}". It was not. That is two grading complaints this year.
 store_gripe	any	neg	2013	2016	And before anyone asks — yes, another local store closed while I was writing this.
 store_note	any	pos	2005	2013	Shout-out to the {city} store staff, who {staff_detail}.
-store_note	any	pos	2005	2013	The staff at my local NGE actually knew the game and talked me out of the worse edition. That still counts for something.
+store_note	any	pos	2005	2013	The staff at my local NGE actually knew the game and talked me out of the worse edition. That still counts for something.	has_other_versions
 store_note	any	pos	2005	2016	Delivery from the warehouse was two days flat, credit where due.
 opener_parent	parent	any	2005	2016	Bought this for my {kid_word}'s birthday after the usual weeks of hints.
 opener_parent	parent	any	2005	2016	Full disclosure: I am the parent here, and my {kid_word} is the actual expert.
@@ -140,7 +140,7 @@ opener_tech	technerd	any	2005	2016	Before the flames start: everything below is 
 opener_tech	technerd	any	2005	2016	Everyone benchmarking the launch build is missing the point, so let me try again with numbers.
 opener_tech	technerd	any	2005	2016	Three claims on the back of this box are testable. I tested them.
 verdict_tech	technerd	pos	2005	2016	Recommended, with the caveats above. The numbers hold up.
-verdict_tech	technerd	pos	2005	2016	Buy the {platform} version specifically. The delta is real and visible.
+verdict_tech	technerd	pos	2005	2016	Buy the {platform} version specifically. The delta over the {other_platform} port is real and visible.	has_other_versions
 verdict_mixed_tech	technerd	mixed	2005	2016	Wait for the revision. The silicon will improve; the launch units will not.
 verdict_neg_tech	technerd	neg	2005	2016	Cannot recommend at any price until the patch lands. The data is in my profile if you want to argue.
 verdict_short_pos	driveby	pos	2005	2016	good.
@@ -158,8 +158,8 @@ verdict_short_neg	driveby	neg	2005	2016	L
 opener_collector	collector	any	2005	2016	Arrived today: {title}, {platform}, listed {condition_grade}. Grading notes below, as always.
 opener_collector	collector	any	2005	2016	This fills the last gap in my {platform} shelf, so I was prepared to forgive a lot.
 opener_collector	collector	any	2005	2016	Ordered sight-unseen from the {city} store's used stock, which is always a small act of faith.
-condition_note	collector	any	2005	2016	Cart pins clean, label square with minor sun-fade, battery holding a save from 1998 — which I left in place, obviously.
-condition_note	collector	any	2005	2016	Disc resurfaced but honest about it, manual complete, case original. That is a fair "{condition_grade}".
+condition_note	collector	any	2005	2016	Cart pins clean, label square with minor sun-fade, battery holding a save from 1998 — which I left in place, obviously.	media_cartridge
+condition_note	collector	any	2005	2016	Disc resurfaced but honest about it, manual complete, case original. That is a fair "{condition_grade}".	media_disc
 condition_note	collector	any	2005	2016	Complete in box with both inserts, which is rarer than the game itself at this point.
 grading_gripe	collector	neg	2005	2016	"{condition_grade}" used to mean tested, complete, minor wear. What arrived fails all three. The chart means something or it means nothing.
 grading_gripe	collector	neg	2005	2016	Three years ago the {city} store would have priced this two grades lower. Somebody in purchasing knows this.
@@ -236,7 +236,7 @@ praise_verb	any	any	2005	2016	actually knew their stock
 praise_verb	any	any	2005	2016	held my pre-order past the deadline
 staff_detail	any	any	2005	2016	printed out the setup steps for me without being asked
 staff_detail	any	any	2005	2016	dug the last copy out of the back room
-staff_detail	any	any	2005	2016	talked me out of the worse edition, against their own commission I assume
+staff_detail	any	any	2005	2016	talked me out of the worse edition, against their own commission I assume	has_other_versions
 staff_detail	any	any	2005	2016	carried it out to the car like it was a piano
 kid_word	any	any	2005	2016	son
 kid_word	any	any	2005	2016	daughter
@@ -309,7 +309,7 @@ opener_tech	technerd	any	2005	2016	Latency, resolution, load times — the three
 opener_tech	technerd	any	2005	2016	The short version is in the stars. The long version has graphs.
 opener_tech	technerd	any	2005	2016	I don't care how it feels until I know how it runs. It runs like this.
 opener_tech	technerd	any	2005	2016	Fair warning: this review has more numbers than adjectives.
-opener_tech	technerd	any	2005	2016	Two consoles, three discs, one CRT and one flat panel. Methodical as always.
+opener_tech	technerd	any	2005	2016	Two consoles, three copies, one CRT and one flat panel. Methodical as always.
 opener_reluctant	grouch	any	2005	2016	Fine. I bought it. Against every instinct I have.
 opener_reluctant	grouch	any	2005	2016	I told myself I wouldn't. Then I did. Here's my punishment, in review form.
 opener_reluctant	grouch	any	2005	2016	Everyone whose taste I distrust loved this. So my expectations were low.
@@ -331,7 +331,7 @@ opener_disappointed	any	neg	2005	2016	How much did they spend on the trailer ver
 opener_disappointed	any	neg	2005	2016	I wanted my money back before the title screen finished loading.
 opener_disappointed	any	neg	2005	2016	This is what happens when a deadline beats a design document.
 opener_disappointed	any	neg	2005	2016	I've played student projects with more polish and fewer excuses.
-opener_disappointed	any	neg	2005	2016	The box promised a lot. The disc had other plans.
+opener_disappointed	any	neg	2005	2016	The box promised a lot. The {medium} had other plans.
 opener_disappointed	any	neg	2005	2016	Every generation has its cautionary tale. Meet this one's.
 opener_disappointed	any	neg	2005	2016	I gave it the benefit of the doubt right until it stopped earning it.
 opener_disappointed	any	neg	2005	2016	Not offended, just tired. Which is somehow worse.
@@ -541,7 +541,7 @@ spec_detail	technerd	any	2005	2016	Anti-aliasing is doing nothing at this resolu
 spec_detail	technerd	any	2005	2016	Texture streaming stutters on the stock drive; the swap fixed 80% of it.
 spec_detail	technerd	any	2005	2016	Color banding in the dark scenes screams 6-bit panel handling. Yours may vary.
 spec_detail	technerd	any	2005	2016	The framerate graph is a saw blade, not a line. I have the capture if anyone doubts it.
-spec_detail	technerd	any	2005	2016	Region-locked at the disc level, not the menu, before anyone asks the obvious.
+spec_detail	technerd	any	2005	2016	Region-locked at the disc level, not the menu, before anyone asks the obvious.	media_disc
 flaw_tech	technerd	any	2005	2016	Screen tearing with vsync OFF I expect; screen tearing with vsync ON is a bug.
 flaw_tech	technerd	any	2005	2016	It ignores the console's display settings entirely and forces its own gamma.
 flaw_tech	technerd	any	2005	2016	The netcode is peer-to-peer with no host migration. In 2011. Inexcusable.
@@ -557,7 +557,7 @@ flaw_tech	technerd	any	2005	2016	It crashes on save if the card is over 80% full
 methodology	technerd	any	2005	2016	Test rig and full numbers are in my profile, as always.
 methodology	technerd	any	2005	2016	Every figure here is a worst-case across three runs, not a cherry-picked best.
 methodology	technerd	any	2005	2016	I disabled every enhancement setting to measure the game, not my TV.
-methodology	technerd	any	2005	2016	Same disc, same console, cold boot each time — controlled as I can make it at home.
+methodology	technerd	any	2005	2016	Same {medium}, same console, cold boot each time — controlled as I can make it at home.
 methodology	technerd	any	2005	2016	Numbers taken with a frame counter overlay, not eyeballed. Eyeballing is how people get fooled.
 methodology	technerd	any	2005	2016	I benched launch and post-patch so the deltas are apples to apples.
 methodology	technerd	any	2005	2016	Measured on a CRT and a calibrated flat panel to separate game from display.
@@ -574,17 +574,17 @@ flaw_loud	capslock	any	2005	2011	50 dollars and it CRASHED on the last level i c
 flaw_loud	capslock	any	2005	2011	the online is UNPLAYABLE dont even try
 condition_note	collector	any	2005	2016	Spine card intact, which for this title is basically a miracle.
 condition_note	collector	any	2005	2016	Manual has one dog-eared corner; everything else is museum-grade.
-condition_note	collector	any	2005	2016	Cart contacts a little tarnished but a pencil eraser sorted that in a minute.
+condition_note	collector	any	2005	2016	Cart contacts a little tarnished but a pencil eraser sorted that in a minute.	media_cartridge
 condition_note	collector	any	2005	2016	Case hinge cracked in transit — not the shop's fault, but noting it for the grade.
 condition_note	collector	any	2005	2016	Original receipt was still tucked in the manual. Previous owner, respect.
-condition_note	collector	any	2005	2016	Disc is flawless, artwork is sun-faded. A fair trade at this price.
+condition_note	collector	any	2005	2016	Disc is flawless, artwork is sun-faded. A fair trade at this price.	media_disc
 condition_note	collector	any	2005	2016	Shrink-wrap intact but I opened it, because a game is for playing.
 condition_note	collector	any	2005	2016	Comes with the pre-order pin nobody kept. That's the real find here.
 grading_gripe	collector	neg	2005	2016	'Complete' apparently no longer includes the manual. Since when?
 grading_gripe	collector	neg	2005	2016	Graded 'Like New' with a price sticker melted into the front. Do better.
 grading_gripe	collector	neg	2005	2016	There's a rental-store label under the shrink. So it's NOT sealed, is it.
-grading_gripe	collector	neg	2005	2016	Someone wrote their name on the cart in marker. That's 'Used - Vandalised.'
-grading_gripe	collector	neg	2005	2016	The disc rattled in the case the whole way here. Zero padding.
+grading_gripe	collector	neg	2005	2016	Someone wrote their name on the {medium} in marker. That's 'Used - Vandalised.'
+grading_gripe	collector	neg	2005	2016	The disc rattled in the case the whole way here. Zero padding.	media_disc
 launch_story	superfan	any	2005	2013	Queued in the rain for this. The rain lost.
 launch_story	superfan	any	2005	2013	The whole line broke into the theme song at midnight. I'm not crying, you are.
 launch_story	superfan	any	2005	2013	Store ran out; the manager sold me the display copy off the wall. Legend.
@@ -593,7 +593,7 @@ launch_story	superfan	any	2005	2013	Met three people in that queue I still play 
 loyalty_note	superfan	any	2005	2016	I'll be first in line for the next one regardless. You know this.
 loyalty_note	superfan	any	2005	2016	Twenty years in and they've earned the benefit of the doubt. This time.
 loyalty_note	superfan	any	2005	2016	This series raised me. I'm allowed to be a little biased about it.
-refund_story	bucks_victim	any	2015	2016	Disc was cracked out of the shrink-wrap. Not a scratch — a crack. Took it straight back.
+refund_story	bucks_victim	any	2015	2016	Disc was cracked out of the shrink-wrap. Not a scratch — a crack. Took it straight back.	media_disc
 refund_story	bucks_victim	any	2015	2016	Wrong region entirely. Sealed, sold to me anyway, and then the 'refund' began.
 refund_story	bucks_victim	any	2015	2016	The console died in nine days. Nine. Within every warranty they advertise.
 refund_story	bucks_victim	any	2015	2016	Bought the wrong version by their own mislabeling and tried to return it same day.
@@ -649,3 +649,32 @@ signoff	any	any	2005	2016	Off to play something else now. Probably.
 postscript	any	any	2005	2016	EDIT: the patch helped. Bumping half a star I can't actually give in stars.
 postscript	any	any	2005	2016	EDIT: yes I finished it before reviewing, unlike some.
 postscript	any	any	2005	2016	EDIT: to the people in my inbox — no.
+# --- V1.27 immersion: retro framing (requires=retro), dev/genre/title, censored ---
+experience	any	any	2005	2016	Coming back to a {game_age}-year-old {genre} in {year}, I expected it to feel dated. Mostly it does not.	retro
+experience	any	any	2005	2016	Yes, I am reviewing a {release_year} game in {year} — some of us are still clearing the backlog.	retro
+experience	essayist	any	2005	2016	Revisiting {title} {game_age} years on, it is striking what held up and what really did not.	retro
+context	any	any	2005	2016	Picked this up long after release — a {release_year} title finally getting its turn on my shelf.	retro
+context	essayist	any	2005	2016	For the record this is a retrospective, not a launch take: {game_age} years late and worth the wait.	retro
+praise_detail	any	pos	2005	2016	It has aged better than most {genre} of its era — {release_year} and still worth an evening.	retro
+verdict_mixed	any	mixed	2005	2016	As a {game_age}-year-old {genre} it is an easy recommend for the curious; at full price back then, less so.	retro
+praise_detail	any	pos	2005	2016	Classic {developer} craft — the studio's fingerprints are all over the {genre} design.	has_developer
+praise_detail	superfan	pos	2005	2016	{developer} understood the brief. This is the {genre} the series always promised.	has_developer
+praise_detail	any	pos	2005	2016	{title} is the rare {genre} that respects your time and your intelligence.
+experience	any	any	2005	2016	If you have played other {developer} {genre} games, you will know the rhythm inside twenty minutes.	has_developer
+experience	essayist	any	2005	2016	{title} sits comfortably beside the better {genre} releases I have played this generation.
+flaw_detail	any	neg	2005	2016	I expected more from {developer}; this is a step back from their last {genre}.	has_developer
+flaw_detail	any	neg	2005	2016	Whatever {title} promised on paper drowns in the same {genre} mistakes we have seen a hundred times.
+verdict_mixed	any	mixed	2005	2016	A middling {genre}, but {developer} have earned enough goodwill that I will try the next one.	has_developer
+signoff	any	any	2005	2016	That is {title} — make of it what you will.
+opener_fan	superfan	any	2005	2016	A new {developer} {genre} is a day-one purchase in this house, no questions.	has_developer
+censored	any	any	2005	2016	****
+censored	any	any	2005	2016	s***
+censored	any	any	2005	2016	bull****
+censored	any	any	2005	2016	c**p
+censored	any	any	2005	2016	p***
+bait_line	troll	any	2006	2016	Imagine paying full price for this {censored}.
+bait_line	troll	any	2006	2016	It is {censored}, and the comments defending it are funnier than the game.
+verdict_troll	troll	neg	2006	2016	One star. It is {censored} and you all know it.
+flaw_loud	capslock	any	2005	2016	{censored} framerate. {censored} camera. i am DONE
+flaw_loud	capslock	any	2005	2016	this is {censored}. absolute {censored}. HOW did this ship
+refund_story	bucks_victim	any	2015	2016	Took the {censored} straight back — store credit only, naturally.

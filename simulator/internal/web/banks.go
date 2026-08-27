@@ -52,7 +52,11 @@ type Skeleton struct {
 	Slots     []SlotRef
 }
 
-// Phrase is one row of phrases_en.tsv (or a language sibling).
+// Phrase is one row of phrases_en.tsv (or a language sibling). Requires is an
+// optional 7th column (V1.27): a comma-separated predicate list the review
+// context must satisfy for the row to be eligible (e.g. "media_disc",
+// "has_other_versions", "retro"; "!" negates a token). Empty = always eligible,
+// so pre-V1.27 six-column rows are unchanged. See requiresSatisfied.
 type Phrase struct {
 	Slot      string
 	Archetype string // "any" = usable by all
@@ -60,9 +64,11 @@ type Phrase struct {
 	EraFrom   int
 	EraTo     int
 	Text      string
+	Requires  string
 }
 
-// CommentPhrase is one row of comments_en.tsv — a conversational move.
+// CommentPhrase is one row of comments_en.tsv — a conversational move. Requires
+// is the same optional 7th-column predicate list as Phrase (V1.27).
 type CommentPhrase struct {
 	Kind       string
 	Archetype  string
@@ -70,6 +76,7 @@ type CommentPhrase struct {
 	EraFrom    int
 	EraTo      int
 	Text       string
+	Requires   string
 }
 
 // UsernamePart is one row of usernames.tsv.
@@ -187,7 +194,8 @@ func LoadBanks(dir string) (*Banks, error) {
 	}
 	if err := forEachRow(filepath.Join(dir, "phrases_en.tsv"), 6, func(f []string) error {
 		p := Phrase{Slot: f[0], Archetype: f[1], Sentiment: f[2],
-			EraFrom: atoiOr(f[3], 2005), EraTo: atoiOr(f[4], 2016), Text: f[5]}
+			EraFrom: atoiOr(f[3], 2005), EraTo: atoiOr(f[4], 2016), Text: f[5],
+			Requires: optField(f, 6)}
 		b.phrases[p.Slot] = append(b.phrases[p.Slot], p)
 		return nil
 	}); err != nil {
@@ -195,7 +203,8 @@ func LoadBanks(dir string) (*Banks, error) {
 	}
 	if err := forEachRow(filepath.Join(dir, "comments_en.tsv"), 6, func(f []string) error {
 		c := CommentPhrase{Kind: f[0], Archetype: f[1], ParentSent: f[2],
-			EraFrom: atoiOr(f[3], 2008), EraTo: atoiOr(f[4], 2016), Text: f[5]}
+			EraFrom: atoiOr(f[3], 2008), EraTo: atoiOr(f[4], 2016), Text: f[5],
+			Requires: optField(f, 6)}
 		b.comments[c.Kind] = append(b.comments[c.Kind], c)
 		return nil
 	}); err != nil {
@@ -286,7 +295,8 @@ func loadLangContent(dir, lang string, lb *Banks) error {
 	}
 	if err := forEachRow(filepath.Join(dir, "phrases_"+lang+".tsv"), 6, func(f []string) error {
 		p := Phrase{Slot: f[0], Archetype: f[1], Sentiment: f[2],
-			EraFrom: atoiOr(f[3], 2005), EraTo: atoiOr(f[4], 2016), Text: f[5]}
+			EraFrom: atoiOr(f[3], 2005), EraTo: atoiOr(f[4], 2016), Text: f[5],
+			Requires: optField(f, 6)}
 		lb.phrases[p.Slot] = append(lb.phrases[p.Slot], p)
 		return nil
 	}); err != nil {
@@ -296,7 +306,8 @@ func loadLangContent(dir, lang string, lb *Banks) error {
 	if _, err := os.Stat(filepath.Join(dir, "comments_"+lang+".tsv")); err == nil {
 		if err := forEachRow(filepath.Join(dir, "comments_"+lang+".tsv"), 6, func(f []string) error {
 			c := CommentPhrase{Kind: f[0], Archetype: f[1], ParentSent: f[2],
-				EraFrom: atoiOr(f[3], 2008), EraTo: atoiOr(f[4], 2016), Text: f[5]}
+				EraFrom: atoiOr(f[3], 2008), EraTo: atoiOr(f[4], 2016), Text: f[5],
+				Requires: optField(f, 6)}
 			lb.comments[c.Kind] = append(lb.comments[c.Kind], c)
 			return nil
 		}); err != nil {
@@ -338,6 +349,15 @@ func forEachRow(path string, minFields int, fn func([]string) error) error {
 		}
 	}
 	return sc.Err()
+}
+
+// optField returns the trimmed i-th field, or "" if the row is too short —
+// for backward-compatible optional trailing columns (e.g. Phrase.Requires).
+func optField(f []string, i int) string {
+	if i < len(f) {
+		return strings.TrimSpace(f[i])
+	}
+	return ""
 }
 
 func atoiOr(s string, def int) int {

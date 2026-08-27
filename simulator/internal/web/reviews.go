@@ -56,7 +56,7 @@ func (e *Emitter) buildReview(rr *rand.Rand, reviewID int64, acct acctRef, arch 
 		}
 		releaseID = p.ReleaseID
 		base = e.Reception.Score(m.NormTitle, m.Platform, p.ReleaseID)
-		ctx = e.releaseContext(rr, m, acct, p)
+		ctx = e.releaseContext(rr, m, acct, p, year)
 	case p.HardwareID != 0:
 		m, ok := e.hardwareMeta[p.HardwareID]
 		if !ok {
@@ -145,7 +145,7 @@ func (e *Emitter) buildUnverifiedReview(rr *rand.Rand, reviewID int64, acct acct
 		return ReviewRecord{}, false
 	}
 	base := e.Reception.Score(m.NormTitle, m.Platform, rid)
-	ctx := e.releaseContext(rr, m, acct, Purchase{Price: 0})
+	ctx := e.releaseContext(rr, m, acct, Purchase{Price: 0}, year)
 	ctx["year"] = itoa(int64(year))
 	rating, sent := RateReview(rr, arch, base, year)
 	title, body := e.reviewText(rr, arch, rating, sent, year, ctx, lang)
@@ -204,9 +204,13 @@ func webMinute(rr *rand.Rand, d time.Time) time.Time {
 	return time.Date(d.Year(), d.Month(), d.Day(), 8+rr.IntN(15), rr.IntN(60), rr.IntN(60), 0, time.UTC)
 }
 
-func (e *Emitter) releaseContext(rr *rand.Rand, m ReleaseMeta, acct acctRef, p Purchase) Context {
+// retroAgeYears is the game age (review year − release year) at/above which a
+// title reads as old/retro, enabling req:retro phrases.
+const retroAgeYears = 8
+
+func (e *Emitter) releaseContext(rr *rand.Rand, m ReleaseMeta, acct acctRef, p Purchase, year int) Context {
 	genre := orDefault(m.Genre, "game")
-	return Context{
+	ctx := Context{
 		"title":           cleanDisplayTitle(m.Title),
 		"platform":        orDefault(m.Platform, "console"),
 		"genre":           genre,
@@ -217,6 +221,67 @@ func (e *Emitter) releaseContext(rr *rand.Rand, m ReleaseMeta, acct acctRef, p P
 		"condition_grade": conditionGrade(p.Condition),
 		"n_years":         itoa(int64(8 + rr.IntN(112))), // playtime filler for the {n_years} slot
 		"credit_amount":   formatPrice(acct.country, 20+rr.Float64()*90),
+	}
+	applyReleaseImmersion(ctx, m, year)
+	return ctx
+}
+
+// applyReleaseImmersion adds the V1.27 immersion fills + gating flags to a
+// release review context: the physical {medium}, {release_year}/{game_age}, a
+// sibling {other_platform}, and the req:* predicate flags renderSlot gates on.
+// It consumes NO RNG (the sibling is chosen by a deterministic index), so it
+// leaves the review's draw sequence untouched — the only count shift in V1.27
+// comes from the new phrase content itself. year is the review's posted year.
+func applyReleaseImmersion(ctx Context, m ReleaseMeta, year int) {
+	class, word := classifyMedia(m.Media)
+	ctx["medium"] = word
+	if class != "" {
+		ctx["req:media_"+class] = "1"
+	}
+	if m.ReleaseYear > 0 {
+		ctx["release_year"] = itoa(int64(m.ReleaseYear))
+		if age := year - m.ReleaseYear; age > 0 {
+			ctx["game_age"] = itoa(int64(age))
+			if age >= retroAgeYears {
+				ctx["req:retro"] = "1"
+			}
+		}
+	}
+	if n := len(m.OtherPlatforms); n > 0 {
+		ctx["req:has_other_versions"] = "1"
+		idx := (m.ReleaseYear + year) % n // deterministic, RNG-free sibling pick
+		if idx < 0 {
+			idx = 0
+		}
+		ctx["other_platform"] = m.OtherPlatforms[idx]
+	}
+	if m.Developer != "" {
+		ctx["req:has_developer"] = "1"
+	}
+}
+
+// classifyMedia maps a policy.CanonicalMedia string to a coarse media class
+// (for req:media_* gating) and a friendly {medium} noun. The class set is small
+// — cartridge/card/disc/floppy/cassette — so a phrase can assert cart-only
+// ("blow on the pins") or disc-only ("resurfaced") flavour without ever landing
+// on the wrong format. An unknown/blank medium yields no class (no
+// format-specific phrase fires) and the neutral word "copy". The cases match
+// CanonicalMedia's exact outputs (internal/policy/policy.go).
+func classifyMedia(media string) (class, word string) {
+	switch media {
+	case "Cartridge":
+		return "cartridge", "cartridge"
+	case "HuCard", "DS Game Card", "3DS Game Card", "PlayStation Vita Card":
+		return "card", "game card"
+	case "Floppy Disk":
+		return "floppy", "floppy disk"
+	case "Cassette":
+		return "cassette", "cassette"
+	case "CD-ROM", "GD-ROM", "DVD-ROM", "Blu-ray Disc", "UMD",
+		"GameCube Game Disc", "Wii Optical Disc", "Wii U Optical Disc":
+		return "disc", "disc"
+	default:
+		return "", "copy"
 	}
 }
 
@@ -232,6 +297,10 @@ func (e *Emitter) hardwareContext(rr *rand.Rand, m HardwareMeta, acct acctRef, p
 		"condition_grade": conditionGrade(p.Condition),
 		"n_years":         itoa(int64(8 + rr.IntN(112))),
 		"credit_amount":   formatPrice(acct.country, 40+rr.Float64()*160),
+		// Hardware has no software medium; a neutral word keeps any shared
+		// {medium} phrase readable, and no req:media_* flag is set so
+		// cartridge/disc-specific lines can never fire on a console review.
+		"medium": "unit",
 	}
 }
 

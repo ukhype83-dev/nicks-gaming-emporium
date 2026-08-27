@@ -13,16 +13,16 @@ Title: "I have been disappointed by this genre for a decade."
 Title: "Picked this up in the sale for $19."
 > Found this in a clearance box under a broken fan. Review reflects the prcie. Cost me less than the DLC costs the people who paid launch. Poetry. First playthrough blind, second with a guide, third to argue with this review. Full marks at this price. Wolud not pay launch price, but that is what patience is for.
 
-**★☆☆☆☆ — `xXPwnageXx` (troll, 2006)** — *the legend of zelda: ocarina of time*
-Title: "Time for your regularly scheduled reality check."
-> Counterpoint, since apparently I'm the only one THINKING clearly. Sorry your childhood was mid. IT'S a fishing minigame with a good soundtrack. That's it. That's the "classic." Rating it what it deserves, not what you remember.
+**★☆☆☆☆ — `xXOmegaRedXx` (troll, 2006)** — *the legend of zelda: ocarina of time*
+Title: "The emperor has no clothes and I brought a camera."
+> Counterpoint, since apparently I'm the only one THINKING clearly. Sorry your childhood was mid. IT'S a fishing minigame with a good soundtrack. That's it. That's the "classic." Cry about it in the comments, that's what they're for.
 
 **★★★★★ — `Dana1979` (capslock, 2005)** — *halo 2*
 > somoene had to say it and its gonna be me me and my brother TOOK turns until 3am on a SCHOOL NIGHT my friends dont BELIEVE the graphics are REAL TIME GAME OF THE YEAR. dont even read the other reviews just BUY IT
 
-**★★★★☆ — `cartblowerpolygon` (technerd, 2005)** — *halo 2*
-Title: "I'll keep the adjectives to a minimum and the measurements"
-> The short version is in the stars. The long version has graphs. Install footprint is double the box quote once the day-one data lands. The manual claims 60fps. It is 60 in menus. In gameplay it is a locked 30, which is fine, but say so. I disabled every enhancement setting to measure the game, not my TV. You can feel the years of iteration in how little of it is wasted. Buy the Xbox version specifically. The delta is real and visible.
+**★★★★☆ — `Dana2003` (technerd, 2005)** — *halo 2*
+Title: "Spec sheet in one hand, stopwatch in the other."
+> The short version is in the stars. The long version has graphs. Controller latency measured at the pad, not the panel: adds ~2 frames over last gen. Load times: 41 seconds from menu to gameplay on the stock drive, 28 after the drive swap. I disabled every enhancement setting to measure the game, not my TV. It's beautiful in motion in a way screenshots genuinely undersell. Recommended, with the caveats above. The numbers hold up.
 
 **★★★★★ — `savepointcartblower` (superfan, 2005)** — *halo 2*
 Title: "I've defended this franchise in worse comment sections than"
@@ -32,31 +32,33 @@ Title: "I've defended this franchise in worse comment sections than"
 Title: "ok so."
 > STOP SCROLLING. read this first. finsihed it then IMMEDIATELY started new game plus the graphics are INSANE. my friend thought it was a movie. A MOVIE 10/10 wuold lose slepe agani
 
-**★★★☆☆ — `Dana2006` (technerd, 2008)** — *too human*
-Title: "I'll keep the adjectives to a minimum and the measurements"
-> The short version is in the stars. The long version has graphs. Color banding in the dark scenes screams 6-bit panel handling. Yours may vary. It doesn't buffer inputs during the animation, so combos drop for no reason. For reference I am running component out into a calibrated set, so this is not a cabling issue. Wait for the revision. The silicon will improve; the launch units will not.
+**★★★☆☆ — `xNoScopex` (technerd, 2008)** — *too human*
+Title: "Everyone benchmarking the launch build is missing the"
+> The short version is in the stars. The long version has graphs. Load times: 41 seconds from menu to gameplay on the stock drive, 28 after the drive swap. It doesn't buffer inputs during the animation, so combos drop for no reason. Anti-aliasing is doing nothing at this resolution; verify with a still and a magnifier. Wait for the revision. The silicon will improve; the launch units will not.
 
-**★★★★★ — `xXOmegaRedXx` (superfan, 2008)** — *too human*
-> Day one. Alawys day one for this series. The whole line broke into the theme song at midnight. I'm not CRYING, you are. Eveyr entry in this series raises the bar and this one cleared it with room to spare. You can feel the years of iteration in how little of it is wasted. Five stars and I'd tattoo the logo. Slightly kidding.
+**★★★★★ — `xOmegaRedx` (superfan, 2008)** — *too human*
+Title: "Day one."
+> Day one. Alawys day one for this series. The whole line broke into the theme song at midnight. I'm not CRYING, you are. Eveyr entry in this series raises the bar and this one cleared it with room to spare. It's beautiful in motion in a way screenshots genuinely undersell. Five stars and I'd tattoo the logo. Slightly kidding.
 
 **★★★☆☆ — `Dana1979` (troll, 2008)** — *too human*
 Title: "Someone check the water supply, everyone's lost their minds"
 > Time for your regularly scheduled reality check. Imagine defending Big Publisher Co. for free. Couldn't be me. I'll give it one thing: the box art goes HARD. Shame about the contents. Perfectly average, and average deserves to hear it.
 
-**★★★★★ — `ShadowLink15` (essayist, 2008)** — *wii sports*
-Title: "A game this divisive deserves more than a thumbs up or"
-> I promised myself I'd keep this short. We both know how that goes. I picked this up the day it dropped on the strength of the previews, going in almost blind. I lost a weekend and found a new favourite, roughly in that order. It respects your time, which I am starting to realise is the rarest feature of all. It nails the one thing the genre usually fumbles: making failure feel fair. The map screen is a mess, but you memorise it eventually and stop caring. Rarely do I finish a game and immediately want to start again. This is one.
+**★★★★★ — `xXVercettiXx` (essayist, 2008)** — *wii sports*
+Title: "Some games you rate; some you have to write your way"
+> I promised myself I'd keep this short. We both know how that goes. For context, I have played every action release worth mentioning since the SNES days. wii sports sits comfortably beside the better action releases I have played this generation. It does one thing better than anything else on the platform, and that's enough. wii sports is the rare action that respects your time and your intelligence. Rarely do I finish a game and immediately want to start again. This is one.
 
-**★★★★★ — `MasterChief02` (parent, 2008)** — *wii sports*
-> Two kids, one console, one copy of this. Imagine the negotiations. We made the mistake of opeinng it before dinner. Dinner was late. I have not seen a reaction like that since the bike with the streamers. Total silence, then screaming. You do NOT need the accessory bundle, whatever the box implies. The basic set is fine. Shout-out to the Evanston store staff, who threw in a used controller for the trouble. Worth every penny of the $19.99, and I am the one who counts the pennies.
+**★★★★★ — `ShadowLink26` (parent, 2008)** — *wii sports*
+Title: "Full disclosure: I am the parent here, and my nephew is the"
+> Two kids, one console, one copy of this. Imagine the negotiations. We made the mistake of opening it before dinner. Dinner was late. I have not seen a reaction like that since the bike with the streamers. Total silence, then screaming. You do NOT need the accessory bundle, whatever the box implies. The basic set is fine. Delivery from the warehouse was two days flat, credit where due. Five stars from the household. The dog abstained.
 
-**★★★★★ — `xFr4ggerx` (collector, 2008)** — *wii sports*
-Title: "New arrival, white gloves on, notes below."
-> Arrived today: wii sports, Wii, listed Used - Good. Grading notes below, as always. Original receipt was still tucked in the manual. Previous owner, respect. Spine card intact, which for this title is basically a miracle. It's beautiful in motion in a way screenshots genuinely undersell. Shelf-worthy. The hunt continues.
+**★★★★★ — `Dana1979` (collector, 2008)** — *wii sports*
+Title: "Filling a gap in the collection that has bothered me for"
+> Arrived today: wii sports, Wii, listed Used - Good. Grading notes below, as always. Original receipt was still tucked in the manual. Previous owner, respect. Manual has one dog-eared corner; everything else is museum-grade. The last hour recontextualises the first, and I love it for that. Shelf-worthy. The hunt continues.
 
-**★☆☆☆☆ — `Dana1979` (troll, 2008)** — *wii sports*
-Title: "Someone check the water supply, everyone's lost their minds"
-> The emperor has no clothes and I brought a camera. Sorry your childhood was mid. Remove the nostalgia and there is genuinely nothing here. I said what I said. Nostalgia is not a game mechanic, no matter how hard you review-bomb this. Rating it what it deserves, not what you remember. Inb4 "you just don't get it." Correct. Neither do you.
+**★☆☆☆☆ — `xMasterChiefx` (troll, 2008)** — *wii sports*
+Title: "So I finally played the \"masterpiece."
+> The emperor has no clothes and I brought a camera. Sorry your childhood was mid. Remove the nostalgia and there is genuinely nothing here. I said what I said. Every fanbase gets the review it deserves. Say hi. Cry about it in the comments, that's what they're for. Inb4 "you just don't get it." Correct. Neither do you.
 
 **★★★☆☆ — `Dana1979` (grouch, 2010)** — *heavy rain*
 Title: "I've been let down by better games than this."
@@ -70,42 +72,44 @@ Title: "Some people wait for reviews."
 > Patience pays: $19.99, down from launch price, six months later. At full price this would be three stasr. At $19.99 it rounds up. For every good idea there is a baffling one right next to it. A solid rental in the old money. Try before you commit.
 
 **★☆☆☆☆ — `Dana1979` (troll, 2010)** — *heavy rain*
-Title: "Someone check the water supply, everyone's lost their minds"
-> Someone chekc the water supply, everyone's lost their minds over this. Bold of a game this derivative to charge full price and bolder of you to pay it. Its held up the way a museum piece holds up: behind glass, don't touch, don't question. Cry about it in the comments, that's what they're for.
+Title: "The emperor has no clothes and I brought a camera."
+> Someone check the water supply, everyone's lost their minds over this. It is bull****, and the comments defending it are funnier than the game. Take away the tehme song and you've got a tech demo with a fanbase. The graphics are carrying a corpse and you're applauding the pallbearer. Rating it what it deserves, not what you remember. Replies are open. Bring friends.
 
 **★★★★★ — `Zer051` (capslock, 2007)** — *some forgotten platformer*
 Title: "STOP SCROLLING."
 > someone had to say it and its gonna be me played it ALL WEEKEND. mom had to physiclaly unplug the tv the SOUNDTRACK is on my MP3 PLAYER rigth now no joke GAME OF THE YEAR. dont even read the other reviews just BUY IT
 
-**★★★★☆ — `xShadowLinkx` (technerd, 2007)** — *some forgotten platformer*
+**★★★★☆ — `Fr4gger57` (technerd, 2007)** — *some forgotten platformer*
 Title: "I test so you don't have to return it."
-> Pulled the capture card out for this one. Findings below. The manual claims 60fps. It is 60 in menus. In gameplay it is a locked 30, which is fine, but say so. Anti-aliasing is doing nothing at this resolution; verify with a still and a magnifier. It does one thing better than anything else on the platform, and that's enough. Buy the PlayStation 2 version specifically. The delta is real and visible.
+> Pulled the capture card out for this one. Findings below. Controller latency measured at the pad, not the panel: adds ~2 frames over last gen. Texture streaming stutters on the stock drive; the swap fixed 80% of it. The difficulty options are generous without ever being condescending. Recommended, with the caveats above. The numbers hold up.
 
 **★★★★★ — `xFr4ggerx` (superfan, 2007)** — *some forgotten platformer*
 Title: "I have every entry in this series, sealed and loose."
 > I could recite the lore in my sleep, so consider THIS an informed opinion. The whole line broke into the theme SONG at MIDNIGHT. I'm not CRYING, you are. This is why Small Studio is the greatest studio working today. Nobody else comes close. Whoever did the SOUND design deserves their name above the title. The one we were promised. Finally. EDIT SINEC people asked: yes the collector's edition is worth it. It is always worth it.
 
-**★☆☆☆☆ — `xXShadowLinkXx` (troll, 2007)** — *some forgotten platformer*
-> Someone check the water supply, everyone's lost their minds over this. NOSTALGIA is not a game mechanic, no matter how hard you review-bomb this. It's held up the way a museum piece holds up: behind glass, don't touch, don't question. Rating it what it deserves, not what you remember. Replies are open. Bring friends.
+**★☆☆☆☆ — `NoScope85` (troll, 2007)** — *some forgotten platformer*
+Title: "Everybody relax, I'm about to fix this game's average"
+> Someone check the water supply, everyone's lost their minds over this. You DIDN'T like the game, you liked being fourteen. Understandable. Still one star. It's held up the way a museum piece holds up: behind glass, don't touch, don't question. Cry about it in the comments, that's what they're for. Replies are open. Bring friends.
 
-**★★★☆☆ — `Pixel_Bandit` (essayist, 2013)** — *grand theft auto v*
-Title: "Some games you rate; some you have to write your way"
-> There are three things you should know before buying grand theft auto v, and noen of them fit in one sentence. For context, I have played every action release worth mentioning since the SNES days. The middle third is where it lives or dies, and mine barely survived. The soundtrack alone is worth the asking price; I have had it on in the car. The ambition outruns the execution in a few too many places. I keep going back and forth on this one, which is itself a kind of verdict. Three stars: worth playing, hard to love. Wait for the price to drop. If you read this far, you were always going to buy it. Enjoy.
+**★★★☆☆ — `Turbo_Bandit` (essayist, 2013)** — *grand theft auto v*
+Title: "Settle in."
+> There are three things you should know before buying grand theft auto v, and noen of them fit in one sentence. I ordered this from the Evanston store, and the copy arrived exactly as described. grand theft auto v sits comfortably beside the better action releases I have played this generation. Whoever designed the difficulty curve deserves a raise — challenging without ever feeling cheap. The ambition outruns the execution in a few too many places. I keep going back and forth on this one, which is itself a kind of verdict. Three stars: worth playing, hard to love. Wait for the price to drop. If you read this far, you were always going to buy it. Enjoy.
 
-**★★★★★ — `Couch_Mum` (parent, 2013)** — *grand theft auto v*
-> Bought it to stop the pestering. Stayed for the surprisingly nice family evenings. It was a good-report-card present, for the record. We have rules. Grandma is now genuinely competitive at it, which has caused some issues at Sunday lunch. Note for other parents: the age rating is about right, maybe a shade generous. The staff at my local NGE actually knew the game and talked me out of the worse edition. That still counts for something. Five stars from the household. The dog abstained.
+**★★★★★ — `Retro_Dave` (parent, 2013)** — *grand theft auto v*
+Title: "Bought this for my stepson's birthday after the usual weeks"
+> Bought it to stop the pestering. Stayed for the surprisingly nice family evenings. It was a good-report-card present, for the record. We have rules. Grandma is now genuinely competitive at it, which has caused some issues at Sunday lunch. Note for other parents: the age rating is about right, maybe a shade generous. Delivery from the warehouse was two days flat, credit where due. Five stars from the household. The dog abstained.
 
-**★★★★★ — `Analog_Doctor` (collector, 2013)** — *grand theft auto v*
-Title: "Another one for the shelf."
-> Filling a gap in the collection that has bothered me for years. Spine card intact, which for this title is basically a miracle. Complete in box with both inserts, which is rarer than the game itself at this point. Shelf-worthy. The hunt continues.
+**★★★★★ — `Dana1979` (collector, 2013)** — *grand theft auto v*
+Title: "New arrival, white gloves on, notes below."
+> Filling a gap in the collection that has bothered me for years. Manual has one dog-eared corner; everything else is museum-grade. Spine card intact, which for this title is basically a miracle. Shelf-worthy. The hunt continues.
 
-**★★☆☆☆ — `WellActually` (troll, 2013)** — *grand theft auto v*
-Title: "Here to be the villain in your favourite game's reviews."
-> Counterpoint, since apparently I'm the only one thinking clearly. Every fanbase gets the review it deserves. Say hi. The 'best game ever' according to people who stopped playing games that same year. Rating it what it deserves, not what you rememebr. Inb4 "you just don't get it." Correct. Neither do you.
+**★★☆☆☆ — `Cartridge_Susan` (troll, 2013)** — *grand theft auto v*
+Title: "Unpopular opinion incoming."
+> Counterpoint, since apparently I'm the only one thinking clearly. Bold of a game this derivative to charge full price and bolder of you to pay it. The 'best game ever' according to people who stopped playing games that same year. Rating it waht it deserves, not what you remember. Inb4 "you just don't get it." Correct. Neither do you.
 
 **★★☆☆☆ — `LoadingAltDefeat` (grouch, 2016)** — *memory manor*
 Title: "I gave memory manor every chance."
-> It brings me no joy to write this review. There's a good ten-hour game trapped inside this thirty-hour one. The load times aren't a nuisance, they're an intermission. Traded it back in within the week, which says more than the last four paragraphs.
+> It brings me no joy to write this review. The checkpointing is actively hostile, like the game is mad at you. Every good idea here is fighting three bad ones for screen time. Traded it back in within the week, which says more than the last four paragraphs.
 
 **★★★☆☆ — `Dana1979` (driveby, 2016)** — *memory manor*
 > eh
@@ -114,9 +118,9 @@ Title: "I gave memory manor every chance."
 Title: "Buckle up, this is a story about 'store credit."
 > Let me save you the trouble I just went through. Took it back to the EVANSTON store wiht the receipt, expecting this to take five minutes. $89 in EmporiumBucks. Spendable only at NGE. My nearest NGE expire before anywhere is left to spend them. Do the maths. Buy from anywhere that still deals in actual money.
 
-**★★☆☆☆ — `RatioKing` (troll, 2016)** — *memory manor*
-Title: "So I finally played the \"masterpiece."
-> The emperor has no clothes and I brought a camera. Downvotes to the left, I'll wait. It's held up the way a museum piece holds up: behind glass, don't touch, don't question. Cry about it in the comments, that's what they're for. Inb4 "you just don't get it." Correct. Neither do you.
+**★★☆☆☆ — `LordDialUp` (troll, 2016)** — *memory manor*
+Title: "Unpopular opinion incoming."
+> The emperor has no clothes and I brought a camera. Downvotes to the left, I'll wait. It's held up the way a museum piece holds up: behind glass, don't touch, don't question. One star. It is s*** and you all know it.
 
 ---
 ## Sample thread (parent sentiment: neg, 2012)
