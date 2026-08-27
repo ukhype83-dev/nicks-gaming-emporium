@@ -29,9 +29,17 @@ of the same tag are equivalent.
   Server (exit 0 on pass; counts and USD reconcile to source). The warehouse is
   a **rowstore + BRIN** design rather than columnstore — a deliberate
   "same query, two engines, different physical design" difference. New
-  `--pg-run-etl` re-runs the DW ETL against an existing database. The reporting
-  and workload-generation procedure libraries (`rpt`, `loadgen`) remain
-  **SQL Server only** for now — their PostgreSQL port is in progress.
+  `--pg-run-etl` re-runs the DW ETL against an existing database.
+- **PostgreSQL reporting procedures.** The full `rpt` reporting library (~190
+  procedures, including the deliberately-awful tuning-lab set — scalar-UDF
+  taxes, non-SARGable predicates, RBAR cursors, the `NOT IN`/NULL trap,
+  views-on-views) is now on PostgreSQL as `refcursor`-returning functions (call
+  one, then `FETCH` from the returned cursor; multi-result procedures return
+  `SETOF refcursor`). The anti-patterns' bad performance is preserved on purpose
+  (`VOLATILE` UDFs that Postgres won't inline, predicates kept non-SARGable);
+  where one would *error* rather than merely scan on Postgres (the implicit
+  text-vs-int till report), a minimal change keeps it runnable-but-slow. The
+  workload generator (`loadgen`) remains **SQL Server only** for now.
 
 ### Changed
 - **Review-engine immersion pass.** Product reviews and comment threads now

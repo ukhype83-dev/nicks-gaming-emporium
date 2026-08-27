@@ -23,7 +23,8 @@ PostgreSQL**.
 | **OLTP** (`dbo`, `hr`, `finance`) — shops, catalogue, customers, staff, transactions, payments, trade-ins, finance roll-ups | ✅ | ✅ |
 | **Web / community** (`web`) — accounts, reviews, comments, votes, clickstream | ✅ | ✅ |
 | **Data warehouse** (`dw`) — dimensional model + ETL (`batch`) | ✅ | ✅ |
-| **Reporting + workload procedures** (`rpt`, `loadgen`) | ✅ | *in progress* |
+| **Reporting procedures** (`rpt`, incl. the tuning-lab "bad" procs) | ✅ | ✅ |
+| **Workload generator** (`loadgen`) | ✅ | *in progress* |
 
 The OLTP + web layers are generated from the same deterministic engine on both
 backends, so a SQL Server database and a PostgreSQL database of the same tier
@@ -32,9 +33,11 @@ hold the **same rows** (aligned by primary key when built the same way — see
 warehouse (the dimensional model plus the `batch` ETL that populates it) now
 builds on both backends too — on PostgreSQL it is a rowstore + BRIN design
 (no columnstore, which is deliberately a "same query, two engines, different
-physical design" teaching point). The **reporting** and **workload-generation**
-procedure libraries (`rpt`, `loadgen`) are still SQL-Server-only; their
-PostgreSQL port is in progress.
+physical design" teaching point). The **reporting** procedure library (`rpt` —
+~190 report procedures, including the deliberately-awful tuning-lab set) is now
+on PostgreSQL too, as `refcursor`-returning functions (call one, then `FETCH`
+from the cursor it returns). Only the **workload generator** (`loadgen`) is
+still SQL-Server-only; its PostgreSQL port is in progress.
 
 ## Tiers
 
@@ -202,9 +205,13 @@ row-for-row **across the two backends** (build both with `--vusers 1`).
   wide denormalised table, and rollups, populated by the reprocessable `batch`
   ETL. *(SQL Server + PostgreSQL — columnstore on SQL Server, rowstore + BRIN
   on PostgreSQL)*
-- **Reporting + workload procedures** (`rpt`, `loadgen`) — reporting/dashboard
-  queries and workload-generation procedures over the warehouse. *(SQL Server;
-  PostgreSQL port in progress)*
+- **Reporting procedures** (`rpt`) — ~190 report/dashboard procedures over the
+  warehouse, including a deliberately-awful tuning-lab set (scalar-UDF taxes,
+  non-SARGable predicates, RBAR cursors, views-on-views) whose bad performance
+  is preserved on purpose. *(SQL Server + PostgreSQL — on PostgreSQL they are
+  `refcursor`-returning functions)*
+- **Workload generator** (`loadgen`) — procedures that drive concurrent read +
+  batch workload over the above. *(SQL Server; PostgreSQL port in progress)*
 
 The data is internally consistent (foreign keys enforced, financials reconcile)
 and reproducible from the seed, so it is well suited to SQL learning,
