@@ -75,6 +75,41 @@ func webWorkers(vusers int) int {
 	return n
 }
 
+// applyShopProximityEras runs the V1.13/V1.23.1 era-aware shop-proximity
+// weighting on the shared geography index: it dampens customer + staff address
+// sampling toward cities within ~50 km of a shop, bucketed by shop-opening era
+// (bounds 1990/94/98/2002/06/10 — the last new-shop year). It MUST run after
+// shops are placed and before any customer/staff address sampling. Shared by
+// LoadAll (OLTP) and LoadWeb so a standalone web load reproduces the exact same
+// postals state; ApplyShopProximityEras is idempotent, so calling it from both
+// is safe (the second call, when LoadAll already ran in-process, is a no-op).
+//
+// Pre-V1.23.1 the damping ran once against the lifetime estate, so a 1991
+// customer could sit beside a shop that opened in 2007; the era buckets fix
+// that. Keeping the params here stops LoadAll and LoadWeb from drifting apart.
+func applyShopProximityEras(postals *geography.Index, shopList []shops.Shop) {
+	const proximityRadiusKm = 50.0
+	const proximityFarFactor = 0.05
+	proximityEraBounds := []int{1990, 1994, 1998, 2002, 2006, 2010}
+	shopLocs := make([]geography.ShopLocation, 0, len(shopList))
+	for i := range shopList {
+		openedYear := 0
+		if t, err := time.Parse("2006-01-02", shopList[i].OpenedDate); err == nil {
+			openedYear = t.Year()
+		}
+		shopLocs = append(shopLocs, geography.ShopLocation{
+			Country:    shopList[i].CountryCode,
+			Latitude:   shopList[i].Address.Latitude,
+			Longitude:  shopList[i].Address.Longitude,
+			OpenedYear: openedYear,
+		})
+	}
+	postals.ApplyShopProximityEras(shopLocs, proximityRadiusKm, proximityFarFactor, proximityEraBounds)
+	fmt.Fprintf(os.Stderr,
+		"  era-aware shop-proximity weighting applied (radius=%.0f km, far_factor=%.2f, %d shops, %d era buckets)\n",
+		proximityRadiusKm, proximityFarFactor, len(shopLocs), len(proximityEraBounds))
+}
+
 // WebStats summarises a web-layer load.
 type WebStats struct {
 	Accounts  int64
@@ -122,6 +157,19 @@ func LoadWeb(
 	}
 	e := web.NewEmitter(banks, seed, asOf, 1)
 
+	// Reproduce the OLTP geography state BEFORE any customer/address sampling:
+	// generate shops, then apply the era-aware shop-proximity weighting exactly
+	// as LoadAll does. Without this a standalone web load (fresh process) samples
+	// pure-population customer cities that don't match the era-damped addresses
+	// already in dbo.customer_addresses — and because the city feeds review text,
+	// it would emit a different review/comment/vote count than the full pipeline.
+	// Idempotent, so a no-op when LoadAll already ran. shopList is reused below.
+	shopList, err := shops.Generate(tier, seed, asOf, postals)
+	if err != nil {
+		return s, fmt.Errorf("shops.Generate: %w", err)
+	}
+	applyShopProximityEras(postals, shopList)
+
 	// 1. Accounts (customer replay). Collect + write.
 	var accounts []web.Account
 	_, custIndex, err := customers.Generate(tier, seed, asOf, postals, func(c customers.Customer) {
@@ -159,11 +207,8 @@ func LoadWeb(
 	//    deterministically. custIndex is the real one (identical to the base
 	//    build → byte-identical per-shop lines → true verified-purchase
 	//    coherence); nil staff is safe (independent RNG stream). No DB
-	//    connection here — capture is pure CPU.
-	shopList, err := shops.Generate(tier, seed, asOf, postals)
-	if err != nil {
-		return s, fmt.Errorf("shops.Generate: %w", err)
-	}
+	//    connection here — capture is pure CPU. shopList was generated up front
+	//    (before the era pass) and is reused here.
 	fmt.Fprintf(os.Stderr, "  web: capturing purchases — %d workers × %d shops (round-robin)\n",
 		workers, len(shopList))
 	shards := make([]*web.CaptureShard, workers)

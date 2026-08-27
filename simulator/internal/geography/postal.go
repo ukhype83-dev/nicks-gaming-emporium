@@ -628,6 +628,9 @@ func (idx *Index) ApplyShopProximityEras(shopLocs []ShopLocation, radiusKm, farF
 	if idx.cities == nil || len(eraBounds) == 0 {
 		return
 	}
+	if idx.cumWeightByEra != nil {
+		return // idempotent — LoadAll and a standalone LoadWeb may both call this
+	}
 	idx.cumWeightAnywhere = make(map[string][]int, len(idx.cumWeight))
 	for country, cum := range idx.cumWeight {
 		clone := make([]int, len(cum))

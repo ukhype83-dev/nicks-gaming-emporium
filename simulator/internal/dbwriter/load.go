@@ -189,39 +189,12 @@ func LoadAll(
 		return s, err
 	}
 
-	// V1.13: dampen the customer/staff sampling distribution toward
-	// cities within `proximityRadiusKm` of a shop. 50 km is a typical
-	// retail catchment; `farFactor` 0.05 keeps a long tail of distant
-	// customers (mail-order, online, edge-case relocations) without
-	// making them dominant. Shops have already been placed above, so
-	// the proximity filter applies only to subsequent samplers
-	// (customers + HR staff addresses).
-	const proximityRadiusKm = 50.0
-	const proximityFarFactor = 0.05
-	// V1.23.1 — era-aware proximity. Pre-V1.23.1 the damping ran once
-	// against the LIFETIME estate, so a 1991 paper-loyalty customer
-	// could live beside a shop that wouldn't open until 2007 (and at
-	// 3T, where ~every populous city eventually got a shop within
-	// 50 km, the damping degenerated to population sampling for every
-	// era). Buckets end at 2010 = the last new-shop year.
-	proximityEraBounds := []int{1990, 1994, 1998, 2002, 2006, 2010}
-	shopLocs := make([]geography.ShopLocation, 0, len(shopList))
-	for i := range shopList {
-		openedYear := 0
-		if t, err := time.Parse("2006-01-02", shopList[i].OpenedDate); err == nil {
-			openedYear = t.Year()
-		}
-		shopLocs = append(shopLocs, geography.ShopLocation{
-			Country:    shopList[i].CountryCode,
-			Latitude:   shopList[i].Address.Latitude,
-			Longitude:  shopList[i].Address.Longitude,
-			OpenedYear: openedYear,
-		})
-	}
-	postals.ApplyShopProximityEras(shopLocs, proximityRadiusKm, proximityFarFactor, proximityEraBounds)
-	fmt.Fprintf(os.Stderr,
-		"  era-aware shop-proximity weighting applied (radius=%.0f km, far_factor=%.2f, %d shops, %d era buckets)\n",
-		proximityRadiusKm, proximityFarFactor, len(shopLocs), len(proximityEraBounds))
+	// Era-aware shop-proximity weighting (V1.13 / V1.23.1): dampen customer +
+	// staff address sampling toward cities near a shop, bucketed by shop-opening
+	// era. Runs after shops are placed and before any customer/staff sampling.
+	// Shared with LoadWeb so a standalone web load reproduces the identical
+	// postals state — see applyShopProximityEras (load_web.go).
+	applyShopProximityEras(postals, shopList)
 
 	// 6. Payroll runs — independent (no per-person FKs); precomputed
 	//    so HR's per-spell payroll_lines can FK into it.

@@ -18,6 +18,12 @@ of the same tag are equivalent.
   varied between builds — non-deterministic run-to-run. Now numbered in a stable
   sorted country order, so payroll ids are reproducible. Also hardened
   `catalog.Platforms()` to sort internally (output-preserving).
+- Web address determinism: the standalone `--emit web` path sampled
+  pure-population customer cities instead of the era-damped ones the full
+  pipeline uses, so review text (and the review/comment/vote counts) differed
+  between `--emit web` and `--emit full`. The era-aware shop-proximity weighting
+  is now applied in both paths (shared helper, idempotent). `--emit full` output
+  is unchanged; standalone `--emit web` now matches it.
 
 ## [0.1.0] — 2026-08-21
 
