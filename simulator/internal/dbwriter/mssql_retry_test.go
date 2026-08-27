@@ -14,10 +14,10 @@ func TestClassifyError(t *testing.T) {
 		want errClass
 	}{
 		// The real one, verbatim from the failed build.
-		{"inline insert into dbo.transactions (chunk starting row 2000, 500 rows): read tcp 172.19.115.171:58588->192.168.0.132:1433: read: connection reset by peer", errNetwork},
+		{"inline insert into dbo.transactions (chunk starting row 2000, 500 rows): read tcp 10.0.0.23:58588->10.0.0.10:1433: read: connection reset by peer", errNetwork},
 		{"login error: mssql: login error: timeout waiting for reply", errNetwork},
-		{"unable to open tcp connection with host '192.168.0.132:1433': dial tcp: i/o timeout", errNetwork},
-		{"dial tcp 192.168.0.132:1433: connect: connection refused", errNetwork},
+		{"unable to open tcp connection with host '10.0.0.10:1433': dial tcp: i/o timeout", errNetwork},
+		{"dial tcp 10.0.0.10:1433: connect: connection refused", errNetwork},
 		{"driver: bad connection", errNetwork},
 		{"wsarecv: An existing connection was forcibly closed by the remote host.", errNetwork},
 		// go-mssqldb client-side parser blip under concurrent load — no
