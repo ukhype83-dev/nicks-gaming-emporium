@@ -89,6 +89,10 @@ func main() {
 	querySQL := flag.String("query", "",
 		"Run a single SQL query against --load-mssql, print rows as TSV, and exit. "+
 			"MCP-independent validation path.")
+	pgRunETL := flag.Bool("pg-run-etl", false,
+		"Run the Postgres DW ETL (CALL batch.usp_refresh_everything(true)) against "+
+			"--load-postgres via the autocommit protocol, then exit. Assumes the DW "+
+			"schema + batch procedures are already deployed.")
 	sqlRoot := flag.String("sql-root", "..",
 		"Root directory that contains sql/ and the schema files (--emit full only). "+
 			"Default '..' = repo root when run from simulator/. The DW schema, procs "+
@@ -139,6 +143,23 @@ func main() {
 			os.Exit(2)
 		}
 		fmt.Fprintf(os.Stderr, "Deployed %s OK.\n", *deploySQL)
+		return
+	}
+
+	// --pg-run-etl: run the DW ETL against an existing Postgres DB and exit.
+	if *pgRunETL {
+		if *loadPostgres == "" {
+			fmt.Fprintf(os.Stderr, "--pg-run-etl requires --load-postgres\n")
+			os.Exit(2)
+		}
+		ctx := context.Background()
+		fmt.Fprintf(os.Stderr, "Running PG DW ETL: %s ...\n", pgDWETLCall)
+		t0 := time.Now()
+		if err := dbwriter.RunETLPostgres(ctx, *loadPostgres, pgDWETLCall); err != nil {
+			fmt.Fprintf(os.Stderr, "PG DW ETL failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "PG DW ETL completed in %s.\n", time.Since(t0).Round(time.Second))
 		return
 	}
 
@@ -246,7 +267,7 @@ func main() {
 					"the schema + indexes are already applied. On an empty DB, add --init-schema.\n")
 			}
 			loadFullPostgres(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *loadPostgres,
-				*pgSchemaFile, *pgIndexesFile, *webBanks, *initSchema, *clickScale, *vusers)
+				*pgSchemaFile, *pgIndexesFile, *webBanks, *sqlRoot, *initSchema, *validate, *clickScale, *vusers)
 			return
 		}
 		if *loadMSSQL == "" {
@@ -345,6 +366,40 @@ const dwETLRunner = "sql/reporting/run_refresh_everything.sql"
 func dwProcFiles(sqlRoot string) ([]string, error) {
 	var out []string
 	for _, pat := range []string{"sql/procs/batch_*.sql", "sql/procs/rpt_*.sql", "sql/procs/loadgen*.sql"} {
+		m, err := filepath.Glob(filepath.Join(sqlRoot, pat))
+		if err != nil {
+			return nil, err
+		}
+		sort.Strings(m)
+		out = append(out, m...)
+	}
+	return out, nil
+}
+
+// pgDWDDLManifest is the PostgreSQL DW schema-DDL deploy sequence (mirrors
+// dwDDLManifest). Rowstore + BRIN; 40_wide replaces 40_columnstore (Postgres
+// has no columnstore). Explicit order, relative to --sql-root.
+var pgDWDDLManifest = []string{
+	"sql/reporting_pg/00_schemas.sql",
+	"sql/reporting_pg/10_dimensions.sql",
+	"sql/reporting_pg/15_dim_fx.sql",
+	"sql/reporting_pg/20_facts.sql",
+	"sql/reporting_pg/30_rollups.sql",
+	"sql/reporting_pg/40_wide.sql",
+}
+
+// pgDWETLCall runs the whole PostgreSQL DW ETL (idempotent). Executed via
+// RunETLPostgres (simple/autocommit protocol) so the fact/wide procedures can
+// COMMIT per month — running it through InitSchemaPostgres would wrap it in an
+// implicit transaction and the COMMITs would fail.
+const pgDWETLCall = "CALL batch.usp_refresh_everything(true)"
+
+// pgProcFiles returns the PostgreSQL stored-procedure files to deploy, in group
+// order batch_* → rpt_* → loadgen* (alphabetical within group), mirroring
+// dwProcFiles for the procs_pg tree. (P2b E2: only batch_* exist yet.)
+func pgProcFiles(sqlRoot string) ([]string, error) {
+	var out []string
+	for _, pat := range []string{"sql/procs_pg/batch_*.sql", "sql/procs_pg/rpt_*.sql", "sql/procs_pg/loadgen*.sql"} {
 		m, err := filepath.Glob(filepath.Join(sqlRoot, pat))
 		if err != nil {
 			return nil, err
@@ -551,6 +606,77 @@ func webContiguityCheck(table, idCol string) string {
 		idCol, idCol, table)
 }
 
+// runFullValidationPostgres is the Postgres twin of runFullValidation: the same
+// nine reconciliation checks, in Postgres dialect (COUNT instead of COUNT_BIG,
+// ::text instead of CONVERT, ::bigint casts). Each query computes its own
+// PASS/FAIL verdict; any failure returns an error.
+func runFullValidationPostgres(ctx context.Context, dsn string) error {
+	type check struct{ name, query string }
+	checks := []check{
+		{"fact_sales rowcount", `
+			SELECT CASE WHEN a=b THEN 'PASS' ELSE 'FAIL' END AS status,
+			       CONCAT('fact_sales=',a,'  transaction_lines=',b,'  diff=',a-b) AS detail
+			FROM (SELECT (SELECT COUNT(*) FROM dw.fact_sales) AS a,
+			             (SELECT COUNT(*) FROM dbo.transaction_lines) AS b) x`},
+		{"fact_sales SUM(line_total)", `
+			SELECT CASE WHEN a=b THEN 'PASS' ELSE 'FAIL' END AS status,
+			       CONCAT('fact=',a,'  oltp=',b,'  diff=',a-b) AS detail
+			FROM (SELECT (SELECT SUM(line_total) FROM dw.fact_sales) AS a,
+			             (SELECT SUM(line_total) FROM dbo.transaction_lines) AS b) x`},
+		{"fact_sales SUM(quantity)", `
+			SELECT CASE WHEN a=b THEN 'PASS' ELSE 'FAIL' END AS status,
+			       CONCAT('fact_qty=',a,'  oltp_qty=',b,'  diff=',a-b) AS detail
+			FROM (SELECT (SELECT SUM(quantity::bigint) FROM dw.fact_sales) AS a,
+			             (SELECT SUM(quantity::bigint) FROM dbo.transaction_lines) AS b) x`},
+		{"USD vs monthly_summary", `
+			SELECT CASE WHEN b IS NULL OR b=0 THEN 'FAIL'
+			            WHEN ABS(a-b)/ABS(b) < 0.0001 THEN 'PASS' ELSE 'FAIL' END AS status,
+			       CONCAT('fact_usd=',a,'  summary_usd=',b,'  rel_diff=',
+			              (ABS(a-b)/NULLIF(ABS(b),0))::text) AS detail
+			FROM (SELECT (SELECT SUM(line_total_usd) FROM dw.fact_sales) AS a,
+			             (SELECT SUM(revenue_usd) FROM finance.monthly_summary) AS b) x`},
+		{"web.accounts contiguous", webContiguityCheckPG("web.accounts", "account_id")},
+		{"web.reviews contiguous", webContiguityCheckPG("web.reviews", "review_id")},
+		{"web.review_comments contiguous", webContiguityCheckPG("web.review_comments", "comment_id")},
+		{"web.review_votes contiguous", webContiguityCheckPG("web.review_votes", "vote_id")},
+		{"web.page_views populated", `
+			SELECT CASE WHEN cnt>0 THEN 'PASS' ELSE 'FAIL' END AS status,
+			       CONCAT('count=',cnt,'  (strided worker bands — contiguity N/A)') AS detail
+			FROM (SELECT COUNT(*) AS cnt FROM web.page_views) x`},
+	}
+
+	allPass := true
+	for _, c := range checks {
+		status, detail, err := dbwriter.QueryStatusPostgres(ctx, dsn, c.query)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "  [ERR ] %-32s %v\n", c.name, err)
+			allPass = false
+			continue
+		}
+		mark := "PASS"
+		if !strings.EqualFold(status, "PASS") {
+			mark = "FAIL"
+			allPass = false
+		}
+		fmt.Fprintf(os.Stderr, "  [%s] %-32s %s\n", mark, c.name, detail)
+	}
+	if !allPass {
+		return fmt.Errorf("one or more validation checks failed")
+	}
+	fmt.Fprintf(os.Stderr, "  All checks passed.\n")
+	return nil
+}
+
+// webContiguityCheckPG is webContiguityCheck in Postgres dialect (COUNT, not
+// COUNT_BIG).
+func webContiguityCheckPG(table, idCol string) string {
+	return fmt.Sprintf(`
+		SELECT CASE WHEN cnt=mx AND mn=1 THEN 'PASS' ELSE 'FAIL' END AS status,
+		       CONCAT('count=',cnt,'  min=',mn,'  max=',mx) AS detail
+		FROM (SELECT COUNT(*) AS cnt, MIN(%s) AS mn, MAX(%s) AS mx FROM %s) x`,
+		idCol, idCol, table)
+}
+
 // normalizeTier maps the user-facing tier names to the canonical tokens the
 // generator switches on. The public vocabulary is tiny / small / medium /
 // large (measured full-build sizes ~8 GB / 40 GB / 300 GB / 2.4 TB); the
@@ -672,13 +798,14 @@ func loadWebPostgres(tier string, seed uint64, asOf time.Time, postals *geograph
 // loadFullPostgres runs the whole Postgres pipeline in one command: schema →
 // OLTP + finance (LoadAll, serial — the parallel tx path is MSSQL-only) →
 // nonclustered indexes → web layer (clickstream parallel over the shared pgx
-// pool). It mirrors the SQL Server --emit full minus the DW/ETL/validation
-// phases, which are not ported to Postgres yet. Each phase carries its own
-// resume behaviour (OLTP/web skip already-loaded tables), so a re-run after a
-// mid-pipeline failure into the same DB is cheap.
+// pool) → DW schema + procedures → DW ETL → validation gate. It mirrors the SQL
+// Server --emit full; the DW is rowstore + BRIN (no columnstore) and the ETL
+// runs via an autocommit CALL so its fact/wide procedures COMMIT per month.
+// Each phase carries its own resume behaviour (OLTP/web skip already-loaded
+// tables; the ETL is idempotent), so a re-run into the same DB is cheap.
 func loadFullPostgres(tier string, seed uint64, asOf time.Time, postals *geography.Index,
-	catalogPath, hardwarePath, dsn, schemaFile, indexesFile, bankDir string,
-	initSchema bool, clickScale float64, vusers int) {
+	catalogPath, hardwarePath, dsn, schemaFile, indexesFile, bankDir, sqlRoot string,
+	initSchema, validate bool, clickScale float64, vusers int) {
 
 	ctx := context.Background()
 	overall := time.Now()
@@ -715,7 +842,7 @@ func loadFullPostgres(tier string, seed uint64, asOf time.Time, postals *geograp
 
 	// [1/3] OLTP base + finance roll-ups (monthly_summary, customer status).
 	oStart := time.Now()
-	fmt.Fprintf(os.Stderr, "\n[1/3] OLTP + finance (tier=%s seed=%d)...\n", tier, seed)
+	fmt.Fprintf(os.Stderr, "\n[1/6] OLTP + finance (tier=%s seed=%d)...\n", tier, seed)
 	stats, err := dbwriter.LoadAll(ctx, w, "", 1, tier, seed, asOf, postals, cat, hw, progress)
 	if err != nil {
 		fatalf("Postgres LoadAll failed: %v", err)
@@ -728,18 +855,18 @@ func loadFullPostgres(tier string, seed uint64, asOf time.Time, postals *geograp
 	// [2/3] Nonclustered indexes (the DB is fully indexed before the web load).
 	if initSchema {
 		iStart := time.Now()
-		fmt.Fprintf(os.Stderr, "\n[2/3] Building Postgres indexes from %s ...\n", indexesFile)
+		fmt.Fprintf(os.Stderr, "\n[2/6] Building Postgres indexes from %s ...\n", indexesFile)
 		if err := dbwriter.InitSchemaPostgres(ctx, dsn, indexesFile); err != nil {
 			fatalf("postgres index build failed: %v", err)
 		}
 		fmt.Fprintf(os.Stderr, "Indexes built in %s.\n", time.Since(iStart).Round(time.Millisecond))
 	} else {
-		fmt.Fprintf(os.Stderr, "\n[2/3] Skipping indexes (--init-schema not set).\n")
+		fmt.Fprintf(os.Stderr, "\n[2/6] Skipping indexes (--init-schema not set).\n")
 	}
 
 	// [3/3] Web layer — accounts/reviews/comments/votes + parallel clickstream.
 	wStart := time.Now()
-	fmt.Fprintf(os.Stderr, "\n[3/3] Web layer (clickstream-scale=%g vusers=%d)...\n", clickScale, vusers)
+	fmt.Fprintf(os.Stderr, "\n[3/6] Web layer (clickstream-scale=%g vusers=%d)...\n", clickScale, vusers)
 	ws, err := dbwriter.LoadWeb(ctx, w, dsn, tier, seed, asOf, postals, cat, hw, bankDir, clickScale, vusers, progress)
 	if err != nil {
 		fatalf("Postgres LoadWeb failed: %v", err)
@@ -748,6 +875,56 @@ func loadFullPostgres(tier string, seed uint64, asOf time.Time, postals *geograp
 		"Web done: %d accounts, %d reviews, %d comments, %d votes, %d page_views in %s\n",
 		ws.Accounts, ws.Reviews, ws.Comments, ws.Votes, ws.PageViews,
 		time.Since(wStart).Round(time.Millisecond))
+
+	// [4/6] DW schema DDL + stored-procedure library (procs_pg batch_* for now).
+	fmt.Fprintf(os.Stderr, "\n[4/6] DW schema + stored procedures (sql-root=%s) ...\n", sqlRoot)
+	p4 := time.Now()
+	for _, rel := range pgDWDDLManifest {
+		path := filepath.Join(sqlRoot, rel)
+		if _, err := os.Stat(path); err != nil {
+			fatalf("PG DW DDL not found: %s (check --sql-root): %v", path, err)
+		}
+		fmt.Fprintf(os.Stderr, "  deploy %s\n", rel)
+		if err := dbwriter.InitSchemaPostgres(ctx, dsn, path); err != nil {
+			fatalf("deploy %s failed: %v", rel, err)
+		}
+	}
+	procs, err := pgProcFiles(sqlRoot)
+	if err != nil {
+		fatalf("glob PG proc files: %v", err)
+	}
+	if len(procs) == 0 {
+		fatalf("no PG proc files found under %s — check --sql-root", filepath.Join(sqlRoot, "sql/procs_pg"))
+	}
+	for _, path := range procs {
+		fmt.Fprintf(os.Stderr, "  deploy %s\n", filepath.Base(path))
+		if err := dbwriter.InitSchemaPostgres(ctx, dsn, path); err != nil {
+			fatalf("deploy %s failed: %v", filepath.Base(path), err)
+		}
+	}
+	fmt.Fprintf(os.Stderr, "DW objects deployed (%d DDL + %d proc files) in %s\n",
+		len(pgDWDDLManifest), len(procs), time.Since(p4).Round(time.Second))
+
+	// [5/6] DW ETL — CALL batch.usp_refresh_everything(true) via autocommit so
+	// the fact/wide procedures COMMIT month by month.
+	fmt.Fprintf(os.Stderr, "\n[5/6] DW ETL — %s ...\n", pgDWETLCall)
+	p5 := time.Now()
+	if err := dbwriter.RunETLPostgres(ctx, dsn, pgDWETLCall); err != nil {
+		fatalf("PG DW ETL failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr, "DW ETL completed in %s\n", time.Since(p5).Round(time.Second))
+
+	// [6/6] reconciliation gate.
+	if validate {
+		fmt.Fprintf(os.Stderr, "\n[6/6] Validation gate ...\n")
+		if err := runFullValidationPostgres(ctx, dsn); err != nil {
+			fmt.Fprintf(os.Stderr, "\n*** FULL POSTGRES BUILD FINISHED WITH VALIDATION FAILURES (tier=%s) after %s ***\n",
+				tier, time.Since(overall).Round(time.Second))
+			os.Exit(3)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "\n[6/6] Validation gate — SKIPPED (--validate=false)\n")
+	}
 
 	fmt.Fprintf(os.Stderr, "\nFull Postgres build done (tier=%s seed=%d). Total wall clock: %s\n",
 		tier, seed, time.Since(overall).Round(time.Millisecond))

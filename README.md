@@ -22,14 +22,19 @@ PostgreSQL**.
 |---|:---:|:---:|
 | **OLTP** (`dbo`, `hr`, `finance`) — shops, catalogue, customers, staff, transactions, payments, trade-ins, finance roll-ups | ✅ | ✅ |
 | **Web / community** (`web`) — accounts, reviews, comments, votes, clickstream | ✅ | ✅ |
-| **Data warehouse** (`dw`) + stored-procedure library (`rpt`, `batch`, `loadgen`) | ✅ | *in progress* |
+| **Data warehouse** (`dw`) — dimensional model + ETL (`batch`) | ✅ | ✅ |
+| **Reporting + workload procedures** (`rpt`, `loadgen`) | ✅ | *in progress* |
 
 The OLTP + web layers are generated from the same deterministic engine on both
 backends, so a SQL Server database and a PostgreSQL database of the same tier
 hold the **same rows** (aligned by primary key when built the same way — see
-[Reproducibility](#build-speed---vusers-your-mileage-will-vary)). The
-data-warehouse and stored-procedure library are currently **SQL Server only**;
-the PostgreSQL warehouse port is in progress.
+[Reproducibility](#build-speed---vusers-your-mileage-will-vary)). The data
+warehouse (the dimensional model plus the `batch` ETL that populates it) now
+builds on both backends too — on PostgreSQL it is a rowstore + BRIN design
+(no columnstore, which is deliberately a "same query, two engines, different
+physical design" teaching point). The **reporting** and **workload-generation**
+procedure libraries (`rpt`, `loadgen`) are still SQL-Server-only; their
+PostgreSQL port is in progress.
 
 ## Tiers
 
@@ -116,13 +121,17 @@ Build it — one command applies the schema and loads OLTP + finance + indexes +
   --init-schema --tier tiny
 ```
 
-Notes for PostgreSQL:
+The full pipeline runs OLTP → indexes → web → **data warehouse → ETL →
+validation** (the same six phases as SQL Server), ending in the reconciliation
+gate. Notes for PostgreSQL:
 
 - The OLTP transaction load runs **serially** (the parallel path is SQL Server
   only), so it's the slow phase on the big tiers; the web clickstream still runs
   in parallel. `--vusers` therefore tunes only the clickstream — the data is
   identical regardless.
-- The warehouse/ETL/validation steps are skipped (SQL Server only, for now).
+- The warehouse is rowstore + BRIN (no columnstore); the `batch` ETL populates
+  it and the build finishes with the same reconciliation checks as SQL Server.
+  (The `rpt`/`loadgen` procedure libraries are not on PostgreSQL yet.)
 - Don't re-run a build into an already-populated database to "resume" — drop and
   recreate, then build clean.
 
@@ -190,10 +199,12 @@ row-for-row **across the two backends** (build both with `--vusers 1`).
 - **Web/community schema** (`web`) — accounts, reviews, votes, clickstream.
   *(SQL Server + PostgreSQL)*
 - **Data warehouse** (`dw`) — conformed dimensions, line-grain fact tables, a
-  wide denormalised table, rollups, and columnstore indexes. *(SQL Server)*
-- **A stored-procedure library** (`rpt`, `batch`, `loadgen`) — reporting,
-  reprocessable ETL, and workload-generation procedures over the warehouse.
-  *(SQL Server)*
+  wide denormalised table, and rollups, populated by the reprocessable `batch`
+  ETL. *(SQL Server + PostgreSQL — columnstore on SQL Server, rowstore + BRIN
+  on PostgreSQL)*
+- **Reporting + workload procedures** (`rpt`, `loadgen`) — reporting/dashboard
+  queries and workload-generation procedures over the warehouse. *(SQL Server;
+  PostgreSQL port in progress)*
 
 The data is internally consistent (foreign keys enforced, financials reconcile)
 and reproducible from the seed, so it is well suited to SQL learning,

@@ -166,6 +166,55 @@ func QueryToStdoutPostgres(ctx context.Context, dsn, query string) error {
 	return rows.Err()
 }
 
+// RunETLPostgres executes one autocommit SQL statement (e.g.
+// "CALL batch.usp_refresh_everything(true)") via the SIMPLE query protocol.
+// Unlike InitSchemaPostgres (extended protocol, one implicit transaction), the
+// simple protocol runs in autocommit, so a CALLed procedure may COMMIT per
+// month — the whole point of the bounded fact-load loop. Routing the ETL
+// through InitSchemaPostgres instead would wrap it in an implicit transaction
+// and the procedure's COMMIT would raise "invalid transaction termination".
+func RunETLPostgres(ctx context.Context, dsn, sql string) error {
+	conn, err := pgx.Connect(ctx, dsn)
+	if err != nil {
+		return fmt.Errorf("connect postgres: %w", err)
+	}
+	defer conn.Close(ctx)
+	if _, err := conn.PgConn().Exec(ctx, sql).ReadAll(); err != nil {
+		return fmt.Errorf("run ETL (%s): %w", sql, err)
+	}
+	return nil
+}
+
+// QueryStatusPostgres runs a validation query returning a single row whose
+// first two columns are (status, detail), mirroring QueryStatus for the pgx
+// backend. Used by the Postgres reconciliation gate.
+func QueryStatusPostgres(ctx context.Context, dsn, query string) (status, detail string, err error) {
+	conn, err := pgx.Connect(ctx, dsn)
+	if err != nil {
+		return "", "", fmt.Errorf("connect postgres: %w", err)
+	}
+	defer conn.Close(ctx)
+	rows, err := conn.Query(ctx, query)
+	if err != nil {
+		return "", "", fmt.Errorf("query: %w", err)
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return "", "", err
+		}
+		return "", "", fmt.Errorf("validation query returned no rows")
+	}
+	vals, err := rows.Values()
+	if err != nil {
+		return "", "", err
+	}
+	if len(vals) < 2 {
+		return "", "", fmt.Errorf("validation query returned %d columns, want >=2", len(vals))
+	}
+	return pgCellToString(vals[0]), pgCellToString(vals[1]), nil
+}
+
 // pgCellToString renders a scanned Postgres cell. pgx decodes NUMERIC columns
 // to pgtype.Numeric (a big.Int mantissa + base-10 exponent), which the shared
 // cellToString would print as its raw struct — so format those as a decimal

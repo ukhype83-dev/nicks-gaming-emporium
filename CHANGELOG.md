@@ -21,9 +21,17 @@ of the same tag are equivalent.
   `schema_v1_postgres.sql` / `schema_v1_postgres_indexes.sql` at the repo root,
   applied by `--init-schema`. The PostgreSQL OLTP load runs serially (the
   parallel transaction path is SQL Server only); `--vusers` tunes only the web
-  clickstream there. The data warehouse (`dw`) and stored-procedure library
-  (`rpt`, `batch`, `loadgen`) remain **SQL Server only** for now — the
-  PostgreSQL warehouse port is in progress.
+  clickstream there.
+- **PostgreSQL data warehouse + ETL.** `--emit full` on PostgreSQL now also
+  builds the `dw` dimensional model (11 dimensions, 3 line-grain fact tables, 7
+  rollups, a wide denormalised table) and the reprocessable `batch` ETL that
+  populates it, finishing with the same nine-check reconciliation gate as SQL
+  Server (exit 0 on pass; counts and USD reconcile to source). The warehouse is
+  a **rowstore + BRIN** design rather than columnstore — a deliberate
+  "same query, two engines, different physical design" difference. New
+  `--pg-run-etl` re-runs the DW ETL against an existing database. The reporting
+  and workload-generation procedure libraries (`rpt`, `loadgen`) remain
+  **SQL Server only** for now — their PostgreSQL port is in progress.
 
 ### Changed
 - **Review-engine immersion pass.** Product reviews and comment threads now
