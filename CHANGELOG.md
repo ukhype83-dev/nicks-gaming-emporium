@@ -12,6 +12,19 @@ of the same tag are equivalent.
 
 ## [Unreleased]
 
+### Added
+- **PostgreSQL backend.** The OLTP (`dbo`, `hr`, `finance`) and web (`web`)
+  layers can now be built on PostgreSQL as well as SQL Server, via
+  `--load-postgres`. The generator is a single deterministic engine, so the two
+  backends hold the **same data** for these layers — byte-identical, aligned by
+  primary key, when both are built with `--vusers 1`. New schema files
+  `schema_v1_postgres.sql` / `schema_v1_postgres_indexes.sql` at the repo root,
+  applied by `--init-schema`. The PostgreSQL OLTP load runs serially (the
+  parallel transaction path is SQL Server only); `--vusers` tunes only the web
+  clickstream there. The data warehouse (`dw`) and stored-procedure library
+  (`rpt`, `batch`, `loadgen`) remain **SQL Server only** for now — the
+  PostgreSQL warehouse port is in progress.
+
 ### Fixed
 - HR payroll id determinism: `payroll_run_id` (and the `payroll_lines` foreign
   key) was assigned while iterating a Go map of countries, so the numbering

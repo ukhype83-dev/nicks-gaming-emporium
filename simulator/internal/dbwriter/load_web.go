@@ -161,9 +161,10 @@ func LoadWeb(
 	// generate shops, then apply the era-aware shop-proximity weighting exactly
 	// as LoadAll does. Without this a standalone web load (fresh process) samples
 	// pure-population customer cities that don't match the era-damped addresses
-	// already in dbo.customer_addresses — and because the city feeds review text,
-	// it would emit a different review/comment/vote count than the full pipeline.
-	// Idempotent, so a no-op when LoadAll already ran. shopList is reused below.
+	// already in dbo.customer_addresses — and because the city feeds review text
+	// (per-word RNG in applyQuirks), it would emit a different review/comment/vote
+	// count than the full pipeline. Idempotent, so a no-op when LoadAll already
+	// ran in this process. shopList is reused by the capture replay below.
 	shopList, err := shops.Generate(tier, seed, asOf, postals)
 	if err != nil {
 		return s, fmt.Errorf("shops.Generate: %w", err)
@@ -331,7 +332,13 @@ func LoadWeb(
 		progress("web.page_views", s.PageViews)
 		return s, nil
 	}
-	if dsn == "" {
+	// Backend-aware writer strategy for the parallel clickstream. A SQL Server
+	// writer holds one connection, so each worker opens its own from the DSN.
+	// The Postgres writer wraps a concurrency-safe pgx pool, so every worker
+	// shares the caller's writer `w` (each COPY takes a pooled connection) — no
+	// per-worker connect, and no DSN required.
+	_, pgShared := w.(*Postgres)
+	if !pgShared && dsn == "" {
 		return s, fmt.Errorf("parallel clickstream needs a DSN for per-worker writers")
 	}
 	fmt.Fprintf(os.Stderr, "  web: clickstream — %d workers, scale %g (day-sharded)\n", workers, clickScale)
@@ -342,15 +349,21 @@ func LoadWeb(
 		pvWG.Add(1)
 		go func(wi int) {
 			defer pvWG.Done()
-			ww, oerr := NewMSSQL(ctx, dsn)
-			if oerr != nil {
-				select {
-				case pvErr <- fmt.Errorf("worker %d open db: %w", wi, oerr):
-				default:
+			var ww Writer
+			if pgShared {
+				ww = w // shared pgx pool; the caller owns Close
+			} else {
+				m, oerr := NewMSSQL(ctx, dsn)
+				if oerr != nil {
+					select {
+					case pvErr <- fmt.Errorf("worker %d open db: %w", wi, oerr):
+					default:
+					}
+					return
 				}
-				return
+				defer m.Close()
+				ww = m
 			}
-			defer ww.Close()
 			pv := NewBatchedLoader(ctx, ww, "web", "page_views", PageViewColumns, 0)
 			base := int64(wi)*clickIDStride + 1
 			var n int64

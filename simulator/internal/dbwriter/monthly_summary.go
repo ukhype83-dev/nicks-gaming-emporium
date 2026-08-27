@@ -80,7 +80,7 @@ func populateMonthlySummary(ctx context.Context, w Writer, s *LoadAllStats, prog
 		return nil
 	}
 
-	stmt := `
+	stmtMSSQL := `
 ;WITH months(month_start) AS (
     SELECT CONVERT(date, '1986-08-01')
     UNION ALL
@@ -284,6 +284,181 @@ LEFT JOIN severance_for_month sev ON sev.month_start = m.month_start
 ORDER BY m.month_start
 OPTION (MAXRECURSION 400);
 `
+
+	// PostgreSQL port of the same aggregation. Identical shape and outputs;
+	// the T-SQL-isms are swapped: generate_series for the month spine (no
+	// recursive CTE), LIMIT for TOP, EXTRACT for YEAR/MONTH, date_trunc +
+	// interval for EOMONTH/DATEFROMPARTS/DATEADD, COALESCE for ISNULL,
+	// to_char for FORMAT, double precision for FLOAT.
+	stmtPostgres := `
+WITH months(month_start) AS (
+    SELECT generate_series(DATE '1986-08-01', DATE '2016-09-01', INTERVAL '1 month')::date
+),
+year_fx AS (
+    SELECT y.yr, c.currency_code,
+           COALESCE(
+             (SELECT f.rate_to_usd FROM dbo.fx_rates f
+              WHERE f.currency_code = c.currency_code AND f.effective_year <= y.yr
+              ORDER BY f.effective_year DESC LIMIT 1),
+             (SELECT f.rate_to_usd FROM dbo.fx_rates f
+              WHERE f.currency_code = c.currency_code
+              ORDER BY f.effective_year ASC LIMIT 1)) AS rate_to_usd
+    FROM (SELECT DISTINCT EXTRACT(YEAR FROM month_start)::int AS yr FROM months) y
+    CROSS JOIN dbo.currencies c
+),
+shops_for_month AS (
+    SELECT m.month_start, COUNT(*) AS shops_active
+    FROM months m
+    LEFT JOIN dbo.shops s
+      ON s.opened_date <= (date_trunc('month', m.month_start) + INTERVAL '1 month' - INTERVAL '1 day')::date
+     AND (s.closed_date IS NULL OR s.closed_date >= m.month_start)
+    GROUP BY m.month_start
+),
+rent_for_month AS (
+    SELECT m.month_start,
+           COALESCE(SUM(
+             3000.0
+             * CASE s.country_code
+                 WHEN 'US' THEN 1.00 WHEN 'GB' THEN 1.15 WHEN 'JP' THEN 1.40
+                 WHEN 'CH' THEN 1.30 WHEN 'NO' THEN 1.25 WHEN 'DK' THEN 1.15
+                 WHEN 'SE' THEN 1.10 WHEN 'DE' THEN 1.05 WHEN 'FR' THEN 1.05
+                 WHEN 'NL' THEN 1.05 WHEN 'AU' THEN 1.05 WHEN 'IT' THEN 0.95
+                 WHEN 'CA' THEN 0.95 WHEN 'KR' THEN 0.95 WHEN 'ES' THEN 0.90
+                 WHEN 'BR' THEN 0.65 WHEN 'PL' THEN 0.55 WHEN 'CZ' THEN 0.55
+                 ELSE 0.90
+               END
+             * (0.45 + 0.020 * (EXTRACT(YEAR FROM m.month_start)::int - 1986))
+           ), 0) AS rent_usd
+    FROM months m
+    LEFT JOIN dbo.shops s
+      ON s.opened_date <= (date_trunc('month', m.month_start) + INTERVAL '1 month' - INTERVAL '1 day')::date
+     AND (s.closed_date IS NULL OR s.closed_date >= m.month_start)
+    GROUP BY m.month_start
+),
+staff_for_month AS (
+    SELECT m.month_start, COUNT(*) AS staff_active
+    FROM months m
+    LEFT JOIN hr.employment_spells es
+      ON es.started_at <= (date_trunc('month', m.month_start) + INTERVAL '1 month' - INTERVAL '1 day')::date
+     AND (es.ended_at IS NULL OR es.ended_at >= m.month_start)
+    GROUP BY m.month_start
+),
+revenue_local AS (
+    SELECT date_trunc('month', t.occurred_at)::date AS month_start,
+           s.currency_code,
+           SUM(t.total) AS total_local
+    FROM dbo.transactions t
+    JOIN dbo.shops s ON s.shop_id = t.shop_id
+    GROUP BY date_trunc('month', t.occurred_at)::date, s.currency_code
+),
+revenue_for_month AS (
+    SELECT rl.month_start,
+           SUM(rl.total_local / COALESCE(fx.rate_to_usd, 1.0)) AS revenue_usd
+    FROM revenue_local rl
+    LEFT JOIN year_fx fx ON fx.yr = EXTRACT(YEAR FROM rl.month_start)::int
+                        AND fx.currency_code = rl.currency_code
+    GROUP BY rl.month_start
+),
+wages_for_month AS (
+    SELECT m.month_start,
+           COALESCE(SUM(c.annual_wage / 12.0 / COALESCE(fx.rate_to_usd, 1.0)), 0) AS wages_usd
+    FROM months m
+    LEFT JOIN hr.compensation_history c
+      ON c.effective_from <= (date_trunc('month', m.month_start) + INTERVAL '1 month' - INTERVAL '1 day')::date
+     AND (c.effective_to IS NULL OR c.effective_to >= m.month_start)
+     AND c.change_reason NOT LIKE 'severance_%'
+     AND c.change_reason <> 'bonus'
+    LEFT JOIN year_fx fx ON fx.yr = EXTRACT(YEAR FROM m.month_start)::int
+                        AND fx.currency_code = c.currency_code
+    GROUP BY m.month_start
+),
+severance_for_month AS (
+    SELECT date_trunc('month', c.effective_from)::date AS month_start,
+           SUM(c.annual_wage / COALESCE(fx.rate_to_usd, 1.0)) AS severance_usd
+    FROM hr.compensation_history c
+    LEFT JOIN year_fx fx ON fx.yr = EXTRACT(YEAR FROM c.effective_from)::int
+                        AND fx.currency_code = c.currency_code
+    WHERE c.change_reason LIKE 'severance_%'
+    GROUP BY date_trunc('month', c.effective_from)::date
+),
+bonus_for_month AS (
+    SELECT date_trunc('month', c.effective_from)::date AS month_start,
+           SUM(c.annual_wage / COALESCE(fx.rate_to_usd, 1.0)) AS bonus_usd
+    FROM hr.compensation_history c
+    LEFT JOIN year_fx fx ON fx.yr = EXTRACT(YEAR FROM c.effective_from)::int
+                        AND fx.currency_code = c.currency_code
+    WHERE c.change_reason = 'bonus'
+    GROUP BY date_trunc('month', c.effective_from)::date
+),
+cogs_ratio AS (
+    SELECT hf.month_start,
+           CASE
+             WHEN EXTRACT(YEAR FROM hf.month_start)::int = 2016 AND EXTRACT(MONTH FROM hf.month_start)::int BETWEEN 4 AND 9 THEN 0.92
+             ELSE (1.0 - hf.console_frac - hf.acc_frac) * (
+                    CASE
+                      WHEN EXTRACT(YEAR FROM hf.month_start)::int <= 1998 THEN 0.72
+                      WHEN EXTRACT(YEAR FROM hf.month_start)::int <= 2007 THEN 0.72 - 0.005 * (EXTRACT(YEAR FROM hf.month_start)::int - 1998)
+                      ELSE 0.675 - 0.007 * (EXTRACT(YEAR FROM hf.month_start)::int - 2007)
+                    END)
+                  + hf.console_frac * 0.93
+                  + hf.acc_frac * 0.65
+           END AS ratio
+    FROM (
+        SELECT date_trunc('month', t.occurred_at)::date AS month_start,
+               CAST(SUM(CASE WHEN h.hardware_id IS NOT NULL AND h.kind <> 'accessory' THEN tl.line_total ELSE 0 END) AS double precision)
+                 / NULLIF(SUM(tl.line_total), 0) AS console_frac,
+               CAST(SUM(CASE WHEN h.kind = 'accessory' THEN tl.line_total ELSE 0 END) AS double precision)
+                 / NULLIF(SUM(tl.line_total), 0) AS acc_frac
+        FROM dbo.transaction_lines tl
+        JOIN dbo.transactions t ON t.transaction_id = tl.transaction_id
+        LEFT JOIN dbo.hardware h ON h.hardware_id = tl.hardware_id
+        GROUP BY date_trunc('month', t.occurred_at)::date
+    ) hf
+)
+INSERT INTO finance.monthly_summary (
+    year_month, revenue_usd, cogs_usd, wages_usd, severance_usd,
+    rent_usd, other_opex_usd, net_income_usd,
+    shops_active, staff_active, notes)
+SELECT
+    to_char(m.month_start, 'YYYY-MM') AS year_month,
+    COALESCE(rev.revenue_usd, 0)                                                 AS revenue_usd,
+    COALESCE(rev.revenue_usd, 0) * COALESCE(cr.ratio, 0.70)                       AS cogs_usd,
+    COALESCE(w.wages_usd, 0) + COALESCE(bon.bonus_usd, 0)                         AS wages_usd,
+    COALESCE(sev.severance_usd, 0)                                               AS severance_usd,
+    COALESCE(rfm.rent_usd, 0)                                                    AS rent_usd,
+    COALESCE(rev.revenue_usd, 0) * (CASE
+        WHEN EXTRACT(YEAR FROM m.month_start)::int <= 2000 THEN 0.05
+        WHEN EXTRACT(YEAR FROM m.month_start)::int <= 2010 THEN 0.06
+        ELSE 0.08 END)                                                          AS other_opex_usd,
+    COALESCE(rev.revenue_usd, 0)
+        - COALESCE(rev.revenue_usd, 0) * COALESCE(cr.ratio, 0.70)
+        - COALESCE(w.wages_usd, 0)
+        - COALESCE(bon.bonus_usd, 0)
+        - COALESCE(sev.severance_usd, 0)
+        - COALESCE(rfm.rent_usd, 0)
+        - COALESCE(rev.revenue_usd, 0) * (CASE
+            WHEN EXTRACT(YEAR FROM m.month_start)::int <= 2000 THEN 0.05
+            WHEN EXTRACT(YEAR FROM m.month_start)::int <= 2010 THEN 0.06
+            ELSE 0.08 END)                                                      AS net_income_usd,
+    COALESCE(sfm.shops_active, 0)                                               AS shops_active,
+    COALESCE(stm.staff_active, 0)                                               AS staff_active,
+    NULL                                                                        AS notes
+FROM months m
+LEFT JOIN shops_for_month     sfm ON sfm.month_start = m.month_start
+LEFT JOIN rent_for_month      rfm ON rfm.month_start = m.month_start
+LEFT JOIN staff_for_month     stm ON stm.month_start = m.month_start
+LEFT JOIN revenue_for_month   rev ON rev.month_start = m.month_start
+LEFT JOIN cogs_ratio          cr  ON cr.month_start  = m.month_start
+LEFT JOIN wages_for_month     w   ON w.month_start   = m.month_start
+LEFT JOIN bonus_for_month     bon ON bon.month_start = m.month_start
+LEFT JOIN severance_for_month sev ON sev.month_start = m.month_start
+ORDER BY m.month_start;
+`
+
+	stmt := stmtMSSQL
+	if _, ok := w.(*Postgres); ok {
+		stmt = stmtPostgres
+	}
 	if err := w.ExecSQL(ctx, stmt); err != nil {
 		return fmt.Errorf("monthly_summary aggregation: %w", err)
 	}

@@ -30,7 +30,7 @@ func populateCustomerStatus(ctx context.Context, w Writer, s *LoadAllStats, prog
 		return nil
 	}
 
-	stmt := `
+	stmtMSSQL := `
 SET NOCOUNT ON;
 IF OBJECT_ID('tempdb..#recent_buyers') IS NOT NULL DROP TABLE #recent_buyers;
 SELECT DISTINCT customer_id
@@ -54,6 +54,27 @@ BEGIN
 END
 DROP TABLE #recent_buyers;
 `
+
+	// PostgreSQL: same result, simpler shape. No batched WHILE loop (that
+	// was SQL Server SIMPLE-recovery log management) — one UPDATE over a
+	// materialised recent-buyers anti-join. TEMP table lives for the one
+	// implicit transaction pgx runs the multi-statement block in.
+	stmtPostgres := `
+CREATE TEMP TABLE recent_buyers AS
+    SELECT DISTINCT customer_id FROM dbo.transactions
+    WHERE customer_id IS NOT NULL AND occurred_at >= DATE '2016-03-30';
+CREATE UNIQUE INDEX ON recent_buyers(customer_id);
+UPDATE dbo.customers c
+    SET status = 'dormant'
+    WHERE c.status = 'active'
+      AND NOT EXISTS (SELECT 1 FROM recent_buyers r WHERE r.customer_id = c.customer_id);
+DROP TABLE recent_buyers;
+`
+
+	stmt := stmtMSSQL
+	if _, ok := w.(*Postgres); ok {
+		stmt = stmtPostgres
+	}
 	if err := w.ExecSQL(ctx, stmt); err != nil {
 		return fmt.Errorf("customer status reclassification: %w", err)
 	}

@@ -207,11 +207,15 @@ func ReleasesToRows(cat *catalog.Index, platformID map[string]int) [][]any {
 		}
 		return mustParseDate(s)
 	}
+	// Returns a Go bool (true when the region date is present) so the value
+	// maps cleanly onto both a SQL Server BIT and a Postgres BOOLEAN column.
+	// The MSSQL inline path (writeSQLLiteral) renders bool as 1/0, so its
+	// output is byte-identical to the previous int form.
 	boolBit := func(s string) any {
 		if s == "" {
 			return nil
 		}
-		return 1
+		return true
 	}
 	for _, r := range releases {
 		pid, ok := platformID[r.Platform]

@@ -1,5 +1,8 @@
-// build_emporium is the simulator CLI entry point: it generates the
-// deterministic dataset and loads it into a SQL Server target.
+// build_emporium is the simulator CLI entry point.
+//
+// Milestone 1 (current): parse CLI, generate deterministic shop records
+// + shop addresses per §9.15.4 and §9.12.7. Emit JSON Lines to stdout.
+// Milestone 2: DB writer (SQL Server + Postgres).
 package main
 
 import (
@@ -32,8 +35,8 @@ func main() {
 	// Tier accepts the user-facing names tiny/small/medium/large or the
 	// canonical tokens 3g/30g/300g/3t (see normalizeTier).
 	emit := flag.String("emit", "full", "What to build (default 'full' = everything): full | oltp | shops | customers | hr | transactions | web. "+
-		"'full' (alias: 'all') runs the whole pipeline in one command — OLTP → indexes → web → DW schema+procs → ETL → validation. "+
-		"'oltp' builds only the OLTP base (no web/DW). The remaining modes emit a single component.")
+		"'full' (alias: 'all') runs the whole pipeline in one command — SQL Server: OLTP → indexes → web → DW schema+procs → ETL → validation; Postgres: OLTP+finance → indexes → web. "+
+		"'oltp' builds only the OLTP base (no web/DW). The remaining modes emit a single component (targeted/advanced use).")
 	countOnly := flag.Bool("count-only", false, "Don't emit rows to stdout — only print final count on stderr")
 	postalPath := flag.String("postal-codes", "../seed_data/postal_codes.tsv",
 		"Path to postal_codes.tsv (from build_seed_postal_codes.py)")
@@ -96,6 +99,14 @@ func main() {
 		"After --emit full, run the reconciliation gate (fact vs OLTP counts/sums, "+
 			"USD vs monthly_summary, web contiguity) and print PASS/FAIL. A failed "+
 			"gate exits non-zero (3) so a smoke run is self-certifying.")
+	loadPostgres := flag.String("load-postgres", "",
+		"Second backend (P1): load into PostgreSQL via this DSN instead of SQL Server. "+
+			"Format: postgres://user:pass@host:port/dbname . Works with --emit all "+
+			"(OLTP, vusers=1), --deploy-sql, and --query.")
+	pgSchemaFile := flag.String("pg-schema-file", "../schema_v1_postgres.sql",
+		"Postgres schema file applied by --init-schema when --load-postgres is set.")
+	pgIndexesFile := flag.String("pg-indexes-file", "../schema_v1_postgres_indexes.sql",
+		"Postgres indexes file applied after --emit all when --init-schema + --load-postgres.")
 	flag.Parse()
 	*tier = normalizeTier(*tier)
 
@@ -105,20 +116,27 @@ func main() {
 		os.Exit(2)
 	}
 
-	// --deploy-sql: apply a GO-separated .sql file (schema/procs) and exit.
-	// Standalone from the emit pipeline — no geography load, no generation.
+	// --deploy-sql: apply a .sql file and exit. Standalone from the emit
+	// pipeline — no geography load, no generation. Routes to Postgres when
+	// --load-postgres is set (no GO-split: pgx runs the whole file).
 	if *deploySQL != "" {
-		if *loadMSSQL == "" {
-			fmt.Fprintf(os.Stderr, "--deploy-sql requires --load-mssql\n")
-			os.Exit(2)
-		}
-		// No timeout — a batch refresh file (e.g. building fact_sales at 3T) can
-		// legitimately run for hours. DDL/proc deploys finish in seconds anyway.
 		ctx := context.Background()
 		fmt.Fprintf(os.Stderr, "Deploying %s ...\n", *deploySQL)
-		if err := dbwriter.InitSchema(ctx, *loadMSSQL, *deploySQL); err != nil {
-			fmt.Fprintf(os.Stderr, "deploy failed: %v\n", err)
-			os.Exit(1)
+		if *loadPostgres != "" {
+			if err := dbwriter.InitSchemaPostgres(ctx, *loadPostgres, *deploySQL); err != nil {
+				fmt.Fprintf(os.Stderr, "deploy (postgres) failed: %v\n", err)
+				os.Exit(1)
+			}
+		} else if *loadMSSQL != "" {
+			// No timeout — a batch refresh file (e.g. building fact_sales at 3T) can
+			// legitimately run for hours. DDL/proc deploys finish in seconds anyway.
+			if err := dbwriter.InitSchema(ctx, *loadMSSQL, *deploySQL); err != nil {
+				fmt.Fprintf(os.Stderr, "deploy failed: %v\n", err)
+				os.Exit(1)
+			}
+		} else {
+			fmt.Fprintf(os.Stderr, "--deploy-sql requires --load-mssql or --load-postgres\n")
+			os.Exit(2)
 		}
 		fmt.Fprintf(os.Stderr, "Deployed %s OK.\n", *deploySQL)
 		return
@@ -126,11 +144,18 @@ func main() {
 
 	// --query: run one query and print rows (TSV). MCP-independent validation.
 	if *querySQL != "" {
+		ctx := context.Background()
+		if *loadPostgres != "" {
+			if err := dbwriter.QueryToStdoutPostgres(ctx, *loadPostgres, *querySQL); err != nil {
+				fmt.Fprintf(os.Stderr, "query (postgres) failed: %v\n", err)
+				os.Exit(1)
+			}
+			return
+		}
 		if *loadMSSQL == "" {
-			fmt.Fprintf(os.Stderr, "--query requires --load-mssql\n")
+			fmt.Fprintf(os.Stderr, "--query requires --load-mssql or --load-postgres\n")
 			os.Exit(2)
 		}
-		ctx := context.Background()
 		if err := dbwriter.QueryToStdout(ctx, *loadMSSQL, *querySQL); err != nil {
 			fmt.Fprintf(os.Stderr, "query failed: %v\n", err)
 			os.Exit(1)
@@ -139,13 +164,15 @@ func main() {
 	}
 
 	// Handle --init-schema and --recovery-simple first — independent
-	// of the emit target.
-	if *initSchema && !*recoverySimple {
+	// of the emit target. SQL-Server-only: the Postgres path applies its
+	// own schema inside loadAllPostgres, so skip this block entirely when
+	// --load-postgres is set (recovery model has no Postgres equivalent).
+	if *loadPostgres == "" && *initSchema && !*recoverySimple {
 		fmt.Fprintf(os.Stderr, "WARNING: --init-schema without --recovery-simple — full recovery model "+
 			"means bulk loads will be 10× slower. Add --recovery-simple unless you need "+
 			"point-in-time restore on this synthetic database.\n")
 	}
-	if *initSchema || *recoverySimple {
+	if *loadPostgres == "" && (*initSchema || *recoverySimple) {
 		if *loadMSSQL == "" {
 			fmt.Fprintf(os.Stderr, "--init-schema / --recovery-simple require --load-mssql\n")
 			os.Exit(2)
@@ -204,10 +231,26 @@ func main() {
 	}
 
 	switch *emit {
-	// "full" (the default) and its back-compat alias "all" both build EVERYTHING.
+	// "full" (the default) and its back-compat alias "all" both build EVERYTHING
+	// in one command. For OLTP-only, use "oltp".
 	case "full", "all":
+		if *loadPostgres != "" {
+			// Postgres full build: schema → OLTP + finance → indexes → web.
+			// (No DW/ETL/validation phases — not ported to Postgres yet.)
+			if *vusers < 1 {
+				fmt.Fprintf(os.Stderr, "--vusers must be >= 1\n")
+				os.Exit(2)
+			}
+			if !*initSchema {
+				fmt.Fprintf(os.Stderr, "WARNING: --emit full --load-postgres without --init-schema — assuming "+
+					"the schema + indexes are already applied. On an empty DB, add --init-schema.\n")
+			}
+			loadFullPostgres(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *loadPostgres,
+				*pgSchemaFile, *pgIndexesFile, *webBanks, *initSchema, *clickScale, *vusers)
+			return
+		}
 		if *loadMSSQL == "" {
-			fmt.Fprintf(os.Stderr, "--emit full requires --load-mssql\n")
+			fmt.Fprintf(os.Stderr, "--emit full requires --load-mssql or --load-postgres\n")
 			os.Exit(2)
 		}
 		if *vusers < 1 {
@@ -223,9 +266,18 @@ func main() {
 			*indexesFile, *webBanks, *sqlRoot, *initSchema, *validate, *vusers, *clickScale)
 		return
 	case "oltp":
-		// OLTP base only (no web/DW). This was the old "all"; "all" now aliases "full".
+		// OLTP base only (no web/DW) — advanced/testing. This was the old
+		// "all"; "all" now aliases "full" (everything).
+		if *loadPostgres != "" {
+			// P1 Postgres path — OLTP base, single writer (vusers=1). The
+			// parallel transactions path opens MSSQL writers, so it stays
+			// SQL-Server-only until a pgx parallel path lands.
+			loadAllPostgres(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath,
+				*loadPostgres, *pgSchemaFile, *pgIndexesFile, *initSchema)
+			return
+		}
 		if *loadMSSQL == "" {
-			fmt.Fprintf(os.Stderr, "--emit oltp requires --load-mssql\n")
+			fmt.Fprintf(os.Stderr, "--emit oltp requires --load-mssql or --load-postgres\n")
 			os.Exit(2)
 		}
 		if *vusers < 1 {
@@ -247,8 +299,12 @@ func main() {
 	case "transactions":
 		emitTransactions(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *countOnly)
 	case "web":
+		if *loadPostgres != "" {
+			loadWebPostgres(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *loadPostgres, *webBanks, *clickScale, *vusers)
+			return
+		}
 		if *loadMSSQL == "" {
-			fmt.Fprintf(os.Stderr, "--emit web requires --load-mssql (it loads directly into the web.* tables)\n")
+			fmt.Fprintf(os.Stderr, "--emit web requires --load-mssql or --load-postgres (it loads directly into the web.* tables)\n")
 			os.Exit(2)
 		}
 		loadWebMSSQL(*tier, *seed, asOf, postals, *catalogPath, *hardwarePath, *loadMSSQL, *webBanks, *clickScale, *vusers)
@@ -572,6 +628,187 @@ func loadWebMSSQL(tier string, seed uint64, asOf time.Time, postals *geography.I
 		"\nWeb load done: %d accounts, %d reviews, %d comments, %d votes, %d page_views (tier=%s) in %s\n",
 		stats.Accounts, stats.Reviews, stats.Comments, stats.Votes, stats.PageViews,
 		tier, time.Since(start).Round(time.Millisecond))
+}
+
+// loadWebPostgres is the Postgres twin of loadWebMSSQL — the additive web-layer
+// load over an existing OLTP Postgres database. The web.* tables ship in
+// schema_v1_postgres.sql (applied during the OLTP --init-schema), so there is
+// no schema step here. LoadWeb runs the clickstream workers over this one pgx
+// pool (shared, concurrency-safe); the dsn is passed only for signature parity
+// and is unused on the Postgres path.
+func loadWebPostgres(tier string, seed uint64, asOf time.Time, postals *geography.Index, catalogPath, hardwarePath, dsn, bankDir string, clickScale float64, vusers int) {
+	ctx := context.Background()
+	if clickScale <= 0 {
+		clickScale = clickScaleForTier(tier)
+	}
+
+	cat, err := catalog.Load(catalogPath)
+	if err != nil {
+		fatalf("catalog load failed: %v", err)
+	}
+	hw, err := hardware.Load(hardwarePath)
+	if err != nil {
+		fatalf("hardware load failed: %v", err)
+	}
+	w, err := dbwriter.NewPostgres(ctx, dsn)
+	if err != nil {
+		fatalf("Postgres connect failed: %v", err)
+	}
+	defer w.Close()
+
+	start := time.Now()
+	progress := func(table string, n int64) { fmt.Fprintf(os.Stderr, "  loaded %10d into %s\n", n, table) }
+	fmt.Fprintf(os.Stderr, "Web layer [Postgres] (tier=%s seed=%d clickstream-scale=%g vusers=%d)...\n", tier, seed, clickScale, vusers)
+	stats, err := dbwriter.LoadWeb(ctx, w, dsn, tier, seed, asOf, postals, cat, hw, bankDir, clickScale, vusers, progress)
+	if err != nil {
+		fatalf("LoadWeb failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr,
+		"\nWeb load done [Postgres]: %d accounts, %d reviews, %d comments, %d votes, %d page_views (tier=%s) in %s\n",
+		stats.Accounts, stats.Reviews, stats.Comments, stats.Votes, stats.PageViews,
+		tier, time.Since(start).Round(time.Millisecond))
+}
+
+// loadFullPostgres runs the whole Postgres pipeline in one command: schema →
+// OLTP + finance (LoadAll, serial — the parallel tx path is MSSQL-only) →
+// nonclustered indexes → web layer (clickstream parallel over the shared pgx
+// pool). It mirrors the SQL Server --emit full minus the DW/ETL/validation
+// phases, which are not ported to Postgres yet. Each phase carries its own
+// resume behaviour (OLTP/web skip already-loaded tables), so a re-run after a
+// mid-pipeline failure into the same DB is cheap.
+func loadFullPostgres(tier string, seed uint64, asOf time.Time, postals *geography.Index,
+	catalogPath, hardwarePath, dsn, schemaFile, indexesFile, bankDir string,
+	initSchema bool, clickScale float64, vusers int) {
+
+	ctx := context.Background()
+	overall := time.Now()
+	if clickScale <= 0 {
+		clickScale = clickScaleForTier(tier)
+	}
+
+	cat, err := catalog.Load(catalogPath)
+	if err != nil {
+		fatalf("catalog load failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr, "Loaded %d releases from %s\n", cat.Count(), catalogPath)
+	hw, err := hardware.Load(hardwarePath)
+	if err != nil {
+		fatalf("hardware load failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr, "Loaded %d hardware models from %s\n", hw.Count(), hardwarePath)
+
+	if initSchema {
+		fmt.Fprintf(os.Stderr, "Applying Postgres schema from %s ...\n", schemaFile)
+		if err := dbwriter.InitSchemaPostgres(ctx, dsn, schemaFile); err != nil {
+			fatalf("postgres schema init failed: %v", err)
+		}
+		fmt.Fprintf(os.Stderr, "Schema applied OK.\n")
+	}
+
+	w, err := dbwriter.NewPostgres(ctx, dsn)
+	if err != nil {
+		fatalf("Postgres connect failed: %v", err)
+	}
+	defer w.Close()
+
+	progress := func(table string, n int64) { fmt.Fprintf(os.Stderr, "  loaded %10d into %s\n", n, table) }
+
+	// [1/3] OLTP base + finance roll-ups (monthly_summary, customer status).
+	oStart := time.Now()
+	fmt.Fprintf(os.Stderr, "\n[1/3] OLTP + finance (tier=%s seed=%d)...\n", tier, seed)
+	stats, err := dbwriter.LoadAll(ctx, w, "", 1, tier, seed, asOf, postals, cat, hw, progress)
+	if err != nil {
+		fatalf("Postgres LoadAll failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr,
+		"OLTP + finance done: %d releases, %d shops, %d persons, %d customers, %d transactions in %s\n",
+		stats.Releases, stats.Shops, stats.Persons, stats.Customers, stats.Transactions,
+		time.Since(oStart).Round(time.Millisecond))
+
+	// [2/3] Nonclustered indexes (the DB is fully indexed before the web load).
+	if initSchema {
+		iStart := time.Now()
+		fmt.Fprintf(os.Stderr, "\n[2/3] Building Postgres indexes from %s ...\n", indexesFile)
+		if err := dbwriter.InitSchemaPostgres(ctx, dsn, indexesFile); err != nil {
+			fatalf("postgres index build failed: %v", err)
+		}
+		fmt.Fprintf(os.Stderr, "Indexes built in %s.\n", time.Since(iStart).Round(time.Millisecond))
+	} else {
+		fmt.Fprintf(os.Stderr, "\n[2/3] Skipping indexes (--init-schema not set).\n")
+	}
+
+	// [3/3] Web layer — accounts/reviews/comments/votes + parallel clickstream.
+	wStart := time.Now()
+	fmt.Fprintf(os.Stderr, "\n[3/3] Web layer (clickstream-scale=%g vusers=%d)...\n", clickScale, vusers)
+	ws, err := dbwriter.LoadWeb(ctx, w, dsn, tier, seed, asOf, postals, cat, hw, bankDir, clickScale, vusers, progress)
+	if err != nil {
+		fatalf("Postgres LoadWeb failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr,
+		"Web done: %d accounts, %d reviews, %d comments, %d votes, %d page_views in %s\n",
+		ws.Accounts, ws.Reviews, ws.Comments, ws.Votes, ws.PageViews,
+		time.Since(wStart).Round(time.Millisecond))
+
+	fmt.Fprintf(os.Stderr, "\nFull Postgres build done (tier=%s seed=%d). Total wall clock: %s\n",
+		tier, seed, time.Since(overall).Round(time.Millisecond))
+}
+
+// loadAllPostgres is the P1 Postgres OLTP loader — loadAllMSSQL mirrored onto
+// a pgx Writer. Single-writer (vusers=1): the parallel transactions path opens
+// SQL Server writers, so Postgres runs serially until a pgx parallel path is
+// added. Optionally applies the schema before the load and the indexes after
+// (HammerDB-style post-load index build).
+func loadAllPostgres(tier string, seed uint64, asOf time.Time, postals *geography.Index,
+	catalogPath, hardwarePath, dsn, schemaFile, indexesFile string, initSchema bool) {
+
+	ctx := context.Background()
+	overall := time.Now()
+
+	cat, err := catalog.Load(catalogPath)
+	if err != nil {
+		fatalf("catalog load failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr, "Loaded %d releases from %s\n", cat.Count(), catalogPath)
+	hw, err := hardware.Load(hardwarePath)
+	if err != nil {
+		fatalf("hardware load failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr, "Loaded %d hardware models from %s\n", hw.Count(), hardwarePath)
+
+	if initSchema {
+		fmt.Fprintf(os.Stderr, "Applying Postgres schema from %s ...\n", schemaFile)
+		if err := dbwriter.InitSchemaPostgres(ctx, dsn, schemaFile); err != nil {
+			fatalf("postgres schema init failed: %v", err)
+		}
+		fmt.Fprintf(os.Stderr, "Schema applied OK.\n")
+	}
+
+	w, err := dbwriter.NewPostgres(ctx, dsn)
+	if err != nil {
+		fatalf("Postgres connect failed: %v", err)
+	}
+	defer w.Close()
+
+	start := time.Now()
+	progress := func(table string, n int64) { fmt.Fprintf(os.Stderr, "  loaded %10d into %s\n", n, table) }
+	stats, err := dbwriter.LoadAll(ctx, w, "", 1, tier, seed, asOf, postals, cat, hw, progress)
+	if err != nil {
+		fatalf("Postgres LoadAll failed: %v", err)
+	}
+	fmt.Fprintf(os.Stderr,
+		"\nOLTP load done (Postgres): %d releases, %d shops, %d persons, %d customers, %d transactions (tier=%s seed=%d) in %s\n",
+		stats.Releases, stats.Shops, stats.Persons, stats.Customers, stats.Transactions,
+		tier, seed, time.Since(start).Round(time.Millisecond))
+
+	if initSchema {
+		fmt.Fprintf(os.Stderr, "\nBuilding Postgres indexes from %s ...\n", indexesFile)
+		iStart := time.Now()
+		if err := dbwriter.InitSchemaPostgres(ctx, dsn, indexesFile); err != nil {
+			fatalf("postgres index build failed: %v", err)
+		}
+		fmt.Fprintf(os.Stderr, "Indexes built in %s.\n", time.Since(iStart).Round(time.Millisecond))
+	}
+	fmt.Fprintf(os.Stderr, "\nTotal wall clock: %s\n", time.Since(overall).Round(time.Millisecond))
 }
 
 func loadAllMSSQL(tier string, seed uint64, asOf time.Time, postals *geography.Index, catalogPath, hardwarePath, dsn, indexesFile string, buildIndexes bool, vusers int) {

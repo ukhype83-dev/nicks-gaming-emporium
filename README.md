@@ -1,22 +1,40 @@
 # Nick's Gaming Emporium
 
-A deterministic generator that builds a large, realistic **synthetic SQL Server
-database** — the 30-year sales history (1986–2016) of a fictional video-game
-retailer. It is designed as a richer, more intuitive alternative to abstract
-benchmark schemas: real-looking products, customers, shops, staff, payments,
-trade-ins, an online store, and a full reporting/analytics warehouse.
+A deterministic generator that builds a large, realistic **synthetic database** —
+the 30-year sales history (1986–2016) of a fictional video-game retailer — for
+either **SQL Server** or **PostgreSQL**. It is designed as a richer, more
+intuitive alternative to abstract benchmark schemas: real-looking products,
+customers, shops, staff, payments, trade-ins, an online store, and (on SQL
+Server) a full reporting/analytics warehouse.
 
 Everything is generated from a fixed seed, so the same tier always produces the
-**same database, byte for byte** — on any machine, any number of times.
+**same database, byte for byte** — on any machine, any number of times, and (for
+the layers both engines share) the **same data across SQL Server and
+PostgreSQL**.
 
 > 🕹️ There's a companion **fan site** for the (fictional) Emporium — a 1998-era
 > tribute page telling the company's story:
 > [ukhype83-dev.github.io/nge-fansite](https://ukhype83-dev.github.io/nge-fansite/)
 
+## Two backends
+
+| Layer | SQL Server | PostgreSQL |
+|---|:---:|:---:|
+| **OLTP** (`dbo`, `hr`, `finance`) — shops, catalogue, customers, staff, transactions, payments, trade-ins, finance roll-ups | ✅ | ✅ |
+| **Web / community** (`web`) — accounts, reviews, comments, votes, clickstream | ✅ | ✅ |
+| **Data warehouse** (`dw`) + stored-procedure library (`rpt`, `batch`, `loadgen`) | ✅ | *in progress* |
+
+The OLTP + web layers are generated from the same deterministic engine on both
+backends, so a SQL Server database and a PostgreSQL database of the same tier
+hold the **same rows** (aligned by primary key when built the same way — see
+[Reproducibility](#build-speed---vusers-your-mileage-will-vary)). The
+data-warehouse and stored-procedure library are currently **SQL Server only**;
+the PostgreSQL warehouse port is in progress.
+
 ## Tiers
 
 Pick a size with `--tier`. The name is the approximate footprint of the finished
-database (OLTP + web + data warehouse):
+SQL Server database (OLTP + web + data warehouse):
 
 | Tier     | Size    | Transactions | Typical build time |
 |----------|--------:|-------------:|--------------------|
@@ -26,12 +44,15 @@ database (OLTP + web + data warehouse):
 | `large`  | ~2.4 TB | ~1.4 B       | ~1–2 days          |
 
 `tiny` and `small` are compact extracts intended for development and learning.
-`medium` and `large` are the full-scale datasets.
+`medium` and `large` are the full-scale datasets. On PostgreSQL the OLTP + web
+footprint is somewhat **larger** than the SQL Server figure above (the rowstore
+has no columnstore compression, and there's no warehouse yet).
 
 ## Requirements
 
 - **Go 1.25+** (to build the generator)
-- **SQL Server 2016 or later** (the schema uses columnstore indexes)
+- **SQL Server 2016 or later** (the warehouse uses columnstore indexes), **or
+  PostgreSQL 14 or later**
 - Enough free disk for your chosen tier (see the table above)
 
 ## Quick start
@@ -43,8 +64,12 @@ cd simulator
 go build -o build_emporium ./cmd/build_emporium
 ```
 
-**2. Create an empty target database** on your SQL Server. Adjust the file paths
-to your disks:
+Then pick your backend below. One command builds the whole database. `--emit`
+defaults to `full`, so you can leave it off.
+
+### SQL Server (full stack, incl. warehouse)
+
+Create an empty target database (adjust the file paths to your disks):
 
 ```sql
 CREATE DATABASE nge_tiny ON PRIMARY
@@ -53,8 +78,7 @@ CREATE DATABASE nge_tiny ON PRIMARY
   (NAME = nge_tiny_log, FILENAME = 'D:\Log\nge_tiny_log.ldf', SIZE = 1024MB, FILEGROWTH = 512MB);
 ```
 
-**3. Build the database** — one command builds everything and validates it.
-`--emit` defaults to `full` (build the whole thing), so you can leave it off:
+Build it:
 
 ```bash
 ./build_emporium \
@@ -74,6 +98,34 @@ The full pipeline runs end to end:
 A successful run **exits 0**; a validation failure exits non-zero and reports
 which check failed.
 
+### PostgreSQL (OLTP + finance + web)
+
+`CREATE DATABASE` can't run inside a transaction, so create the database with a
+single-statement file:
+
+```bash
+printf 'CREATE DATABASE nge_tiny;\n' > create.sql
+./build_emporium --load-postgres "postgres://user:password@host:5432/postgres" --deploy-sql create.sql
+```
+
+Build it — one command applies the schema and loads OLTP + finance + indexes + web:
+
+```bash
+./build_emporium \
+  --load-postgres "postgres://user:password@host:5432/nge_tiny" \
+  --init-schema --tier tiny
+```
+
+Notes for PostgreSQL:
+
+- The OLTP transaction load runs **serially** (the parallel path is SQL Server
+  only), so it's the slow phase on the big tiers; the web clickstream still runs
+  in parallel. `--vusers` therefore tunes only the clickstream — the data is
+  identical regardless.
+- The warehouse/ETL/validation steps are skipped (SQL Server only, for now).
+- Don't re-run a build into an already-populated database to "resume" — drop and
+  recreate, then build clean.
+
 ## Downloads (prebuilt databases)
 
 Don't want to build a terabyte yourself? Prebuilt database backups for each tier
@@ -89,7 +141,9 @@ RESTORE DATABASE nge_tiny FROM DISK = 'D:\Downloads\nge_tiny.bak'
        MOVE 'nge_tiny_log' TO 'D:\Log\nge_tiny_log.ldf';
 ```
 
-Building from source (above) is always the zero-cost option. For a given seed
+Prebuilt files are SQL Server backups today; PostgreSQL dumps (`pg_restore`) are
+planned alongside the PostgreSQL warehouse work. Building from source (above) is
+always the zero-cost option and works for both backends now. For a given seed
 and `--vusers` it produces a byte-identical database; the data and all aggregate
 results are identical regardless of `--vusers` (only the build-order surrogate
 ids differ). The downloads are purely a convenience for the larger tiers.
@@ -99,39 +153,53 @@ ids differ). The downloads are purely a convenience for the larger tiers.
 | Flag                  | Purpose |
 |-----------------------|---------|
 | `--tier`              | `tiny` \| `small` \| `medium` \| `large` |
-| `--load-mssql`        | target DSN: `sqlserver://user:pass@host:1433?database=NAME` |
+| `--load-mssql`        | SQL Server target DSN: `sqlserver://user:pass@host:1433?database=NAME` |
+| `--load-postgres`     | PostgreSQL target DSN: `postgres://user:pass@host:5432/NAME` |
 | `--init-schema`       | apply the table schema before loading (use on an empty database) |
-| `--recovery-simple`   | set SIMPLE recovery for faster bulk load |
+| `--recovery-simple`   | (SQL Server) set SIMPLE recovery for faster bulk load |
 | `--vusers`            | parallel data-load workers. See **Build speed** below — more isn't always faster, and it changes id reproducibility. |
 | `--emit`              | defaults to `full` (build everything — omit it for the normal case). `oltp` builds only the OLTP base; or name a single layer, e.g. `web`. (`all` is a back-compat alias for `full`.) |
-| `--validate=false`    | skip the final reconciliation gate |
+| `--deploy-sql`        | run a single SQL file against the target (used to `CREATE DATABASE` on PostgreSQL) |
+| `--validate=false`    | (SQL Server) skip the final reconciliation gate |
+
+The schema files applied by `--init-schema` are at the repo root:
+`schema_v1_sqlserver.sql` / `schema_v1_sqlserver_indexes.sql` and
+`schema_v1_postgres.sql` / `schema_v1_postgres_indexes.sql`.
 
 ### Build speed: `--vusers` (your mileage will vary)
 
 `--vusers` sets how many workers load the data in parallel. On a machine with
-plenty of cores, fast disks and RAM, more workers build faster. But parallel
-loading falls back to a slower per-row insert path — single-worker mode
-(`--vusers 1`) uses SQL Server's fast bulk-copy path — so on a modest or shared
-box `--vusers 1` can actually be the **fastest** option. Try a couple of values
-on the `tiny` tier first; your mileage will vary with cores, disk and RAM.
+plenty of cores, fast disks and RAM, more workers build faster. But on SQL
+Server the parallel path falls back to a slower per-row insert — single-worker
+mode (`--vusers 1`) uses SQL Server's fast bulk-copy path — so on a modest or
+shared box `--vusers 1` can actually be the **fastest** option. Try a couple of
+values on the `tiny` tier first; your mileage will vary with cores, disk and RAM.
+(On PostgreSQL the OLTP load is serial regardless, so `--vusers` only affects the
+web clickstream.)
 
 Reproducibility note: surrogate ids (`transaction_id`, `page_view_id`, …) are
 numbered in load order, so different `--vusers` values produce the **same data
 with different id labels**. Build with a fixed `--vusers` (or `--vusers 1`) if
-you need byte-identical reproducibility, ids included.
+you need byte-identical reproducibility, ids included — including matching
+row-for-row **across the two backends** (build both with `--vusers 1`).
 
 ## What you get
 
 - **OLTP schema** (`dbo`, `hr`, `finance`) — the operational database.
+  *(SQL Server + PostgreSQL)*
 - **Web/community schema** (`web`) — accounts, reviews, votes, clickstream.
+  *(SQL Server + PostgreSQL)*
 - **Data warehouse** (`dw`) — conformed dimensions, line-grain fact tables, a
-  wide denormalised table, rollups, and columnstore indexes.
+  wide denormalised table, rollups, and columnstore indexes. *(SQL Server)*
 - **A stored-procedure library** (`rpt`, `batch`, `loadgen`) — reporting,
   reprocessable ETL, and workload-generation procedures over the warehouse.
+  *(SQL Server)*
 
 The data is internally consistent (foreign keys enforced, financials reconcile)
 and reproducible from the seed, so it is well suited to SQL learning,
-performance tuning, and analytics/BI practice at a range of scales.
+performance tuning, and analytics/BI practice at a range of scales — including
+**cross-engine** work, since the OLTP and web layers hold the same data on both
+SQL Server and PostgreSQL.
 
 ## Notes
 

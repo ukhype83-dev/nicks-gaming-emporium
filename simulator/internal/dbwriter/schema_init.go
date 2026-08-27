@@ -1,5 +1,5 @@
 // Schema-init helpers. The SQL Server DDL file uses `GO` batch
-// separators which only sqlcmd understands — database/sql drivers will
+// separators which only sqlcmd understands — database/sql / pgx will
 // choke on them. SplitGOBatches() + ExecBatches() let the simulator
 // apply the DDL directly via the mssql driver, removing the sqlcmd
 // dependency.

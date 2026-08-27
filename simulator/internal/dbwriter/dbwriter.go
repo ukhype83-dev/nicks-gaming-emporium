@@ -4,10 +4,15 @@
 //   - MSSQL — SQL Server via github.com/microsoft/go-mssqldb and
 //     mssql.CopyIn (uses the TDS bulk-copy protocol underneath)
 //
+// Planned:
+//   - Postgres — via jackc/pgx v5's CopyFrom protocol
+//   - SQLite — for local dev/test without spinning up SQL Server
+//
 // The Writer interface is deliberately minimal: the caller hands over
 // batches of rows for a specific table. Schema creation is out of
-// scope here — user runs schema_v1_sqlserver.sql against the target
-// database before the simulator loads anything.
+// scope here — user runs schema_v1_sqlserver.sql (or its Postgres
+// equivalent) against the target database before the simulator loads
+// anything.
 package dbwriter
 
 import "context"
@@ -30,8 +35,8 @@ type Writer interface {
 	BulkInsert(ctx context.Context, schema, table string, columns []string, rows [][]any) error
 
 	// BulkCopy loads rows via the database-native bulk protocol — for
-	// SQL Server this is the TDS bulk-copy RPC (mssql.CopyIn).
-	// Significantly faster than
+	// SQL Server this is the TDS bulk-copy RPC (mssql.CopyIn), for
+	// Postgres it will be COPY FROM. Significantly faster than
 	// BulkInsert on hot tables (>10K rows). Type contract per
 	// implementation; for MSSQL each row element must be a concrete
 	// scalar or untyped nil — pointer types are rejected.

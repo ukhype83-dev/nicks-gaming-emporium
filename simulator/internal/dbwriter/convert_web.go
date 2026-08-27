@@ -56,11 +56,12 @@ func ReviewsToRows(reviews []web.ReviewRecord) [][]any {
 	return rows
 }
 
-func boolToBit(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
+// boolToBit yields the flag as a Go bool. The MSSQL inline path renders a
+// bool as 1/0 (byte-identical to the previous int form), while Postgres takes
+// it directly into a BOOLEAN column. Kept as a named helper for call-site
+// clarity at the review-row builder.
+func boolToBit(b bool) bool {
+	return b
 }
 
 var ReviewCommentColumns = []string{
