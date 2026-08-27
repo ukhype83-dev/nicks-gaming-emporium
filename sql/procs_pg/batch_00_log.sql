@@ -25,3 +25,12 @@ RETURNS bigint LANGUAGE sql AS $$
     VALUES (p_proc, p_target, p_mode)
     RETURNING run_id;
 $$;
+
+/* drain a refcursor to completion — executes the underlying query and discards
+   the rows. Used by loadgen (and a couple of heavy jobs) to turn a report
+   FUNCTION into real read load: PERFORM batch.drain(rpt.usp_rpt_X(...)). */
+CREATE OR REPLACE FUNCTION batch.drain(cur refcursor) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+    MOVE FORWARD ALL IN cur;   -- execute the query, discard rows
+    CLOSE cur;                 -- release the portal (workload sessions call this a lot)
+END $$;

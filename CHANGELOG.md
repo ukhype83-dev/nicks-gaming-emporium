@@ -38,8 +38,19 @@ of the same tag are equivalent.
   `SETOF refcursor`). The anti-patterns' bad performance is preserved on purpose
   (`VOLATILE` UDFs that Postgres won't inline, predicates kept non-SARGable);
   where one would *error* rather than merely scan on Postgres (the implicit
-  text-vs-int till report), a minimal change keeps it runnable-but-slow. The
-  workload generator (`loadgen`) remains **SQL Server only** for now.
+  text-vs-int till report), a minimal change keeps it runnable-but-slow.
+- **PostgreSQL workload generator + batch jobs/maintenance.** The `loadgen`
+  workload procedures, the in-character overnight batch jobs (supplier feeds,
+  loyalty/tier recomputes, month-end close, statement runs) and the DBA
+  maintenance procedures are now on PostgreSQL too — completing the
+  stored-procedure library on both engines. `WAITFOR DELAY` → `pg_sleep`,
+  `NEWID()` → `random()`, the CPU-burn loop uses `clock_timestamp()` (Postgres
+  `now()` is transaction-fixed), and `loadgen` drains the reporting functions'
+  cursors to generate real read load. The `sys.dm_db_*` DMV monitoring reports
+  (index/columnstore/table health) are rewritten to their `pg_stat_*`
+  equivalents. The only procedures not ported are the three columnstore
+  build/drop/rebuild routines, which have no Postgres analogue (BRIN replaces
+  them).
 
 ### Changed
 - **Review-engine immersion pass.** Product reviews and comment threads now

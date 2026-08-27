@@ -24,7 +24,7 @@ PostgreSQL**.
 | **Web / community** (`web`) — accounts, reviews, comments, votes, clickstream | ✅ | ✅ |
 | **Data warehouse** (`dw`) — dimensional model + ETL (`batch`) | ✅ | ✅ |
 | **Reporting procedures** (`rpt`, incl. the tuning-lab "bad" procs) | ✅ | ✅ |
-| **Workload generator** (`loadgen`) | ✅ | *in progress* |
+| **Workload generator** (`loadgen`) + batch jobs/maintenance | ✅ | ✅ |
 
 The OLTP + web layers are generated from the same deterministic engine on both
 backends, so a SQL Server database and a PostgreSQL database of the same tier
@@ -36,8 +36,12 @@ builds on both backends too — on PostgreSQL it is a rowstore + BRIN design
 physical design" teaching point). The **reporting** procedure library (`rpt` —
 ~190 report procedures, including the deliberately-awful tuning-lab set) is now
 on PostgreSQL too, as `refcursor`-returning functions (call one, then `FETCH`
-from the cursor it returns). Only the **workload generator** (`loadgen`) is
-still SQL-Server-only; its PostgreSQL port is in progress.
+from the cursor it returns). The **workload generator** (`loadgen`) and the
+overnight batch jobs + maintenance procedures are on PostgreSQL as well — so the
+whole stored-procedure library runs on both engines, bar a few SQL-Server
+storage internals with no Postgres equivalent (the columnstore build/rebuild
+procedures; the `sys.dm_db_*` DMV monitoring reports are rewritten to their
+`pg_stat_*` counterparts).
 
 ## Tiers
 
@@ -211,7 +215,8 @@ row-for-row **across the two backends** (build both with `--vusers 1`).
   is preserved on purpose. *(SQL Server + PostgreSQL — on PostgreSQL they are
   `refcursor`-returning functions)*
 - **Workload generator** (`loadgen`) — procedures that drive concurrent read +
-  batch workload over the above. *(SQL Server; PostgreSQL port in progress)*
+  batch workload over the above, plus in-character overnight batch jobs and DBA
+  maintenance procedures (`batch`). *(SQL Server + PostgreSQL)*
 
 The data is internally consistent (foreign keys enforced, financials reconcile)
 and reproducible from the seed, so it is well suited to SQL learning,
