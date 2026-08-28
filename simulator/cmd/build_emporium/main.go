@@ -93,6 +93,11 @@ func main() {
 		"Run the Postgres DW ETL (CALL batch.usp_refresh_everything(true)) against "+
 			"--load-postgres via the autocommit protocol, then exit. Assumes the DW "+
 			"schema + batch procedures are already deployed.")
+	pgCall := flag.String("pg-call", "",
+		"Run one SQL statement against --load-postgres via the autocommit (simple) "+
+			"protocol, then exit — e.g. --pg-call \"CALL loadgen.usp_BatchCycle('facts')\". "+
+			"Unlike --deploy-sql this does NOT wrap the statement in a transaction, so "+
+			"procedures that COMMIT (the batch/loadgen write jobs) work.")
 	sqlRoot := flag.String("sql-root", "..",
 		"Root directory that contains sql/ and the schema files (--emit full only). "+
 			"Default '..' = repo root when run from simulator/. The DW schema, procs "+
@@ -160,6 +165,24 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Fprintf(os.Stderr, "PG DW ETL completed in %s.\n", time.Since(t0).Round(time.Second))
+		return
+	}
+
+	// --pg-call: run one autocommit statement (e.g. a loadgen/batch CALL that
+	// COMMITs) against Postgres and exit.
+	if *pgCall != "" {
+		if *loadPostgres == "" {
+			fmt.Fprintf(os.Stderr, "--pg-call requires --load-postgres\n")
+			os.Exit(2)
+		}
+		ctx := context.Background()
+		fmt.Fprintf(os.Stderr, "Running (autocommit): %s ...\n", *pgCall)
+		t0 := time.Now()
+		if err := dbwriter.RunETLPostgres(ctx, *loadPostgres, *pgCall); err != nil {
+			fmt.Fprintf(os.Stderr, "pg-call failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "Done in %s.\n", time.Since(t0).Round(time.Second))
 		return
 	}
 

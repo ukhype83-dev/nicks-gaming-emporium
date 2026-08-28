@@ -176,6 +176,7 @@ ids differ). The downloads are purely a convenience for the larger tiers.
 | `--vusers`            | parallel data-load workers. See **Build speed** below — more isn't always faster, and it changes id reproducibility. |
 | `--emit`              | defaults to `full` (build everything — omit it for the normal case). `oltp` builds only the OLTP base; or name a single layer, e.g. `web`. (`all` is a back-compat alias for `full`.) |
 | `--deploy-sql`        | run a single SQL file against the target (used to `CREATE DATABASE` on PostgreSQL) |
+| `--pg-call`           | run one autocommit statement against `--load-postgres` and exit — e.g. `--pg-call "CALL loadgen.usp_BatchCycle('facts')"`. Needed for procedures that `COMMIT` (the batch/loadgen write jobs), which `--deploy-sql` can't run. |
 | `--validate=false`    | (SQL Server) skip the final reconciliation gate |
 
 The schema files applied by `--init-schema` are at the repo root:
