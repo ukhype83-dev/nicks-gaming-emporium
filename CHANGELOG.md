@@ -51,6 +51,12 @@ of the same tag are equivalent.
   equivalents. The only procedures not ported are the three columnstore
   build/drop/rebuild routines, which have no Postgres analogue (BRIN replaces
   them).
+- `--pg-call "<sql>"` — run one statement against `--load-postgres` over the
+  autocommit (simple) protocol and exit. Unlike `--deploy-sql` it does not wrap
+  the statement in a transaction, so procedures that `COMMIT` — the batch
+  refresh jobs and the `loadgen` write cycles — can be driven from the CLI (e.g.
+  `--pg-call "CALL loadgen.usp_BatchCycle('facts')"`), which is how you exercise
+  the workload generator on PostgreSQL without a client that manages autocommit.
 
 ### Changed
 - **Review-engine immersion pass.** Product reviews and comment threads now
