@@ -61,10 +61,10 @@ DROP TABLE #recent_buyers;
 	// implicit transaction pgx runs the multi-statement block in.
 	stmtPostgres := `
 CREATE TEMP TABLE recent_buyers AS
-    SELECT DISTINCT customer_id FROM dbo.transactions
+    SELECT DISTINCT customer_id FROM public.transactions
     WHERE customer_id IS NOT NULL AND occurred_at >= DATE '2016-03-30';
 CREATE UNIQUE INDEX ON recent_buyers(customer_id);
-UPDATE dbo.customers c
+UPDATE public.customers c
     SET status = 'dormant'
     WHERE c.status = 'active'
       AND NOT EXISTS (SELECT 1 FROM recent_buyers r WHERE r.customer_id = c.customer_id);

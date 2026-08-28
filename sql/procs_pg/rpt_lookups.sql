@@ -55,9 +55,9 @@ CREATE OR REPLACE FUNCTION rpt.usp_GetTransaction(p_transaction_id bigint)
 RETURNS SETOF refcursor LANGUAGE plpgsql AS $$
 DECLARE c1 refcursor; c2 refcursor;
 BEGIN
-    OPEN c1 FOR SELECT * FROM dbo.transactions WHERE transaction_id = p_transaction_id;
+    OPEN c1 FOR SELECT * FROM public.transactions WHERE transaction_id = p_transaction_id;
     RETURN NEXT c1;
-    OPEN c2 FOR SELECT * FROM dbo.transaction_lines WHERE transaction_id = p_transaction_id ORDER BY line_number;
+    OPEN c2 FOR SELECT * FROM public.transaction_lines WHERE transaction_id = p_transaction_id ORDER BY line_number;
     RETURN NEXT c2;
 END $$;
 
@@ -182,7 +182,7 @@ DECLARE c refcursor;
 BEGIN
     OPEN c FOR
     SELECT customer_id, first_name, last_name, signed_up_at
-    FROM dbo.customers WHERE last_name = p_name ORDER BY signed_up_at   -- SARGable equality
+    FROM public.customers WHERE last_name = p_name ORDER BY signed_up_at   -- SARGable equality
     LIMIT 500;
     RETURN c;
 END $$;

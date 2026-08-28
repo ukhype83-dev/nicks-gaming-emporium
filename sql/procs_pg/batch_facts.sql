@@ -21,8 +21,8 @@ LANGUAGE plpgsql AS $$
 DECLARE v_run bigint; v_rows bigint := 0; v_m date; v_mend date; v_start date := p_start; v_end date := p_end; v_n bigint;
 BEGIN
     v_run := batch.log_start('batch.usp_refresh_fact_sales','dw.fact_sales', CASE WHEN p_full THEN 'full' ELSE 'incremental' END);
-    IF v_start IS NULL THEN SELECT MIN(occurred_at)::date INTO v_start FROM dbo.transactions; END IF;
-    IF v_end   IS NULL THEN SELECT MAX(occurred_at)::date INTO v_end   FROM dbo.transactions; END IF;
+    IF v_start IS NULL THEN SELECT MIN(occurred_at)::date INTO v_start FROM public.transactions; END IF;
+    IF v_end   IS NULL THEN SELECT MAX(occurred_at)::date INTO v_end   FROM public.transactions; END IF;
     IF p_full THEN
         TRUNCATE TABLE dw.fact_sales;
         DROP INDEX IF EXISTS dw.brin_fact_sales_occurred;
@@ -47,8 +47,8 @@ BEGIN
                CAST(tl.line_total / COALESCE(NULLIF(fx.rate_to_usd,0),1.0) AS decimal(14,4)),
                (t.original_transaction_id IS NOT NULL),
                (tl.hardware_id IS NOT NULL)
-        FROM dbo.transactions t
-        JOIN dbo.transaction_lines tl ON tl.transaction_id = t.transaction_id
+        FROM public.transactions t
+        JOIN public.transaction_lines tl ON tl.transaction_id = t.transaction_id
         LEFT JOIN dw.dim_channel   ch ON ch.channel_name   = t.channel
         LEFT JOIN dw.dim_condition co ON co.condition_name = tl.condition
         LEFT JOIN dw.dim_fx        fx ON fx.currency_code  = t.currency_code AND fx.year = extract(year from t.occurred_at)::smallint
@@ -76,8 +76,8 @@ LANGUAGE plpgsql AS $$
 DECLARE v_run bigint; v_rows bigint := 0; v_m date; v_mend date; v_start date := p_start; v_end date := p_end; v_n bigint;
 BEGIN
     v_run := batch.log_start('batch.usp_refresh_fact_tradein','dw.fact_tradein', CASE WHEN p_full THEN 'full' ELSE 'incremental' END);
-    IF v_start IS NULL THEN SELECT MIN(occurred_at)::date INTO v_start FROM dbo.trade_ins; END IF;
-    IF v_end   IS NULL THEN SELECT MAX(occurred_at)::date INTO v_end   FROM dbo.trade_ins; END IF;
+    IF v_start IS NULL THEN SELECT MIN(occurred_at)::date INTO v_start FROM public.trade_ins; END IF;
+    IF v_end   IS NULL THEN SELECT MAX(occurred_at)::date INTO v_end   FROM public.trade_ins; END IF;
     IF p_full THEN
         TRUNCATE TABLE dw.fact_tradein;
         DROP INDEX IF EXISTS dw.brin_fact_tradein_occurred;
@@ -97,8 +97,8 @@ BEGIN
                ti.valuation,
                CAST(ti.valuation / COALESCE(NULLIF(fx.rate_to_usd,0),1.0) AS decimal(14,4)),
                (ti.hardware_id IS NOT NULL)
-        FROM dbo.trade_ins tr
-        JOIN dbo.trade_in_items ti ON ti.trade_in_id = tr.trade_in_id
+        FROM public.trade_ins tr
+        JOIN public.trade_in_items ti ON ti.trade_in_id = tr.trade_in_id
         LEFT JOIN dw.dim_condition co ON co.condition_name = ti.condition
         LEFT JOIN dw.dim_fx fx ON fx.currency_code = tr.currency_code AND fx.year = extract(year from tr.occurred_at)::smallint
         WHERE tr.occurred_at >= v_m AND tr.occurred_at < v_mend;

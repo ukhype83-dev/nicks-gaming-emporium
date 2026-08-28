@@ -1,5 +1,5 @@
 /* =============================================================
-   rpt — inventory / stock reports (PostgreSQL port over dbo.inventory)
+   rpt — inventory / stock reports (PostgreSQL port over public.inventory)
    product_key = release_id OR 9e9 + hardware_id.
    ============================================================= */
 
@@ -11,7 +11,7 @@ BEGIN
     SELECT i.condition,
            COUNT(*) AS sku_rows,
            SUM(i.on_hand) AS on_hand, SUM(i.on_order) AS on_order, SUM(i.reserved) AS reserved
-    FROM dbo.inventory i
+    FROM public.inventory i
     WHERE i.shop_id = p_shop_key
     GROUP BY i.condition ORDER BY on_hand DESC;
     RETURN c;
@@ -24,7 +24,7 @@ BEGIN
     OPEN c FOR
     SELECT COALESCE(p.platform_name, '(unknown)') AS platform_name,
            SUM(i.on_hand) AS on_hand, COUNT(*) AS sku_rows
-    FROM dbo.inventory i
+    FROM public.inventory i
     JOIN dw.dim_product p ON p.product_key = CASE WHEN i.release_id IS NOT NULL THEN i.release_id
                                                   ELSE 9000000000 + i.hardware_id END
     WHERE (p_shop_key IS NULL OR i.shop_id = p_shop_key)
@@ -38,7 +38,7 @@ DECLARE c refcursor;
 BEGIN
     OPEN c FOR
     SELECT i.shop_id, p.title, p.platform_name, i.condition, i.on_hand, i.last_movement_at
-    FROM dbo.inventory i
+    FROM public.inventory i
     JOIN dw.dim_product p ON p.product_key = CASE WHEN i.release_id IS NOT NULL THEN i.release_id
                                                   ELSE 9000000000 + i.hardware_id END
     WHERE i.on_hand > 0
@@ -54,7 +54,7 @@ DECLARE c refcursor;
 BEGIN
     OPEN c FOR
     SELECT p.title, p.platform_name, i.condition, i.on_hand, i.on_order
-    FROM dbo.inventory i
+    FROM public.inventory i
     JOIN dw.dim_product p ON p.product_key = CASE WHEN i.release_id IS NOT NULL THEN i.release_id
                                                   ELSE 9000000000 + i.hardware_id END
     WHERE i.shop_id = p_shop_key AND i.on_hand <= p_threshold AND i.condition = 'new'

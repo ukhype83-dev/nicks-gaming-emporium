@@ -106,12 +106,12 @@ DECLARE c refcursor;
 BEGIN
     OPEN c FOR
     SELECT 'fact_sales' AS fact, (SELECT MAX(occurred_at) FROM dw.fact_sales) AS dw_max,
-           (SELECT MAX(occurred_at) FROM dbo.transactions) AS oltp_max
+           (SELECT MAX(occurred_at) FROM public.transactions) AS oltp_max
     UNION ALL
     SELECT 'fact_web_activity', (SELECT MAX(occurred_at) FROM dw.fact_web_activity),
            (SELECT MAX(occurred_at) FROM web.page_views)
     UNION ALL
     SELECT 'fact_tradein', (SELECT MAX(occurred_at) FROM dw.fact_tradein),
-           (SELECT MAX(occurred_at) FROM dbo.trade_ins);
+           (SELECT MAX(occurred_at) FROM public.trade_ins);
     RETURN c;
 END $$;

@@ -12,11 +12,11 @@
 
 /* ---- the UDF tax: a scalar function called once per row. VOLATILE so
    Postgres never inlines/caches it — one lookup per row, like T-SQL. ---- */
-CREATE OR REPLACE FUNCTION dbo.fn_GetPlatformName(p_platform_id int)
+CREATE OR REPLACE FUNCTION public.fn_GetPlatformName(p_platform_id int)
 RETURNS varchar(100) LANGUAGE plpgsql VOLATILE AS $$
 DECLARE n varchar(100);
 BEGIN
-    SELECT name INTO n FROM dbo.platforms WHERE platform_id = p_platform_id;
+    SELECT name INTO n FROM public.platforms WHERE platform_id = p_platform_id;
     RETURN COALESCE(n, 'Unknown Platform');
 END $$;
 
@@ -28,12 +28,12 @@ DECLARE c refcursor;
 BEGIN
     OPEN c FOR
     SELECT *,
-           dbo.fn_GetPlatformName(p.platform_key) AS PlatformNameAgain,   -- UDF tax
+           public.fn_GetPlatformName(p.platform_key) AS PlatformNameAgain,   -- UDF tax
            f.line_total * 1.0 AS RevenueMaybe
     FROM dw.fact_sales f
     JOIN dw.dim_product p ON p.product_key = f.product_key
     WHERE extract(year from f.occurred_at) = COALESCE(p_year, extract(year from f.occurred_at))  -- kills the index
-    ORDER BY dbo.fn_GetPlatformName(p.platform_key), f.line_total DESC;    -- UDF in ORDER BY too
+    ORDER BY public.fn_GetPlatformName(p.platform_key), f.line_total DESC;    -- UDF in ORDER BY too
     RETURN c;
 END $$;
 
@@ -119,7 +119,7 @@ DECLARE c refcursor;
 BEGIN
     OPEN c FOR
     SELECT t.till_id, COUNT(*) AS txns, SUM(t.total) AS total_local
-    FROM dbo.transactions t
+    FROM public.transactions t
     WHERE t.till_id = p_till::text                    -- text column vs int param (kept runnable)
     GROUP BY t.till_id;
     RETURN c;

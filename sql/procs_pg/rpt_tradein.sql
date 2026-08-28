@@ -55,7 +55,7 @@ BEGIN
     SELECT tr.payout_method,
            COUNT(*) AS trade_ins,
            CAST(SUM(tr.total_value / COALESCE(NULLIF(fx.rate_to_usd,0),1.0)) AS decimal(16,2)) AS value_usd
-    FROM dbo.trade_ins tr
+    FROM public.trade_ins tr
     LEFT JOIN dw.dim_fx fx ON fx.currency_code = tr.currency_code AND fx.year = extract(year from tr.occurred_at)::smallint
     WHERE (p_year IS NULL OR extract(year from tr.occurred_at) = p_year)
     GROUP BY tr.payout_method ORDER BY value_usd DESC;
@@ -72,7 +72,7 @@ BEGIN
            COUNT(*) AS trade_ins,
            SUM(CASE WHEN transaction_id IS NOT NULL THEN 1 ELSE 0 END) AS with_purchase,
            CAST(100.0*SUM(CASE WHEN transaction_id IS NOT NULL THEN 1 ELSE 0 END)/NULLIF(COUNT(*),0) AS decimal(5,1)) AS attach_pct
-    FROM dbo.trade_ins
+    FROM public.trade_ins
     WHERE (p_year IS NULL OR extract(year from occurred_at) = p_year)
     GROUP BY extract(year from occurred_at) ORDER BY yr;
     RETURN c;

@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS dw.dim_currency (
 
 /* ---- dim_platform ---- */
 CREATE TABLE IF NOT EXISTS dw.dim_platform (
-    platform_key      INTEGER      NOT NULL PRIMARY KEY,   -- = dbo.platforms.platform_id
+    platform_key      INTEGER      NOT NULL PRIMARY KEY,   -- = public.platforms.platform_id
     platform_name     VARCHAR(100) NOT NULL,
     family            VARCHAR(50)  NULL,                   -- Sony|Nintendo|Sega|...
     released_year     SMALLINT     NULL,
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS dw.dim_product (
 
 /* ---- dim_customer (~39.4M) ---- */
 CREATE TABLE IF NOT EXISTS dw.dim_customer (
-    customer_key  BIGINT       NOT NULL PRIMARY KEY,      -- = dbo.customers.customer_id
+    customer_key  BIGINT       NOT NULL PRIMARY KEY,      -- = public.customers.customer_id
     status        VARCHAR(16)  NOT NULL,
     signup_date   DATE         NOT NULL,
     signup_year   SMALLINT     NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS dw.dim_customer (
 
 /* ---- dim_shop (~8,260) ---- */
 CREATE TABLE IF NOT EXISTS dw.dim_shop (
-    shop_key      BIGINT       NOT NULL PRIMARY KEY,      -- = dbo.shops.shop_id
+    shop_key      BIGINT       NOT NULL PRIMARY KEY,      -- = public.shops.shop_id
     shop_code     VARCHAR(16)  NOT NULL,
     name          VARCHAR(255) NOT NULL,
     country_code  CHAR(2)      NOT NULL,

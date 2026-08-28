@@ -51,10 +51,23 @@ func (p *Postgres) Close() error {
 	return nil
 }
 
+// pgSchema maps a logical schema name to its physical Postgres schema. The
+// shared loader addresses the OLTP core tables as "dbo" (SQL Server's default
+// schema); on Postgres that default is "public", so we redirect "dbo" there.
+// Every other schema (hr, web, finance, dw, rpt, batch, loadgen) keeps its
+// name on both engines. This is the only place the OLTP schema name diverges.
+func pgSchema(schema string) string {
+	if schema == "dbo" {
+		return "public"
+	}
+	return schema
+}
+
 // copyRows loads rows into schema.table via COPY. One COPY is a single
 // atomic operation, so a failed call leaves the table unchanged — which is
 // what makes whole-call retry (and the resume watermark) safe.
 func (p *Postgres) copyRows(ctx context.Context, schema, table string, columns []string, rows [][]any) error {
+	schema = pgSchema(schema)
 	if len(rows) == 0 {
 		return nil
 	}
@@ -85,6 +98,7 @@ func (p *Postgres) BulkCopy(ctx context.Context, schema, table string, columns [
 // MaxBigint returns the largest value of column in schema.table (0 when
 // empty), cast to bigint so it works for int/smallint columns too.
 func (p *Postgres) MaxBigint(ctx context.Context, schema, table, column string) (int64, error) {
+	schema = pgSchema(schema)
 	stmt := fmt.Sprintf("SELECT COALESCE(MAX(%s), 0)::bigint FROM %s.%s", column, schema, table)
 	var n int64
 	if err := p.pool.QueryRow(ctx, stmt).Scan(&n); err != nil {
@@ -95,6 +109,7 @@ func (p *Postgres) MaxBigint(ctx context.Context, schema, table, column string) 
 
 // DeleteAbove removes rows where column > threshold (resume cleanup).
 func (p *Postgres) DeleteAbove(ctx context.Context, schema, table, column string, threshold int64) error {
+	schema = pgSchema(schema)
 	stmt := fmt.Sprintf("DELETE FROM %s.%s WHERE %s > $1", schema, table, column)
 	if _, err := p.pool.Exec(ctx, stmt, threshold); err != nil {
 		return fmt.Errorf("delete above %d from %s.%s: %w", threshold, schema, table, err)

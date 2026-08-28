@@ -10,14 +10,14 @@ BEGIN
     v_run := batch.log_start('batch.usp_refresh_dim_fx','dw.dim_fx','full');
     TRUNCATE TABLE dw.dim_fx;
     WITH yrs AS (SELECT generate_series(p_start_year::int, p_end_year::int) AS yr),
-         curr AS (SELECT DISTINCT currency_code FROM dbo.fx_rates)
+         curr AS (SELECT DISTINCT currency_code FROM public.fx_rates)
     INSERT INTO dw.dim_fx(currency_code, year, rate_to_usd)
     SELECT c.currency_code, y.yr::smallint,
            COALESCE(
-             (SELECT f.rate_to_usd FROM dbo.fx_rates f
+             (SELECT f.rate_to_usd FROM public.fx_rates f
                 WHERE f.currency_code=c.currency_code AND f.effective_year<=y.yr
                 ORDER BY f.effective_year DESC LIMIT 1),
-             (SELECT f.rate_to_usd FROM dbo.fx_rates f
+             (SELECT f.rate_to_usd FROM public.fx_rates f
                 WHERE f.currency_code=c.currency_code
                 ORDER BY f.effective_year ASC LIMIT 1))
     FROM curr c CROSS JOIN yrs y;

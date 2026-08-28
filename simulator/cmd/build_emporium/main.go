@@ -617,17 +617,17 @@ func runFullValidationPostgres(ctx context.Context, dsn string) error {
 			SELECT CASE WHEN a=b THEN 'PASS' ELSE 'FAIL' END AS status,
 			       CONCAT('fact_sales=',a,'  transaction_lines=',b,'  diff=',a-b) AS detail
 			FROM (SELECT (SELECT COUNT(*) FROM dw.fact_sales) AS a,
-			             (SELECT COUNT(*) FROM dbo.transaction_lines) AS b) x`},
+			             (SELECT COUNT(*) FROM public.transaction_lines) AS b) x`},
 		{"fact_sales SUM(line_total)", `
 			SELECT CASE WHEN a=b THEN 'PASS' ELSE 'FAIL' END AS status,
 			       CONCAT('fact=',a,'  oltp=',b,'  diff=',a-b) AS detail
 			FROM (SELECT (SELECT SUM(line_total) FROM dw.fact_sales) AS a,
-			             (SELECT SUM(line_total) FROM dbo.transaction_lines) AS b) x`},
+			             (SELECT SUM(line_total) FROM public.transaction_lines) AS b) x`},
 		{"fact_sales SUM(quantity)", `
 			SELECT CASE WHEN a=b THEN 'PASS' ELSE 'FAIL' END AS status,
 			       CONCAT('fact_qty=',a,'  oltp_qty=',b,'  diff=',a-b) AS detail
 			FROM (SELECT (SELECT SUM(quantity::bigint) FROM dw.fact_sales) AS a,
-			             (SELECT SUM(quantity::bigint) FROM dbo.transaction_lines) AS b) x`},
+			             (SELECT SUM(quantity::bigint) FROM public.transaction_lines) AS b) x`},
 		{"USD vs monthly_summary", `
 			SELECT CASE WHEN b IS NULL OR b=0 THEN 'FAIL'
 			            WHEN ABS(a-b)/ABS(b) < 0.0001 THEN 'PASS' ELSE 'FAIL' END AS status,

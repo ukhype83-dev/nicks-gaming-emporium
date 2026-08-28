@@ -9,7 +9,7 @@
               OLTP and WRITE dw.
      loadgen  workload/chaos procedures the load generator calls.
 
-   Contract: OLTP (dbo/hr/web/finance) is READ-ONLY; writes are
+   Contract: OLTP (public/hr/web/finance) is READ-ONLY; writes are
    confined to dw. The DW is DERIVED and REPROCESSABLE. Idempotent.
 
    Type conventions match schema_v1_postgres.sql:

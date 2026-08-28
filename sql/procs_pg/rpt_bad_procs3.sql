@@ -7,9 +7,9 @@ CREATE OR REPLACE FUNCTION rpt.usp_GetEverythingAboutACustomer(p_customer_id big
 RETURNS SETOF refcursor LANGUAGE plpgsql AS $$
 DECLARE c1 refcursor; c2 refcursor; c3 refcursor; c4 refcursor; c5 refcursor;
 BEGIN
-    OPEN c1 FOR SELECT * FROM dbo.customers WHERE customer_id = p_customer_id; RETURN NEXT c1;
-    OPEN c2 FOR SELECT * FROM dbo.customer_addresses WHERE customer_id = p_customer_id; RETURN NEXT c2;
-    OPEN c3 FOR SELECT * FROM dbo.loyalty_memberships WHERE customer_id = p_customer_id; RETURN NEXT c3;
+    OPEN c1 FOR SELECT * FROM public.customers WHERE customer_id = p_customer_id; RETURN NEXT c1;
+    OPEN c2 FOR SELECT * FROM public.customer_addresses WHERE customer_id = p_customer_id; RETURN NEXT c2;
+    OPEN c3 FOR SELECT * FROM public.loyalty_memberships WHERE customer_id = p_customer_id; RETURN NEXT c3;
     OPEN c4 FOR SELECT * FROM dw.agg_customer_ltv WHERE customer_key = p_customer_id; RETURN NEXT c4;
     OPEN c5 FOR SELECT * FROM dw.fact_sales WHERE customer_key = p_customer_id ORDER BY occurred_at; RETURN NEXT c5;
 END $$;

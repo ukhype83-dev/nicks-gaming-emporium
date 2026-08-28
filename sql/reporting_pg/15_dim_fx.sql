@@ -1,7 +1,7 @@
 /* =============================================================
    dw.dim_fx — dense FX dimension (PostgreSQL port of 15_dim_fx.sql)
    -------------------------------------------------------------
-   dbo.fx_rates is a 5-year snapshot (1990,1995,...). dim_fx densifies
+   public.fx_rates is a 5-year snapshot (1990,1995,...). dim_fx densifies
    it to one row per (currency, year) carrying the era-correct rate =
    the latest snapshot at or before that year (earliest-snapshot
    fallback for pre-1990) — the same rule finance.monthly_summary uses.

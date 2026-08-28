@@ -14,14 +14,14 @@
      SYSUTCDATETIME()  -> NOW() AT TIME ZONE 'UTC'   (none present in DDL)
      GO batch markers removed; every statement ends with ';'
    Collation: Postgres default (case-sensitive) — intentionally no COLLATE.
-   Schema `dbo` is kept (NOT renamed to public) so the Go generator's
-   dbo.<table> references resolve.
+   The SQL Server default schema `dbo` maps to the Postgres default schema
+   `public` here — the OLTP core tables live in `public`. Every other schema
+   (hr, web, finance, dw, rpt, batch, loadgen) keeps its name on both engines.
    ============================================================= */
 
 /* -------------------------------------------------------------
    Schemas
    ------------------------------------------------------------- */
-CREATE SCHEMA IF NOT EXISTS dbo;
 CREATE SCHEMA IF NOT EXISTS hr;
 
 /* =============================================================
@@ -29,7 +29,7 @@ CREATE SCHEMA IF NOT EXISTS hr;
    ============================================================= */
 
 /* Source-system enum plus nature and date-range. */
-CREATE TABLE dbo.source_systems (
+CREATE TABLE public.source_systems (
     source_system   VARCHAR(48)   NOT NULL PRIMARY KEY,
     nature          VARCHAR(16)   NOT NULL,  -- 'migrated' | 'native'
     effective_from  DATE          NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE dbo.source_systems (
     CONSTRAINT ck_source_systems_nature CHECK (nature IN ('migrated','native'))
 );
 
-CREATE TABLE dbo.privacy_regimes (
+CREATE TABLE public.privacy_regimes (
     regime          VARCHAR(16)   NOT NULL PRIMARY KEY,
     effective_from  DATE          NOT NULL,
     retention_days  INT           NULL,        -- max retention from last activity
@@ -46,7 +46,7 @@ CREATE TABLE dbo.privacy_regimes (
     description     VARCHAR(200)  NOT NULL
 );
 
-CREATE TABLE dbo.payment_methods (
+CREATE TABLE public.payment_methods (
     method          VARCHAR(32)   NOT NULL PRIMARY KEY,
     introduced      DATE          NOT NULL,
     retired         DATE          NULL,
@@ -54,22 +54,22 @@ CREATE TABLE dbo.payment_methods (
     description     VARCHAR(200)  NOT NULL
 );
 
-CREATE TABLE dbo.currencies (
+CREATE TABLE public.currencies (
     currency_code   CHAR(3)       NOT NULL PRIMARY KEY,  -- ISO 4217
     name            VARCHAR(64)   NOT NULL,
     minor_unit      SMALLINT      NOT NULL      -- e.g. JPY=0, USD=2 (was TINYINT)
 );
 
-CREATE TABLE dbo.countries (
+CREATE TABLE public.countries (
     country_code    CHAR(2)       NOT NULL PRIMARY KEY,  -- ISO 3166-1 alpha-2
     name            VARCHAR(64)   NOT NULL,
-    default_currency CHAR(3)      NOT NULL REFERENCES dbo.currencies(currency_code),
-    governing_regime VARCHAR(16)  NULL REFERENCES dbo.privacy_regimes(regime)
+    default_currency CHAR(3)      NOT NULL REFERENCES public.currencies(currency_code),
+    governing_regime VARCHAR(16)  NULL REFERENCES public.privacy_regimes(regime)
 );
 
 /* Annual FX rates against USD. */
-CREATE TABLE dbo.fx_rates (
-    currency_code   CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
+CREATE TABLE public.fx_rates (
+    currency_code   CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
     effective_year  SMALLINT      NOT NULL,
     rate_to_usd     DECIMAL(14,6) NOT NULL,
     CONSTRAINT pk_fx_rates PRIMARY KEY (currency_code, effective_year),
@@ -77,7 +77,7 @@ CREATE TABLE dbo.fx_rates (
 );
 
 /* Catalog platform — normalises the `platform` string on releases. */
-CREATE TABLE dbo.platforms (
+CREATE TABLE public.platforms (
     platform_id     INT           NOT NULL PRIMARY KEY,
     name            VARCHAR(100)  NOT NULL UNIQUE,
     family          VARCHAR(50)   NULL,       -- 'Sony' | 'Nintendo' | 'Sega' | etc.
@@ -90,11 +90,11 @@ CREATE TABLE dbo.platforms (
    ============================================================= */
 
 /* One row per released SKU. */
-CREATE TABLE dbo.releases (
+CREATE TABLE public.releases (
     release_id          BIGINT         NOT NULL PRIMARY KEY,
     title               TEXT           NOT NULL,  -- PS2 multi-region denorm rows hit ~960 chars
     normalised_title    VARCHAR(450)   NULL,      -- 450 was the NVARCHAR nonclustered-index key-length limit
-    platform_id         INT            NOT NULL REFERENCES dbo.platforms(platform_id),
+    platform_id         INT            NOT NULL REFERENCES public.platforms(platform_id),
     media_type          VARCHAR(50)    NULL,
     publisher           VARCHAR(300)   NULL,
     developer           VARCHAR(300)   NULL,
@@ -112,10 +112,10 @@ CREATE TABLE dbo.releases (
 );
 
 /* V1.21.0 — console / hardware catalog. One row per hardware MODEL. */
-CREATE TABLE dbo.hardware (
+CREATE TABLE public.hardware (
     hardware_id    INT           NOT NULL PRIMARY KEY,
     model_name     VARCHAR(120)  NOT NULL,
-    platform_id    INT           NOT NULL REFERENCES dbo.platforms(platform_id),
+    platform_id    INT           NOT NULL REFERENCES public.platforms(platform_id),
     kind           VARCHAR(16)   NOT NULL,   -- 'console'|'handheld'|'computer'|'accessory'
     manufacturer   VARCHAR(80)   NULL,
     model_number   VARCHAR(60)   NULL,
@@ -123,7 +123,7 @@ CREATE TABLE dbo.hardware (
     release_jp     DATE          NULL,
     release_eu     DATE          NULL,
     launch_usd     DECIMAL(10,2) NULL,
-    revision_of    INT           NULL REFERENCES dbo.hardware(hardware_id),
+    revision_of    INT           NULL REFERENCES public.hardware(hardware_id),
     notes          VARCHAR(400)  NULL,
     CONSTRAINT ck_hardware_kind CHECK (kind IN ('console','handheld','computer','accessory'))
 );
@@ -132,36 +132,36 @@ CREATE TABLE dbo.hardware (
    retail — operations (shops, inventory)
    ============================================================= */
 
-CREATE TABLE dbo.shops (
+CREATE TABLE public.shops (
     shop_id         BIGINT        NOT NULL PRIMARY KEY,
     shop_code       VARCHAR(16)   NOT NULL UNIQUE,    -- 'GB-LON-001'
     name            VARCHAR(255)  NOT NULL,
-    country_code    CHAR(2)       NOT NULL REFERENCES dbo.countries(country_code),
+    country_code    CHAR(2)       NOT NULL REFERENCES public.countries(country_code),
     opened_date     DATE          NOT NULL,
     closed_date     DATE          NULL,
-    currency_code   CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
-    source_system   VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    currency_code   CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
+    source_system   VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 /* Shop addresses are per-owner — not shared with customers. */
-CREATE TABLE dbo.shop_addresses (
+CREATE TABLE public.shop_addresses (
     shop_address_id BIGINT        NOT NULL PRIMARY KEY,
-    shop_id         BIGINT        NOT NULL REFERENCES dbo.shops(shop_id),
+    shop_id         BIGINT        NOT NULL REFERENCES public.shops(shop_id),
     line1           VARCHAR(200)  NOT NULL,
     line2           VARCHAR(200)  NULL,
     city            VARCHAR(500)  NOT NULL,  -- GeoNames CA FSA entries have verbose district descriptors
     region          VARCHAR(500)  NULL,
     postal_code     VARCHAR(20)   NULL,
-    country_code    CHAR(2)       NOT NULL REFERENCES dbo.countries(country_code),
+    country_code    CHAR(2)       NOT NULL REFERENCES public.countries(country_code),
     latitude        DECIMAL(9,6)  NULL,
     longitude       DECIMAL(9,6)  NULL
 );
 
-CREATE TABLE dbo.inventory (
+CREATE TABLE public.inventory (
     inventory_id    BIGINT        NOT NULL PRIMARY KEY,
-    shop_id         BIGINT        NOT NULL REFERENCES dbo.shops(shop_id),
-    release_id      BIGINT        NULL REFERENCES dbo.releases(release_id),
-    hardware_id     INT           NULL REFERENCES dbo.hardware(hardware_id),
+    shop_id         BIGINT        NOT NULL REFERENCES public.shops(shop_id),
+    release_id      BIGINT        NULL REFERENCES public.releases(release_id),
+    hardware_id     INT           NULL REFERENCES public.hardware(hardware_id),
     condition       VARCHAR(16)   NOT NULL,  -- 'new' | 'used_mint' | 'used_good' | 'used_fair' | 'used_loose'
     on_hand         INT           NOT NULL DEFAULT 0,
     on_order        INT           NOT NULL DEFAULT 0,
@@ -177,16 +177,16 @@ CREATE TABLE dbo.inventory (
     CONSTRAINT ck_inventory_nonneg CHECK (on_hand >= 0 AND on_order >= 0 AND reserved >= 0)
 );
 
-CREATE TABLE dbo.inventory_movements (
+CREATE TABLE public.inventory_movements (
     movement_id      BIGINT        NOT NULL PRIMARY KEY,
-    inventory_id     BIGINT        NOT NULL REFERENCES dbo.inventory(inventory_id),
+    inventory_id     BIGINT        NOT NULL REFERENCES public.inventory(inventory_id),
     occurred_at      TIMESTAMP(3)  NOT NULL,
     occurred_at_precision VARCHAR(12) NOT NULL,  -- 'year'|'month'|'day'|'hour'|'minute'|'second'|'millisecond'
     movement_type    VARCHAR(24)   NOT NULL,      -- 'sale'|'trade_in'|'delivery'|'transfer_in'|'transfer_out'|'adjustment'|'return'
     quantity         INT           NOT NULL,      -- signed; sale is negative, delivery is positive
     reference_type   VARCHAR(32)   NULL,          -- e.g. 'transaction' | 'trade_in'
     reference_id     BIGINT        NULL,          -- FK-less soft pointer
-    source_system    VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system    VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_inventory_movements_precision CHECK (occurred_at_precision IN (
         'year','month','day','hour','minute','second','millisecond'
     ))
@@ -196,23 +196,23 @@ CREATE TABLE dbo.inventory_movements (
    retail — customers & privacy
    ============================================================= */
 
-CREATE TABLE dbo.customers (
+CREATE TABLE public.customers (
     customer_id         BIGINT        NOT NULL PRIMARY KEY,
     status              VARCHAR(16)   NOT NULL DEFAULT 'active',  -- 'active'|'dormant'|'anonymised'|'deleted'
     signed_up_at        TIMESTAMP(3)  NOT NULL,
-    governing_regime    VARCHAR(16)   NOT NULL REFERENCES dbo.privacy_regimes(regime),
+    governing_regime    VARCHAR(16)   NOT NULL REFERENCES public.privacy_regimes(regime),
     first_name          VARCHAR(100)  NULL,       -- NULLable: anonymised / never-captured
     last_name           VARCHAR(100)  NULL,
     date_of_birth       DATE          NULL,
-    source_system       VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system       VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     anonymised_at       TIMESTAMP(3)  NULL,
     data_retention_expires_at TIMESTAMP(3) NULL,
     CONSTRAINT ck_customers_status CHECK (status IN ('active','dormant','anonymised','deleted'))
 );
 
-CREATE TABLE dbo.customer_addresses (
+CREATE TABLE public.customer_addresses (
     customer_address_id BIGINT        NOT NULL PRIMARY KEY,
-    customer_id         BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id         BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     address_type        VARCHAR(16)   NOT NULL,   -- 'billing'|'shipping'|'work'|'other'
     effective_from      DATE          NOT NULL,
     effective_to        DATE          NULL,       -- NULL = currently active
@@ -221,25 +221,25 @@ CREATE TABLE dbo.customer_addresses (
     city                VARCHAR(500)  NULL,       -- GeoNames CA FSA entries can be verbose
     region              VARCHAR(500)  NULL,
     postal_code         VARCHAR(20)   NULL,
-    country_code        CHAR(2)       NOT NULL REFERENCES dbo.countries(country_code),
+    country_code        CHAR(2)       NOT NULL REFERENCES public.countries(country_code),
     address_hash        VARCHAR(64)   NULL,       -- SHA-256 of normalised form, survives anonymisation
     anonymised_at       TIMESTAMP(3)  NULL,
-    source_system       VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system       VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_cust_addr_type CHECK (address_type IN ('billing','shipping','work','other'))
 );
 
-CREATE TABLE dbo.customer_emails (
+CREATE TABLE public.customer_emails (
     customer_email_id BIGINT        NOT NULL PRIMARY KEY,
-    customer_id       BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id       BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     email             VARCHAR(320)  NULL,       -- NULLable when anonymised
     is_primary        BOOLEAN       NOT NULL DEFAULT FALSE,
     verified_at       TIMESTAMP(3)  NULL,
     anonymised_at     TIMESTAMP(3)  NULL
 );
 
-CREATE TABLE dbo.communication_preferences (
+CREATE TABLE public.communication_preferences (
     comm_pref_id      BIGINT        NOT NULL PRIMARY KEY,
-    customer_id       BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id       BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     channel           VARCHAR(16)   NOT NULL,  -- 'email'|'sms'|'push'|'post'
     purpose           VARCHAR(32)   NOT NULL,  -- 'marketing'|'service'|'trade_in_alerts'|...
     opt_in            BOOLEAN       NOT NULL,
@@ -248,29 +248,29 @@ CREATE TABLE dbo.communication_preferences (
 );
 
 /* Timestamped consent events. */
-CREATE TABLE dbo.consent_events (
+CREATE TABLE public.consent_events (
     consent_event_id BIGINT        NOT NULL PRIMARY KEY,
-    customer_id      BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id      BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     channel          VARCHAR(16)   NOT NULL,
     purpose          VARCHAR(32)   NOT NULL,
     event_type       VARCHAR(16)   NOT NULL,   -- 'granted'|'revoked'
     occurred_at      TIMESTAMP(3)  NOT NULL,
-    source_system    VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system    VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_consent_events_type CHECK (event_type IN ('granted','revoked'))
 );
 
-CREATE TABLE dbo.customer_lifecycle_events (
+CREATE TABLE public.customer_lifecycle_events (
     lifecycle_event_id BIGINT       NOT NULL PRIMARY KEY,
-    customer_id        BIGINT       NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id        BIGINT       NOT NULL REFERENCES public.customers(customer_id),
     event_type         VARCHAR(32)  NOT NULL,  -- 'signup'|'reactivated'|'marked_dormant'|'anonymisation_requested'|'anonymised'|'deleted'
     occurred_at        TIMESTAMP(3) NOT NULL,
     reason             VARCHAR(64)  NULL,      -- 'gdpr_erasure'|'ccpa_request'|'retention_expiry'|'fraud'
-    source_system      VARCHAR(48)  NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system      VARCHAR(48)  NOT NULL REFERENCES public.source_systems(source_system)
 );
 
-CREATE TABLE dbo.loyalty_memberships (
+CREATE TABLE public.loyalty_memberships (
     membership_id     BIGINT        NOT NULL PRIMARY KEY,
-    customer_id       BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id       BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     scheme            VARCHAR(32)   NOT NULL,  -- 'stamp_1986'|'card_1998'|'unified_2011'
     enrolled_at       TIMESTAMP(3)  NOT NULL,
     tier              VARCHAR(16)   NULL,       -- 'bronze'|'silver'|'gold'|'platinum'
@@ -278,10 +278,10 @@ CREATE TABLE dbo.loyalty_memberships (
     closed_at         TIMESTAMP(3)  NULL
 );
 
-CREATE TABLE dbo.saved_payment_methods (
+CREATE TABLE public.saved_payment_methods (
     saved_payment_id  BIGINT        NOT NULL PRIMARY KEY,
-    customer_id       BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
-    method            VARCHAR(32)   NOT NULL REFERENCES dbo.payment_methods(method),
+    customer_id       BIGINT        NOT NULL REFERENCES public.customers(customer_id),
+    method            VARCHAR(32)   NOT NULL REFERENCES public.payment_methods(method),
     token             VARCHAR(128)  NOT NULL,   -- processor-side token; no PAN stored
     card_last4        CHAR(4)       NULL,
     expiry_month      SMALLINT      NULL,        -- was TINYINT
@@ -294,25 +294,25 @@ CREATE TABLE dbo.saved_payment_methods (
    retail — transactions  (plain heap tables for V1 — no partitioning)
    ============================================================= */
 
-CREATE TABLE dbo.transactions (
+CREATE TABLE public.transactions (
     transaction_id       BIGINT        NOT NULL PRIMARY KEY,
     occurred_at          TIMESTAMP(3)  NOT NULL,
     occurred_at_precision VARCHAR(12)  NOT NULL,
-    shop_id              BIGINT        NULL REFERENCES dbo.shops(shop_id),
+    shop_id              BIGINT        NULL REFERENCES public.shops(shop_id),
     channel              VARCHAR(24)   NOT NULL,   -- 'in_store'|'phone'|'online'|'mobile_app'|'click_and_collect'
-    customer_id          BIGINT        NULL REFERENCES dbo.customers(customer_id),
-    shipping_address_id  BIGINT        NULL REFERENCES dbo.customer_addresses(customer_address_id),
+    customer_id          BIGINT        NULL REFERENCES public.customers(customer_id),
+    shipping_address_id  BIGINT        NULL REFERENCES public.customer_addresses(customer_address_id),
     staff_id             BIGINT        NULL,       -- FK to hr.employment_spells declared later (cross-schema ordering)
     till_id              VARCHAR(32)   NULL,       -- deliberately STRING: tills '7A' exist; implicit-conversion exhibit
     device_id            VARCHAR(64)   NULL,
-    currency_code        CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
+    currency_code        CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
     subtotal             DECIMAL(12,2) NOT NULL,
     tax_total            DECIMAL(12,2) NOT NULL,
     discount_total       DECIMAL(12,2) NOT NULL,
     total                DECIMAL(12,2) NOT NULL,
     trade_in_offset      DECIMAL(12,2) NOT NULL DEFAULT 0,
-    original_transaction_id BIGINT     NULL REFERENCES dbo.transactions(transaction_id),
-    source_system        VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    original_transaction_id BIGINT     NULL REFERENCES public.transactions(transaction_id),
+    source_system        VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_tx_channel CHECK (channel IN (
         'in_store','phone','online','mobile_app','click_and_collect'
     )),
@@ -321,12 +321,12 @@ CREATE TABLE dbo.transactions (
     ))
 );
 
-CREATE TABLE dbo.transaction_lines (
+CREATE TABLE public.transaction_lines (
     transaction_line_id BIGINT        NOT NULL PRIMARY KEY,
-    transaction_id      BIGINT        NOT NULL REFERENCES dbo.transactions(transaction_id),
+    transaction_id      BIGINT        NOT NULL REFERENCES public.transactions(transaction_id),
     line_number         SMALLINT      NOT NULL,
-    release_id          BIGINT        NULL REFERENCES dbo.releases(release_id),
-    hardware_id         INT           NULL REFERENCES dbo.hardware(hardware_id),  -- V1.21.0: console/hardware line
+    release_id          BIGINT        NULL REFERENCES public.releases(release_id),
+    hardware_id         INT           NULL REFERENCES public.hardware(hardware_id),  -- V1.21.0: console/hardware line
     condition           VARCHAR(16)   NULL,       -- 'new'/'used_*' for software OR hardware; NULL only for description-only
     description         VARCHAR(200)  NULL,       -- free-text fallback
     quantity            INT           NOT NULL,
@@ -341,37 +341,37 @@ CREATE TABLE dbo.transaction_lines (
     )
 );
 
-CREATE TABLE dbo.payments (
+CREATE TABLE public.payments (
     payment_id       BIGINT         NOT NULL PRIMARY KEY,
-    transaction_id   BIGINT         NOT NULL REFERENCES dbo.transactions(transaction_id),
-    method           VARCHAR(32)    NOT NULL REFERENCES dbo.payment_methods(method),
-    currency_code    CHAR(3)        NOT NULL REFERENCES dbo.currencies(currency_code),
+    transaction_id   BIGINT         NOT NULL REFERENCES public.transactions(transaction_id),
+    method           VARCHAR(32)    NOT NULL REFERENCES public.payment_methods(method),
+    currency_code    CHAR(3)        NOT NULL REFERENCES public.currencies(currency_code),
     amount           DECIMAL(12,2)  NOT NULL,
-    saved_payment_id BIGINT         NULL REFERENCES dbo.saved_payment_methods(saved_payment_id),
+    saved_payment_id BIGINT         NULL REFERENCES public.saved_payment_methods(saved_payment_id),
     processor_ref    VARCHAR(64)    NULL
 );
 
 /* Trade-ins: reverse money flow. */
-CREATE TABLE dbo.trade_ins (
+CREATE TABLE public.trade_ins (
     trade_in_id       BIGINT        NOT NULL PRIMARY KEY,
     occurred_at       TIMESTAMP(3)  NOT NULL,
     occurred_at_precision VARCHAR(12) NOT NULL,
-    shop_id           BIGINT        NULL REFERENCES dbo.shops(shop_id),
-    customer_id       BIGINT        NULL REFERENCES dbo.customers(customer_id),
+    shop_id           BIGINT        NULL REFERENCES public.shops(shop_id),
+    customer_id       BIGINT        NULL REFERENCES public.customers(customer_id),
     staff_id          BIGINT        NULL,
-    transaction_id    BIGINT        NULL REFERENCES dbo.transactions(transaction_id),  -- linked sale (blended trade-in + purchase)
-    currency_code     CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
+    transaction_id    BIGINT        NULL REFERENCES public.transactions(transaction_id),  -- linked sale (blended trade-in + purchase)
+    currency_code     CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
     total_value       DECIMAL(12,2) NOT NULL,
     payout_method     VARCHAR(16)   NOT NULL,   -- 'cash'|'store_credit'|'bank_transfer'
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_trade_ins_payout CHECK (payout_method IN ('cash','store_credit','bank_transfer'))
 );
 
-CREATE TABLE dbo.trade_in_items (
+CREATE TABLE public.trade_in_items (
     trade_in_item_id BIGINT        NOT NULL PRIMARY KEY,
-    trade_in_id      BIGINT        NOT NULL REFERENCES dbo.trade_ins(trade_in_id),
-    release_id       BIGINT        NULL REFERENCES dbo.releases(release_id),
-    hardware_id      INT           NULL REFERENCES dbo.hardware(hardware_id),  -- V1.21.0: traded-in console
+    trade_in_id      BIGINT        NOT NULL REFERENCES public.trade_ins(trade_in_id),
+    release_id       BIGINT        NULL REFERENCES public.releases(release_id),
+    hardware_id      INT           NULL REFERENCES public.hardware(hardware_id),  -- V1.21.0: traded-in console
     condition        VARCHAR(16)   NOT NULL,
     valuation        DECIMAL(12,2) NOT NULL,
     notes            VARCHAR(200)  NULL,
@@ -381,16 +381,16 @@ CREATE TABLE dbo.trade_in_items (
 );
 
 /* Store credit ledger — SHOP-LOCAL. */
-CREATE TABLE dbo.store_credit_ledger (
+CREATE TABLE public.store_credit_ledger (
     ledger_id         BIGINT        NOT NULL PRIMARY KEY,
-    customer_id       BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id       BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     occurred_at       TIMESTAMP(3)  NOT NULL,
     event_type        VARCHAR(24)   NOT NULL,   -- 'credit_granted'|'credit_used'|'credit_expired'|'credit_adjusted'
     amount            DECIMAL(12,2) NOT NULL,   -- signed; positive = grant, negative = redeem
-    currency_code     CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
+    currency_code     CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
     trade_in_id       BIGINT        NULL,
     transaction_id    BIGINT        NULL,
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 /* =============================================================
@@ -398,16 +398,16 @@ CREATE TABLE dbo.store_credit_ledger (
    Start value 10^15 sits far above the simulator's deterministic
    id ranges; runner-era rows can never collide with bulk-loaded rows.
    ============================================================= */
-CREATE SEQUENCE dbo.seq_transactions              START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_transaction_lines         START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_payments                  START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_inventory_movements       START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_trade_ins                 START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_trade_in_items            START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_store_credit_ledger       START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_customers                 START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_customer_addresses        START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
-CREATE SEQUENCE dbo.seq_customer_lifecycle_events START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_transactions              START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_transaction_lines         START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_payments                  START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_inventory_movements       START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_trade_ins                 START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_trade_in_items            START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_store_credit_ledger       START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_customers                 START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_customer_addresses        START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
+CREATE SEQUENCE public.seq_customer_lifecycle_events START WITH 1000000000000000 INCREMENT BY 1 CACHE 100;
 
 /* =============================================================
    hr — human resources
@@ -420,10 +420,10 @@ CREATE TABLE hr.persons (
     last_name         VARCHAR(100)  NULL,
     date_of_birth     DATE          NULL,
     national_id_hash  VARCHAR(64)   NULL,       -- hash only; raw ID never stored
-    country_of_residence CHAR(2)    NULL REFERENCES dbo.countries(country_code),
+    country_of_residence CHAR(2)    NULL REFERENCES public.countries(country_code),
     created_at        TIMESTAMP(3)  NOT NULL,
     anonymised_at     TIMESTAMP(3)  NULL,
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 CREATE TABLE hr.departments (
@@ -453,18 +453,18 @@ CREATE TABLE hr.employment_spells (
     role_id           INT           NOT NULL REFERENCES hr.roles(role_id),
     department_id     INT           NOT NULL REFERENCES hr.departments(department_id),
     pay_grade_id      INT           NULL REFERENCES hr.pay_grades(pay_grade_id),
-    home_shop_id      BIGINT        NULL REFERENCES dbo.shops(shop_id),
+    home_shop_id      BIGINT        NULL REFERENCES public.shops(shop_id),
     started_at        DATE          NOT NULL,
     ended_at          DATE          NULL,
     termination_reason VARCHAR(64)  NULL,
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 /* Declare the staff_id FKs now that hr.employment_spells exists. */
-ALTER TABLE dbo.transactions
+ALTER TABLE public.transactions
     ADD CONSTRAINT fk_tx_staff
     FOREIGN KEY (staff_id) REFERENCES hr.employment_spells(spell_id);
-ALTER TABLE dbo.trade_ins
+ALTER TABLE public.trade_ins
     ADD CONSTRAINT fk_trade_ins_staff
     FOREIGN KEY (staff_id) REFERENCES hr.employment_spells(spell_id);
 
@@ -474,7 +474,7 @@ CREATE TABLE hr.contracts (
     contract_type     VARCHAR(32)   NOT NULL,   -- 'permanent_full'|'permanent_part'|'fixed_term'|'temp'|'intern'
     weekly_hours      DECIMAL(5,2)  NULL,
     signed_at         DATE          NOT NULL,
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_contract_type CHECK (contract_type IN (
         'permanent_full','permanent_part','fixed_term','temp','intern'
     ))
@@ -490,29 +490,29 @@ CREATE TABLE hr.staff_addresses (
     city              VARCHAR(500)  NULL,       -- GeoNames CA FSA entries can be verbose
     region            VARCHAR(500)  NULL,
     postal_code       VARCHAR(20)   NULL,
-    country_code      CHAR(2)       NOT NULL REFERENCES dbo.countries(country_code),
+    country_code      CHAR(2)       NOT NULL REFERENCES public.countries(country_code),
     anonymised_at     TIMESTAMP(3)  NULL
 );
 
 CREATE TABLE hr.staff_shifts (
     shift_id          BIGINT        NOT NULL PRIMARY KEY,
     spell_id          BIGINT        NOT NULL REFERENCES hr.employment_spells(spell_id),
-    shop_id           BIGINT        NOT NULL REFERENCES dbo.shops(shop_id),
+    shop_id           BIGINT        NOT NULL REFERENCES public.shops(shop_id),
     shift_start       TIMESTAMP(3)  NOT NULL,
     shift_end         TIMESTAMP(3)  NOT NULL,
     break_minutes     INT           NOT NULL DEFAULT 0,
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 CREATE TABLE hr.payroll_runs (
     payroll_run_id    BIGINT        NOT NULL PRIMARY KEY,
-    country_code      CHAR(2)       NOT NULL REFERENCES dbo.countries(country_code),
+    country_code      CHAR(2)       NOT NULL REFERENCES public.countries(country_code),
     period_start      DATE          NOT NULL,
     period_end        DATE          NOT NULL,
     paid_at           DATE          NOT NULL,
-    currency_code     CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
+    currency_code     CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
     status            VARCHAR(16)   NOT NULL DEFAULT 'posted',  -- 'draft'|'posted'|'void'
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 CREATE TABLE hr.payroll_lines (
@@ -530,7 +530,7 @@ CREATE TABLE hr.payroll_lines (
    Seed reference data (§9.10)
    ============================================================= */
 
-INSERT INTO dbo.source_systems (source_system, nature, effective_from, effective_to, description) VALUES
+INSERT INTO public.source_systems (source_system, nature, effective_from, effective_to, description) VALUES
     ('pos_legacy_1986_2003',       'migrated', '1986-01-01', '2003-12-31', 'AS/400 era POS; nightly batch aggregates for most of its life'),
     ('pos_transitional_2004_2015', 'migrated', '2004-01-01', '2015-12-31', 'Windows-Server SQL era POS; timestamp precision improves mid-life'),
     ('pos_current',                'native',   '2016-01-01', NULL,         'Modern POS, full fidelity, live writes'),
@@ -542,7 +542,7 @@ INSERT INTO dbo.source_systems (source_system, nature, effective_from, effective
     ('hr_legacy_hris_1999_2013',   'migrated', '1999-01-01', '2013-12-31', 'First HRIS; limited non-HQ coverage'),
     ('hr_unified_2014_plus',       'native',   '2014-01-01', NULL,         'Current cloud HRIS');
 
-INSERT INTO dbo.privacy_regimes (regime, effective_from, retention_days, deletion_sla_days, description) VALUES
+INSERT INTO public.privacy_regimes (regime, effective_from, retention_days, deletion_sla_days, description) VALUES
     ('none',   '1900-01-01',  NULL,  NULL, 'No specific regime applies'),
     ('pipeda', '2000-01-01',  NULL,  30,   'Canadian privacy legislation, 2000'),
     ('appi',   '2005-04-01',  NULL,  30,   'Japanese Act on the Protection of Personal Information'),
@@ -551,7 +551,7 @@ INSERT INTO dbo.privacy_regimes (regime, effective_from, retention_days, deletio
     ('lgpd',   '2020-08-16',  NULL,  15,   'Brazilian Lei Geral de Proteção de Dados'),
     ('uk_gdpr','2021-01-01',  NULL,  30,   'UK GDPR post-Brexit divergence');
 
-INSERT INTO dbo.payment_methods (method, introduced, retired, channel_scope, description) VALUES
+INSERT INTO public.payment_methods (method, introduced, retired, channel_scope, description) VALUES
     ('cash',             '1986-01-01', NULL,         NULL,          'Physical cash'),
     ('check',            '1986-01-01', '2010-12-31', NULL,          'Personal check'),
     ('card_manual',      '1986-01-01', '1998-12-31', NULL,          'Carbon-copy imprint card'),
@@ -565,14 +565,14 @@ INSERT INTO dbo.payment_methods (method, introduced, retired, channel_scope, des
     ('gift_card',             '2004-01-01', NULL, NULL,          'Store gift card redemption'),
     ('store_credit',     '1986-01-01', NULL,         NULL,          'Customer store credit, usually from trade-ins');
 
-INSERT INTO dbo.currencies (currency_code, name, minor_unit) VALUES
+INSERT INTO public.currencies (currency_code, name, minor_unit) VALUES
     ('USD','US Dollar',2),('EUR','Euro',2),('GBP','Pound Sterling',2),('JPY','Japanese Yen',0),
     ('AUD','Australian Dollar',2),('CAD','Canadian Dollar',2),('BRL','Brazilian Real',2),
     ('KRW','South Korean Won',0),('SEK','Swedish Krona',2),('NOK','Norwegian Krone',2),
     ('DKK','Danish Krone',2),('CHF','Swiss Franc',2),('PLN','Polish Zloty',2),('CZK','Czech Koruna',2);
 
 /* FX rates against USD — five-year snapshots 1990-2025. */
-INSERT INTO dbo.fx_rates (currency_code, effective_year, rate_to_usd) VALUES
+INSERT INTO public.fx_rates (currency_code, effective_year, rate_to_usd) VALUES
     -- 1990 (pre-Euro; BRL hyperinflation era so omitted)
     ('USD',1990,1.000000),('GBP',1990,0.563000),('JPY',1990,144.800000),
     ('AUD',1990,1.281000),('CAD',1990,1.167000),('CHF',1990,1.389000),
@@ -621,7 +621,7 @@ INSERT INTO dbo.fx_rates (currency_code, effective_year, rate_to_usd) VALUES
     ('DKK',2025,6.900000),('KRW',2025,1380.000000),('BRL',2025,5.400000),
     ('PLN',2025,3.990000),('CZK',2025,23.300000);
 
-INSERT INTO dbo.countries (country_code, name, default_currency, governing_regime) VALUES
+INSERT INTO public.countries (country_code, name, default_currency, governing_regime) VALUES
     ('US','United States','USD','ccpa'),
     ('GB','United Kingdom','GBP','uk_gdpr'),
     ('DE','Germany','EUR','gdpr'),
@@ -642,7 +642,7 @@ INSERT INTO dbo.countries (country_code, name, default_currency, governing_regim
     ('CZ','Czech Republic','CZK','gdpr');
 
 /* Platforms table is populated by the simulator's catalog-load step
-   from dbo.releases distinct platform values — left empty here. */
+   from public.releases distinct platform values — left empty here. */
 
 /* =============================================================
    V1.9.1 — design hardening
@@ -652,35 +652,35 @@ INSERT INTO dbo.countries (country_code, name, default_currency, governing_regim
 
 /* ----- (1) Missing CHECK constraints ----- */
 
-ALTER TABLE dbo.inventory_movements
+ALTER TABLE public.inventory_movements
     ADD CONSTRAINT ck_inv_movement_type CHECK (movement_type IN (
         'sale','trade_in','delivery','transfer_in','transfer_out','adjustment','return'
     ));
 
-ALTER TABLE dbo.inventory_movements
+ALTER TABLE public.inventory_movements
     ADD CONSTRAINT ck_inv_reference_type CHECK (
         reference_type IS NULL OR reference_type IN ('transaction','trade_in')
     );
 
-ALTER TABLE dbo.customer_lifecycle_events
+ALTER TABLE public.customer_lifecycle_events
     ADD CONSTRAINT ck_lifecycle_event_type CHECK (event_type IN (
         'signup','reactivated','marked_dormant','anonymisation_requested','anonymised','deleted'
     ));
 
-ALTER TABLE dbo.consent_events
+ALTER TABLE public.consent_events
     ADD CONSTRAINT ck_consent_channel CHECK (channel IN ('email','sms','push','post'));
 
-ALTER TABLE dbo.loyalty_memberships
+ALTER TABLE public.loyalty_memberships
     ADD CONSTRAINT ck_loyalty_scheme CHECK (scheme IN (
         'stamp_1986','card_1998','unified_2011'
     ));
 
-ALTER TABLE dbo.loyalty_memberships
+ALTER TABLE public.loyalty_memberships
     ADD CONSTRAINT ck_loyalty_tier CHECK (
         tier IS NULL OR tier IN ('bronze','silver','gold','platinum')
     );
 
-ALTER TABLE dbo.store_credit_ledger
+ALTER TABLE public.store_credit_ledger
     ADD CONSTRAINT ck_store_credit_event_type CHECK (event_type IN (
         'credit_granted','credit_used','credit_expired','credit_adjusted'
     ));
@@ -690,32 +690,32 @@ ALTER TABLE hr.payroll_runs
 
 /* ----- (2) Range / date-pair CHECKs ----- */
 
-ALTER TABLE dbo.shops
+ALTER TABLE public.shops
     ADD CONSTRAINT ck_shops_dates CHECK (
         closed_date IS NULL OR closed_date >= opened_date
     );
 
-ALTER TABLE dbo.customer_addresses
+ALTER TABLE public.customer_addresses
     ADD CONSTRAINT ck_cust_addr_dates CHECK (
         effective_to IS NULL OR effective_to >= effective_from
     );
 
-ALTER TABLE dbo.loyalty_memberships
+ALTER TABLE public.loyalty_memberships
     ADD CONSTRAINT ck_loyalty_dates CHECK (
         closed_at IS NULL OR closed_at >= enrolled_at
     );
 
-ALTER TABLE dbo.saved_payment_methods
+ALTER TABLE public.saved_payment_methods
     ADD CONSTRAINT ck_saved_payment_dates CHECK (
         removed_at IS NULL OR removed_at >= added_at
     );
 
-ALTER TABLE dbo.source_systems
+ALTER TABLE public.source_systems
     ADD CONSTRAINT ck_source_systems_dates CHECK (
         effective_to IS NULL OR effective_to >= effective_from
     );
 
-ALTER TABLE dbo.payment_methods
+ALTER TABLE public.payment_methods
     ADD CONSTRAINT ck_payment_methods_dates CHECK (
         retired IS NULL OR retired >= introduced
     );
@@ -740,12 +740,12 @@ ALTER TABLE hr.payroll_runs
 
 /* =============================================================
    V1.15.0 — "The Fall of Nick's Gaming Emporium"
-     - dbo.shops.closure_reason
+     - public.shops.closure_reason
      - hr.compensation_history
      - finance schema + finance.monthly_summary
    ============================================================= */
 
-ALTER TABLE dbo.shops
+ALTER TABLE public.shops
     ADD COLUMN closure_reason VARCHAR(40) NULL;
 
 CREATE TABLE hr.compensation_history (
@@ -754,7 +754,7 @@ CREATE TABLE hr.compensation_history (
     effective_from  DATE          NOT NULL,
     effective_to    DATE          NULL,
     annual_wage     DECIMAL(12,2) NOT NULL,   -- in person's currency_code
-    currency_code   CHAR(3)       NOT NULL REFERENCES dbo.currencies(currency_code),
+    currency_code   CHAR(3)       NOT NULL REFERENCES public.currencies(currency_code),
     change_reason   VARCHAR(40)   NOT NULL    -- hire, cola, tenure_step, promotion, retention_*, severance_*, winddown_premium
 );
 
@@ -788,11 +788,11 @@ CREATE SCHEMA IF NOT EXISTS web;
    NOT the customer's legal name. created_at carries whole-second precision. */
 CREATE TABLE web.accounts (
     account_id      BIGINT        NOT NULL PRIMARY KEY,
-    customer_id     BIGINT        NOT NULL REFERENCES dbo.customers(customer_id),
+    customer_id     BIGINT        NOT NULL REFERENCES public.customers(customer_id),
     username        VARCHAR(40)   NOT NULL,
     created_at      TIMESTAMP(0)  NOT NULL,
     status          VARCHAR(16)   NOT NULL DEFAULT 'active',   -- 'active'|'closed'|'banned'
-    source_system   VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system   VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ux_accounts_customer UNIQUE (customer_id),
     CONSTRAINT ux_accounts_username UNIQUE (username),
     CONSTRAINT ck_accounts_status CHECK (status IN ('active','closed','banned'))
@@ -802,8 +802,8 @@ CREATE TABLE web.accounts (
 CREATE TABLE web.reviews (
     review_id            BIGINT        NOT NULL PRIMARY KEY,
     account_id           BIGINT        NOT NULL REFERENCES web.accounts(account_id),
-    release_id           BIGINT        NULL REFERENCES dbo.releases(release_id),
-    hardware_id          INT           NULL REFERENCES dbo.hardware(hardware_id),
+    release_id           BIGINT        NULL REFERENCES public.releases(release_id),
+    hardware_id          INT           NULL REFERENCES public.hardware(hardware_id),
     rating               SMALLINT      NOT NULL,     -- was TINYINT
     title                VARCHAR(200)  NULL,         -- NULL = untitled (early UI had no title field)
     body                 TEXT          NOT NULL,
@@ -814,7 +814,7 @@ CREATE TABLE web.reviews (
     comment_count        INT           NOT NULL DEFAULT 0,
     helpful_count        INT           NOT NULL DEFAULT 0,
     funny_count          INT           NOT NULL DEFAULT 0,
-    source_system        VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system),
+    source_system        VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system),
     CONSTRAINT ck_reviews_target_xor CHECK (
         (release_id IS NOT NULL AND hardware_id IS NULL) OR
         (release_id IS NULL AND hardware_id IS NOT NULL)),
@@ -828,7 +828,7 @@ CREATE TABLE web.review_comments (
     account_id      BIGINT         NOT NULL REFERENCES web.accounts(account_id),
     body            VARCHAR(2000)  NOT NULL,
     posted_at       TIMESTAMP(0)   NOT NULL,
-    source_system   VARCHAR(48)    NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system   VARCHAR(48)    NOT NULL REFERENCES public.source_systems(source_system)
 );
 
 /* The Votes analog. One vote of each kind per (review, account). */
@@ -853,7 +853,7 @@ CREATE TABLE web.page_views (
     http_status       SMALLINT      NOT NULL,
     referrer_domain   VARCHAR(80)   NULL,             -- 'google.com', 'gamefaqs.com', NULL = direct
     user_agent_family VARCHAR(60)   NOT NULL,         -- 'IE6', 'Netscape4', 'Firefox2', 'Googlebot'
-    client_country    CHAR(2)       NOT NULL REFERENCES dbo.countries(country_code),
+    client_country    CHAR(2)       NOT NULL REFERENCES public.countries(country_code),
     bytes_sent        INT           NOT NULL,
-    source_system     VARCHAR(48)   NOT NULL REFERENCES dbo.source_systems(source_system)
+    source_system     VARCHAR(48)   NOT NULL REFERENCES public.source_systems(source_system)
 );

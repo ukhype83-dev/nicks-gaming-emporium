@@ -13,11 +13,14 @@ of the same tag are equivalent.
 ## [Unreleased]
 
 ### Added
-- **PostgreSQL backend.** The OLTP (`dbo`, `hr`, `finance`) and web (`web`)
+- **PostgreSQL backend.** The OLTP (`public`, `hr`, `finance`) and web (`web`)
   layers can now be built on PostgreSQL as well as SQL Server, via
   `--load-postgres`. The generator is a single deterministic engine, so the two
   backends hold the **same data** for these layers — byte-identical, aligned by
-  primary key. New schema files
+  primary key. The OLTP core tables sit in Postgres's default `public` schema,
+  matching where SQL Server uses its default `dbo` (so SQL Server's
+  `dbo.customers` is `public.customers` on PostgreSQL); every other schema name
+  is identical on both engines. New schema files
   `schema_v1_postgres.sql` / `schema_v1_postgres_indexes.sql` at the repo root,
   applied by `--init-schema`. The OLTP transaction load runs serially.
 - **PostgreSQL data warehouse + ETL.** `--emit full` on PostgreSQL now also

@@ -32,7 +32,7 @@ RETURNS refcursor LANGUAGE plpgsql AS $$
 DECLARE c refcursor;
 BEGIN
     OPEN c FOR
-    SELECT p.title, dbo.fn_GetPlatformName(p.platform_key) AS platform,
+    SELECT p.title, public.fn_GetPlatformName(p.platform_key) AS platform,
            pp.units_sold, pp.revenue_usd
     FROM dw.agg_product_performance pp
     JOIN dw.dim_product p ON p.product_key = pp.product_key

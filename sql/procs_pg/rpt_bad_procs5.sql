@@ -38,11 +38,11 @@ RETURNS refcursor LANGUAGE plpgsql AS $$
 DECLARE c refcursor;
 BEGIN
     OPEN c FOR
-    SELECT 'customers' AS entity, COUNT(*) AS n FROM dbo.customers WHERE status='active'
+    SELECT 'customers' AS entity, COUNT(*) AS n FROM public.customers WHERE status='active'
     UNION ALL SELECT 'accounts', COUNT(*) FROM web.accounts WHERE status IS NOT NULL
     UNION ALL SELECT 'reviews', COUNT(*) FROM web.reviews WHERE rating >= 1
     UNION ALL SELECT 'fact_sales', COUNT(*) FROM dw.fact_sales WHERE line_total >= 0
-    UNION ALL SELECT 'transactions', COUNT(*) FROM dbo.transactions WHERE total >= 0;
+    UNION ALL SELECT 'transactions', COUNT(*) FROM public.transactions WHERE total >= 0;
     RETURN c;
 END $$;
 

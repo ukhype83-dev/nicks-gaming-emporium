@@ -47,7 +47,7 @@ BEGIN
     v_run := batch.log_start('batch.usp_refresh_dim_currency','dw.dim_currency','full');
     TRUNCATE TABLE dw.dim_currency;
     INSERT INTO dw.dim_currency(currency_code,name,minor_unit)
-    SELECT currency_code,name,minor_unit FROM dbo.currencies;
+    SELECT currency_code,name,minor_unit FROM public.currencies;
     GET DIAGNOSTICS v_rows = ROW_COUNT;
     UPDATE dw.etl_run_log SET finished_at=now() AT TIME ZONE 'UTC', rows_affected=v_rows, status='ok' WHERE run_id=v_run;
 EXCEPTION WHEN OTHERS THEN
@@ -81,7 +81,7 @@ BEGIN
           ELSE 'Other'
         END,
         c.default_currency, c.governing_regime
-    FROM dbo.countries c;
+    FROM public.countries c;
     GET DIAGNOSTICS v_rows = ROW_COUNT;
     UPDATE dw.etl_run_log SET finished_at=now() AT TIME ZONE 'UTC', rows_affected=v_rows, status='ok' WHERE run_id=v_run;
 EXCEPTION WHEN OTHERS THEN
@@ -97,7 +97,7 @@ BEGIN
     v_run := batch.log_start('batch.usp_refresh_dim_platform','dw.dim_platform','full');
     TRUNCATE TABLE dw.dim_platform;
     INSERT INTO dw.dim_platform(platform_key,platform_name,family,released_year,discontinued_year)
-    SELECT platform_id,name,family,released_year,discontinued_year FROM dbo.platforms;
+    SELECT platform_id,name,family,released_year,discontinued_year FROM public.platforms;
     GET DIAGNOSTICS v_rows = ROW_COUNT;
     UPDATE dw.etl_run_log SET finished_at=now() AT TIME ZONE 'UTC', rows_affected=v_rows, status='ok' WHERE run_id=v_run;
 EXCEPTION WHEN OTHERS THEN
@@ -117,13 +117,13 @@ BEGIN
     SELECT r.release_id, 'game', r.release_id, NULL,
            LEFT(r.title,450), r.platform_id, p.name,
            r.genre, r.publisher, r.developer, NULL, r.media_type, r.first_release_date, NULL
-    FROM dbo.releases r LEFT JOIN dbo.platforms p ON p.platform_id = r.platform_id
+    FROM public.releases r LEFT JOIN public.platforms p ON p.platform_id = r.platform_id
     UNION ALL
     SELECT 9000000000 + h.hardware_id, 'hardware', NULL, h.hardware_id,
            h.model_name, h.platform_id, p.name,
            h.kind, NULL, NULL, h.manufacturer, NULL,
            COALESCE(h.release_na,h.release_jp,h.release_eu), h.launch_usd
-    FROM dbo.hardware h LEFT JOIN dbo.platforms p ON p.platform_id = h.platform_id;
+    FROM public.hardware h LEFT JOIN public.platforms p ON p.platform_id = h.platform_id;
     GET DIAGNOSTICS v_rows = ROW_COUNT;
     UPDATE dw.etl_run_log SET finished_at=now() AT TIME ZONE 'UTC', rows_affected=v_rows, status='ok' WHERE run_id=v_run;
 EXCEPTION WHEN OTHERS THEN
@@ -141,13 +141,13 @@ BEGIN
     WITH addr AS (
         SELECT shop_id, city, region,
                ROW_NUMBER() OVER (PARTITION BY shop_id ORDER BY shop_address_id) rn
-        FROM dbo.shop_addresses
+        FROM public.shop_addresses
     )
     INSERT INTO dw.dim_shop(shop_key,shop_code,name,country_code,region,city,opened_date,closed_date,is_open,currency_code,is_flagship)
     SELECT s.shop_id, s.shop_code, s.name, s.country_code, g.region, a.city,
            s.opened_date, s.closed_date, (s.closed_date IS NULL),
            s.currency_code, (s.shop_id IN (1,2))
-    FROM dbo.shops s
+    FROM public.shops s
     LEFT JOIN addr a ON a.shop_id = s.shop_id AND a.rn = 1
     LEFT JOIN dw.dim_geography g ON g.country_code = s.country_code;
     GET DIAGNOSTICS v_rows = ROW_COUNT;
@@ -224,13 +224,13 @@ BEGIN
                     CASE WHEN effective_to IS NULL THEN 0 ELSE 1 END,
                     CASE WHEN address_type='billing' THEN 0 ELSE 1 END,
                     effective_from DESC) rn
-        FROM dbo.customer_addresses
+        FROM public.customer_addresses
     ),
     loy AS (
         SELECT customer_id, tier,
                ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY
                     CASE WHEN closed_at IS NULL THEN 0 ELSE 1 END, enrolled_at DESC) rn
-        FROM dbo.loyalty_memberships WHERE tier IS NOT NULL
+        FROM public.loyalty_memberships WHERE tier IS NOT NULL
     )
     INSERT INTO dw.dim_customer(customer_key,status,signup_date,signup_year,signup_cohort,country_code,region,city,
                            loyalty_tier,is_anonymised,birth_year,age_band)
@@ -246,7 +246,7 @@ BEGIN
                 WHEN 2016 - extract(year from c.date_of_birth) <= 44 THEN '35-44'
                 WHEN 2016 - extract(year from c.date_of_birth) <= 54 THEN '45-54'
                 ELSE '55+' END
-    FROM dbo.customers c
+    FROM public.customers c
     LEFT JOIN addr a ON a.customer_id = c.customer_id AND a.rn = 1
     LEFT JOIN loy  l ON l.customer_id = c.customer_id AND l.rn = 1
     LEFT JOIN dw.dim_geography g ON g.country_code = a.country_code;

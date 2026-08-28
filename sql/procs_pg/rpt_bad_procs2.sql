@@ -3,18 +3,18 @@
    ============================================================= */
 
 /* ---- two more scalar UDFs (VOLATILE) to spread the UDF tax around ---- */
-CREATE OR REPLACE FUNCTION dbo.fn_GetShopName(p_shop_id bigint)
+CREATE OR REPLACE FUNCTION public.fn_GetShopName(p_shop_id bigint)
 RETURNS varchar(255) LANGUAGE plpgsql VOLATILE AS $$
 DECLARE n varchar(255);
 BEGIN
-    SELECT name INTO n FROM dbo.shops WHERE shop_id = p_shop_id;   -- one lookup per row
+    SELECT name INTO n FROM public.shops WHERE shop_id = p_shop_id;   -- one lookup per row
     RETURN COALESCE(n, '(unknown shop)');
 END $$;
 
-CREATE OR REPLACE FUNCTION dbo.fn_GetCustomerCountry(p_customer_id bigint)
+CREATE OR REPLACE FUNCTION public.fn_GetCustomerCountry(p_customer_id bigint)
 RETURNS char(2) LANGUAGE plpgsql VOLATILE AS $$
 BEGIN
-    RETURN (SELECT country_code FROM dbo.customer_addresses WHERE customer_id = p_customer_id LIMIT 1);
+    RETURN (SELECT country_code FROM public.customer_addresses WHERE customer_id = p_customer_id LIMIT 1);
 END $$;
 
 /* ---- inventory "check" that cursors over every shop, one query each ---- */
@@ -24,10 +24,10 @@ DECLARE c refcursor; v_sid bigint;
 BEGIN
     DROP TABLE IF EXISTS _toddsinv;
     CREATE TEMP TABLE _toddsinv (shop_id bigint, skus int, units bigint) ON COMMIT DROP;
-    FOR v_sid IN SELECT shop_id FROM dbo.shops LOOP
-        INSERT INTO _toddsinv SELECT v_sid, COUNT(*), SUM(on_hand) FROM dbo.inventory WHERE shop_id = v_sid;  -- one scan per shop
+    FOR v_sid IN SELECT shop_id FROM public.shops LOOP
+        INSERT INTO _toddsinv SELECT v_sid, COUNT(*), SUM(on_hand) FROM public.inventory WHERE shop_id = v_sid;  -- one scan per shop
     END LOOP;
-    OPEN c FOR SELECT r.*, dbo.fn_GetShopName(r.shop_id) AS shop_name FROM _toddsinv r ORDER BY units DESC;  -- + UDF tax
+    OPEN c FOR SELECT r.*, public.fn_GetShopName(r.shop_id) AS shop_name FROM _toddsinv r ORDER BY units DESC;  -- + UDF tax
     RETURN c;
 END $$;
 
@@ -79,10 +79,10 @@ RETURNS refcursor LANGUAGE plpgsql AS $$
 DECLARE c refcursor;
 BEGIN
     OPEN c FOR
-    SELECT c.customer_key, l.net_spend_usd, dbo.fn_GetCustomerCountry(c.customer_key) AS country_again
+    SELECT c.customer_key, l.net_spend_usd, public.fn_GetCustomerCountry(c.customer_key) AS country_again
     FROM dw.dim_customer c
     JOIN dw.agg_customer_ltv l ON l.customer_key = c.customer_key
-    WHERE dbo.fn_GetCustomerCountry(c.customer_key) = p_country      -- UDF per row instead of c.country_code
+    WHERE public.fn_GetCustomerCountry(c.customer_key) = p_country      -- UDF per row instead of c.country_code
       AND l.net_spend_usd > 1000
     ORDER BY l.net_spend_usd DESC;
     RETURN c;

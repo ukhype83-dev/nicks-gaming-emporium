@@ -1,7 +1,7 @@
 /* =============================================================
    dw — fact tables (PostgreSQL port of 20_facts.sql)
    -------------------------------------------------------------
-   fact_sales grain = dbo.transaction_lines. Loaded month-by-month by
+   fact_sales grain = public.transaction_lines. Loaded month-by-month by
    batch.usp_refresh_fact_sales (a PROCEDURE that COMMITs per month so
    the load is never one giant transaction). No fact->dim FKs (DW
    convention). PK on the natural line key for reconciliation.
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS dw.fact_sales (
     CONSTRAINT pk_fact_sales PRIMARY KEY (transaction_line_id)
 );
 
-/* ---- fact_tradein : grain = dbo.trade_in_items ---- */
+/* ---- fact_tradein : grain = public.trade_in_items ---- */
 CREATE TABLE IF NOT EXISTS dw.fact_tradein (
     trade_in_item_id BIGINT        NOT NULL,
     trade_in_id      BIGINT        NOT NULL,

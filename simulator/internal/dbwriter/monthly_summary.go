@@ -297,19 +297,19 @@ WITH months(month_start) AS (
 year_fx AS (
     SELECT y.yr, c.currency_code,
            COALESCE(
-             (SELECT f.rate_to_usd FROM dbo.fx_rates f
+             (SELECT f.rate_to_usd FROM public.fx_rates f
               WHERE f.currency_code = c.currency_code AND f.effective_year <= y.yr
               ORDER BY f.effective_year DESC LIMIT 1),
-             (SELECT f.rate_to_usd FROM dbo.fx_rates f
+             (SELECT f.rate_to_usd FROM public.fx_rates f
               WHERE f.currency_code = c.currency_code
               ORDER BY f.effective_year ASC LIMIT 1)) AS rate_to_usd
     FROM (SELECT DISTINCT EXTRACT(YEAR FROM month_start)::int AS yr FROM months) y
-    CROSS JOIN dbo.currencies c
+    CROSS JOIN public.currencies c
 ),
 shops_for_month AS (
     SELECT m.month_start, COUNT(*) AS shops_active
     FROM months m
-    LEFT JOIN dbo.shops s
+    LEFT JOIN public.shops s
       ON s.opened_date <= (date_trunc('month', m.month_start) + INTERVAL '1 month' - INTERVAL '1 day')::date
      AND (s.closed_date IS NULL OR s.closed_date >= m.month_start)
     GROUP BY m.month_start
@@ -330,7 +330,7 @@ rent_for_month AS (
              * (0.45 + 0.020 * (EXTRACT(YEAR FROM m.month_start)::int - 1986))
            ), 0) AS rent_usd
     FROM months m
-    LEFT JOIN dbo.shops s
+    LEFT JOIN public.shops s
       ON s.opened_date <= (date_trunc('month', m.month_start) + INTERVAL '1 month' - INTERVAL '1 day')::date
      AND (s.closed_date IS NULL OR s.closed_date >= m.month_start)
     GROUP BY m.month_start
@@ -347,8 +347,8 @@ revenue_local AS (
     SELECT date_trunc('month', t.occurred_at)::date AS month_start,
            s.currency_code,
            SUM(t.total) AS total_local
-    FROM dbo.transactions t
-    JOIN dbo.shops s ON s.shop_id = t.shop_id
+    FROM public.transactions t
+    JOIN public.shops s ON s.shop_id = t.shop_id
     GROUP BY date_trunc('month', t.occurred_at)::date, s.currency_code
 ),
 revenue_for_month AS (
@@ -409,9 +409,9 @@ cogs_ratio AS (
                  / NULLIF(SUM(tl.line_total), 0) AS console_frac,
                CAST(SUM(CASE WHEN h.kind = 'accessory' THEN tl.line_total ELSE 0 END) AS double precision)
                  / NULLIF(SUM(tl.line_total), 0) AS acc_frac
-        FROM dbo.transaction_lines tl
-        JOIN dbo.transactions t ON t.transaction_id = tl.transaction_id
-        LEFT JOIN dbo.hardware h ON h.hardware_id = tl.hardware_id
+        FROM public.transaction_lines tl
+        JOIN public.transactions t ON t.transaction_id = tl.transaction_id
+        LEFT JOIN public.hardware h ON h.hardware_id = tl.hardware_id
         GROUP BY date_trunc('month', t.occurred_at)::date
     ) hf
 )

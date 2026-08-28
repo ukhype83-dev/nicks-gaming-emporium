@@ -20,7 +20,7 @@ PostgreSQL**.
 
 | Layer | SQL Server | PostgreSQL |
 |---|:---:|:---:|
-| **OLTP** (`dbo`, `hr`, `finance`) — shops, catalogue, customers, staff, transactions, payments, trade-ins, finance roll-ups | ✅ | ✅ |
+| **OLTP** (`dbo`/`public`, `hr`, `finance`) — shops, catalogue, customers, staff, transactions, payments, trade-ins, finance roll-ups | ✅ | ✅ |
 | **Web / community** (`web`) — accounts, reviews, comments, votes, clickstream | ✅ | ✅ |
 | **Data warehouse** (`dw`) — dimensional model + ETL (`batch`) | ✅ | ✅ |
 | **Reporting procedures** (`rpt`, incl. the tuning-lab "bad" procs) | ✅ | ✅ |
@@ -29,7 +29,11 @@ PostgreSQL**.
 The OLTP + web layers are generated from the same deterministic engine on both
 backends, so a SQL Server database and a PostgreSQL database of the same tier
 hold the **same rows**, aligned by primary key (see
-[Reproducibility](#reproducibility)). The data
+[Reproducibility](#reproducibility)). One deliberate naming difference: the OLTP
+core tables live in each engine's **default schema** — `dbo` on SQL Server,
+`public` on PostgreSQL — while every other schema (`hr`, `web`, `finance`, `dw`,
+`rpt`, `batch`, `loadgen`) keeps the same name on both. So a table SQL Server
+calls `dbo.customers` is `public.customers` on PostgreSQL. The data
 warehouse (the dimensional model plus the `batch` ETL that populates it) now
 builds on both backends too — on PostgreSQL it is a rowstore + BRIN design
 (no columnstore, which is deliberately a "same query, two engines, different
@@ -190,8 +194,8 @@ assigned in a fixed order, so they match too.
 
 ## What you get
 
-- **OLTP schema** (`dbo`, `hr`, `finance`) — the operational database.
-  *(SQL Server + PostgreSQL)*
+- **OLTP schema** (`dbo` on SQL Server / `public` on PostgreSQL, plus `hr`,
+  `finance`) — the operational database. *(SQL Server + PostgreSQL)*
 - **Web/community schema** (`web`) — accounts, reviews, votes, clickstream.
   *(SQL Server + PostgreSQL)*
 - **Data warehouse** (`dw`) — conformed dimensions, line-grain fact tables, a
