@@ -29,6 +29,7 @@ func TestReleaseDateOverridesApply(t *testing.T) {
 	}{
 		{23417, "2000-01-01", "2000-04-01"}, // Carmageddon — raw "April 1, 2000"
 		{24075, "1998-01-01", "1998-11-30"}, // Centipede — raw "November 30, 1998"
+		{20950, "1996-01-01", "1996-02-29"}, // Civilization II (Windows) — Wikidata P577 (matched via enwiki sitelink)
 	}
 	for _, c := range cases {
 		got := overrideReleaseDate(c.id, mustDate(t, c.fallback))
