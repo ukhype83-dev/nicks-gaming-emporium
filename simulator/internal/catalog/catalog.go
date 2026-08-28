@@ -297,6 +297,11 @@ func Load(path string) (*Index, error) {
 		if err != nil {
 			continue
 		}
+		// Replace a year-only "YYYY-01-01" fallback with the recovered real
+		// date where we have one (release_date_overrides.tsv). Done here, before
+		// the date sort and the per-platform / per-(platform,year) indexes, so
+		// the correction reaches the sales sampler and the web ReleaseYear.
+		releaseDate = overrideReleaseDate(releaseID, releaseDate)
 		score, err := strconv.ParseFloat(fields[4], 64)
 		if err != nil {
 			score = 65.0

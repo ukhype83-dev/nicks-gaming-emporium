@@ -60,6 +60,21 @@ of the same tag are equivalent.
   the workload generator on PostgreSQL without a client that manages autocommit.
 
 ### Changed
+- **Accurate release dates; nothing shipped before release.** About 40% of the
+  catalogue carried only a year-only `YYYY-01-01` fallback date. Real dates are
+  now recovered for **7,965** of those titles — 5,458 from each game's own
+  scraped date strings and regional columns, and 2,507 from Wikidata's
+  structured publication dates (`P577`). Every correction is accepted only when
+  its year matches the year already on record, so a wrong match can't change the
+  data. Because the sales sampler gates on the full release date, this places
+  those titles' transactions — and the reviews that follow real purchases — in
+  realistic time. In addition, the two previously-ungated paths — unverified
+  ("browsed") reviews and the page-view clickstream — now sample only titles
+  already released at that moment, so **no review or page view ever references a
+  game before it shipped**. Corrections live in a new data file,
+  `seed_data/release_date_overrides.tsv`, applied at catalogue load. This shifts
+  canonical OLTP + web data, so a rebuilt database differs from a prior one; it
+  stays fully deterministic for a given seed.
 - **Review-engine immersion pass.** Product reviews and comment threads now
   read truer to the game they are about:
   - **Physical medium is correct.** A review can no longer describe a cartridge

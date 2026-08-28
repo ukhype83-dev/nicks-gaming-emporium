@@ -94,10 +94,12 @@ type Emitter struct {
 	reviewers    map[int64]*reviewerState
 	releaseMeta  map[int64]ReleaseMeta
 	hardwareMeta map[int64]HardwareMeta
-	// curatedReleaseIDs (famous, for unverified reviews + traffic weighting)
-	// and allReleaseIDs (every catalog id, for clickstream) — both lazy.
-	curatedReleaseIDs []int64
-	allReleaseIDs     []int64
+	// curatedByDate (famous, for unverified reviews + traffic weighting) and
+	// allByDate (every catalog id, for clickstream) — both lazy, and sorted by
+	// release date so a sale/view/review can be restricted to titles already
+	// shipped at that moment (see sampleReleaseBefore).
+	curatedByDate []datedRelease
+	allByDate     []datedRelease
 
 	accountIDBase int64
 	nextAccountID int64

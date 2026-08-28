@@ -94,7 +94,7 @@ func (e *Emitter) EmitClickstreamShard(scale float64, shardIdx, shardCount int, 
 			for v := 0; v < views; v++ {
 				at := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, time.UTC).
 					Add(time.Duration(secOfDay) * time.Second)
-				path := e.trafficPath(rr, isBot)
+				path := e.trafficPath(rr, isBot, at)
 				status := httpStatus(rr, day)
 				emit(PageViewRecord{
 					PageViewID: pvID, SessionID: sessionID, AccountID: acctID,
@@ -215,13 +215,13 @@ func (e *Emitter) drawVisitor(rr *rand.Rand, day time.Time) (acctRef, bool) {
 
 // trafficPath builds a URL. Bots sweep product pages; humans browse a wider
 // mix. Product paths reference real release_ids (joinable to the catalog).
-func (e *Emitter) trafficPath(rr *rand.Rand, isBot bool) string {
+func (e *Emitter) trafficPath(rr *rand.Rand, isBot bool, at time.Time) string {
 	if isBot || rr.Float64() < 0.62 {
-		return "/product/" + itoa(e.sampleTrafficRelease(rr))
+		return "/product/" + itoa(e.sampleTrafficReleaseBefore(rr, at))
 	}
 	switch rr.IntN(10) {
 	case 0, 1:
-		return "/reviews/" + itoa(e.sampleTrafficRelease(rr))
+		return "/reviews/" + itoa(e.sampleTrafficReleaseBefore(rr, at))
 	case 2, 3:
 		return "/search"
 	case 4:
@@ -327,29 +327,36 @@ func webClickSource(day time.Time) string {
 	return "web_2008_plus"
 }
 
-// sampleTrafficRelease returns a release_id weighted toward the famous
-// (curated) titles — they pull most of the traffic.
-func (e *Emitter) sampleTrafficRelease(rr *rand.Rand) int64 {
-	if len(e.curatedReleaseIDs) > 0 && rr.Float64() < 0.6 {
-		return e.curatedReleaseIDs[rr.IntN(len(e.curatedReleaseIDs))]
+// sampleTrafficReleaseBefore returns a release_id weighted toward the famous
+// (curated) titles — they pull most of the traffic — restricted to titles that
+// had shipped by `at`, so a page view never references an unreleased game.
+func (e *Emitter) sampleTrafficReleaseBefore(rr *rand.Rand, at time.Time) int64 {
+	if len(e.curatedByDate) > 0 && rr.Float64() < 0.6 {
+		if id, ok := sampleReleaseBefore(e.curatedByDate, rr, at); ok {
+			return id
+		}
+		// nothing curated had shipped yet — fall back to the full pool
 	}
-	if len(e.allReleaseIDs) == 0 {
-		return 0
-	}
-	return e.allReleaseIDs[rr.IntN(len(e.allReleaseIDs))]
+	id, _ := sampleReleaseBefore(e.allByDate, rr, at)
+	return id
 }
 
-// ensureTrafficReleases builds the release-id pools once.
+// ensureTrafficReleases builds the date-sorted release pools once.
 func (e *Emitter) ensureTrafficReleases() {
-	if len(e.curatedReleaseIDs) == 0 {
+	if len(e.curatedByDate) == 0 {
 		e.buildCuratedReleaseIDs()
 	}
-	if len(e.allReleaseIDs) == 0 {
-		ids := make([]int64, 0, len(e.releaseMeta))
-		for id := range e.releaseMeta {
-			ids = append(ids, id)
+	if len(e.allByDate) == 0 {
+		pool := make([]datedRelease, 0, len(e.releaseMeta))
+		for id, m := range e.releaseMeta {
+			pool = append(pool, datedRelease{id: id, date: m.ReleaseDate})
 		}
-		sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
-		e.allReleaseIDs = ids
+		sort.Slice(pool, func(i, j int) bool {
+			if pool[i].date.Equal(pool[j].date) {
+				return pool[i].id < pool[j].id
+			}
+			return pool[i].date.Before(pool[j].date)
+		})
+		e.allByDate = pool
 	}
 }

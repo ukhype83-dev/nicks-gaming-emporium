@@ -45,6 +45,10 @@ type ReleaseMeta struct {
 	// into cartridge/disc/… by the review engine), and OtherPlatforms (the
 	// sibling platforms the same title shipped on, sorted, excluding this
 	// release's own platform; nil = single-platform title).
+	// ReleaseDate is the full first-release date (zero if unknown); it gates
+	// unverified reviews and the clickstream so a game is never reviewed or
+	// viewed before it shipped. ReleaseYear is just its year, for immersion text.
+	ReleaseDate    time.Time
 	ReleaseYear    int
 	Media          string
 	OtherPlatforms []string

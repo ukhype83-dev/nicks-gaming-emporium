@@ -139,7 +139,7 @@ func (e *Emitter) buildUnverifiedReview(rr *rand.Rand, reviewID int64, acct acct
 	year := posted.Year()
 	arch = e.eraAdjustArchetype(rr, arch, year)
 
-	rid := e.sampleCuratedRelease(rr)
+	rid := e.sampleCuratedReleaseBefore(rr, posted)
 	m, ok := e.releaseMeta[rid]
 	if !ok {
 		return ReviewRecord{}, false
@@ -304,32 +304,56 @@ func (e *Emitter) hardwareContext(rr *rand.Rand, m HardwareMeta, acct acctRef, p
 	}
 }
 
-// sampleCuratedRelease returns a release_id known to have metadata — used for
-// unverified (browsed) reviews. Draws from the reception-curated set so the
-// score and title are always meaningful. Deterministic given rr.
-func (e *Emitter) sampleCuratedRelease(rr *rand.Rand) int64 {
-	if len(e.curatedReleaseIDs) == 0 {
-		e.buildCuratedReleaseIDs()
-	}
-	if len(e.curatedReleaseIDs) == 0 {
-		return 0
-	}
-	return e.curatedReleaseIDs[rr.IntN(len(e.curatedReleaseIDs))]
+// datedRelease pairs a release id with its release date. Pools of these are
+// kept sorted ascending by date so a sampler can binary-search the set of
+// titles already released at a given moment.
+type datedRelease struct {
+	id   int64
+	date time.Time
 }
 
-// buildCuratedReleaseIDs collects release_ids whose normalised title the
-// reception index knows — the pool of "famous enough to have an opinion on"
-// games for unverified reviews. Built lazily, once.
+// sampleReleaseBefore returns a uniformly chosen release id from pool (sorted
+// ascending by date) whose release date is on or before `at`; ok is false when
+// nothing had shipped yet. One draw — mirrors the catalog availability sampler
+// so the web layer never references a game before it existed.
+func sampleReleaseBefore(pool []datedRelease, rr *rand.Rand, at time.Time) (int64, bool) {
+	cutoff := sort.Search(len(pool), func(i int) bool { return pool[i].date.After(at) })
+	if cutoff == 0 {
+		return 0, false
+	}
+	return pool[rr.IntN(cutoff)].id, true
+}
+
+// sampleCuratedReleaseBefore returns a reception-curated release (guaranteed
+// metadata + score) that had shipped by `at` — used for unverified (browsed)
+// reviews so a browsed game is never reviewed before it released. Deterministic
+// given rr; 0 when nothing curated had shipped yet (the caller drops the review).
+func (e *Emitter) sampleCuratedReleaseBefore(rr *rand.Rand, at time.Time) int64 {
+	if len(e.curatedByDate) == 0 {
+		e.buildCuratedReleaseIDs()
+	}
+	id, _ := sampleReleaseBefore(e.curatedByDate, rr, at)
+	return id
+}
+
+// buildCuratedReleaseIDs collects releases whose normalised title the reception
+// index knows — the pool of "famous enough to have an opinion on" games for
+// unverified reviews and traffic weighting — sorted by release date. Lazy, once.
 func (e *Emitter) buildCuratedReleaseIDs() {
-	ids := make([]int64, 0, 4096)
+	pool := make([]datedRelease, 0, 4096)
 	for id, m := range e.releaseMeta {
 		if e.Reception.IsCurated(m.NormTitle, m.Platform) {
-			ids = append(ids, id)
+			pool = append(pool, datedRelease{id: id, date: m.ReleaseDate})
 		}
 	}
-	// Stable order for determinism (map iteration is random).
-	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
-	e.curatedReleaseIDs = ids
+	// Sort by date, then id — a total order independent of map iteration.
+	sort.Slice(pool, func(i, j int) bool {
+		if pool[i].date.Equal(pool[j].date) {
+			return pool[i].id < pool[j].id
+		}
+		return pool[i].date.Before(pool[j].date)
+	})
+	e.curatedByDate = pool
 }
 
 // pickArchetype selects a reviewer's sticky voice, tilting toward the

@@ -438,6 +438,7 @@ func buildReleaseMeta(cat *catalog.Index) map[int64]web.ReleaseMeta {
 			Genre:          r.Genre,
 			Publisher:      r.Publisher,
 			Developer:      r.Developer,
+			ReleaseDate:    r.ReleaseDate,
 			ReleaseYear:    year,
 			Media:          policy.CanonicalMedia(r.Platform, year),
 			OtherPlatforms: others,
