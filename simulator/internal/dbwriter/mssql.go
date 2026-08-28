@@ -109,7 +109,7 @@ func classifyError(err error) errClass {
 		// parser hits a hiccup on a connection under concurrent load (no
 		// server-side fault is logged). Behaves like a connection blip: a
 		// retry on a fresh pool connection succeeds. Seen on a co-tenant
-		// 16GB instance at vusers=8. BulkInsert is one transaction per
+		// 16GB instance under concurrent load. BulkInsert is one transaction per
 		// call, so whole-call retry is safe (the lost-ack edge is covered
 		// by the duplicate-key rule).
 		strings.Contains(msg, "sql server had internal error"),
@@ -219,10 +219,9 @@ func NewMSSQL(ctx context.Context, dsn string) (*MSSQL, error) {
 //
 // Transient SQL Server errors (deadlocks, schema-change races) trigger
 // automatic retry with exponential backoff up to bulkInsertMaxAttempts.
-// All other errors return immediately. Deadlocks are common under the
-// 16-vusers parallel build because peer workers concurrently INSERT
-// into the same heap tables and contend for B-tree page latches; the
-// retry path resolves them transparently.
+// All other errors return immediately. Deadlocks can occur when
+// concurrent writers INSERT into the same heap tables and contend for
+// B-tree page latches; the retry path resolves them transparently.
 // BulkInsert loads rows via inline-value multi-row INSERT. One
 // transaction per BulkInsert call; rolls back on any error — which is
 // what makes whole-call retry safe: the transaction either committed

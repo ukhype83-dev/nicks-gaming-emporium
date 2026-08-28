@@ -22,7 +22,7 @@ func TestClassifyError(t *testing.T) {
 		{"wsarecv: An existing connection was forcibly closed by the remote host.", errNetwork},
 		// go-mssqldb client-side parser blip under concurrent load — no
 		// server-side fault logged; a fresh-connection retry succeeds.
-		// Verbatim from a co-tenant 30g build at vusers=8.
+		// Verbatim from a co-tenant 30g build under concurrent load.
 		{"inline insert into dbo.transaction_lines (chunk starting row 24500, 500 rows): SQL Server had internal error", errNetwork},
 		{"Transaction (Process ID 87) was deadlocked on lock resources with another process and has been chosen as the deadlock victim.", errDeadlock},
 		{"Bulk load failed due to schema change of the target table.", errDeadlock},

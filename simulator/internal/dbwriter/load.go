@@ -28,8 +28,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"sync"
-	"sync/atomic"
 	"time"
 
 	"emporium/internal/catalog"
@@ -109,17 +107,10 @@ func loadIfEmpty(ctx context.Context, w Writer, schema, table, idCol string, col
 
 // LoadAll drives the end-to-end build. `w` should be an already-
 // connected Writer; the schema must already be applied (use
-// InitSchema first if needed).
-//
-// dsn / vusers are only consumed by the transactions phase, which is
-// the only phase parallelism currently applies to. When vusers > 1,
-// loadTransactions opens vusers additional MSSQL writers from dsn and
-// runs N shop shards concurrently. dsn may be empty when vusers == 1.
+// InitSchema first if needed). The transactions phase loads serially.
 func LoadAll(
 	ctx context.Context,
 	w Writer,
-	dsn string,
-	vusers int,
 	tier string,
 	seed uint64,
 	asOf time.Time,
@@ -216,18 +207,9 @@ func LoadAll(
 		return s, err
 	}
 
-	// 11-12. Transactions + lines + payments. Parallel when vusers > 1.
-	if vusers > 1 {
-		if dsn == "" {
-			return s, fmt.Errorf("vusers=%d requires a non-empty DSN", vusers)
-		}
-		if err := loadTransactionsParallel(ctx, w, dsn, vusers, tier, seed, asOf, shopList, cat, hw, custIndex, shiftIdx, &s, progress); err != nil {
-			return s, err
-		}
-	} else {
-		if err := loadTransactions(ctx, w, tier, seed, asOf, shopList, cat, hw, custIndex, shiftIdx, &s, progress); err != nil {
-			return s, err
-		}
+	// 11-12. Transactions + lines + payments (serial).
+	if err := loadTransactions(ctx, w, tier, seed, asOf, shopList, cat, hw, custIndex, shiftIdx, &s, progress); err != nil {
+		return s, err
 	}
 
 	// V1.15.0 — 12.6: finance.monthly_summary (post-load aggregation).
@@ -866,280 +848,5 @@ func loadTransactions(
 	progress("dbo.trade_ins", s.TradeIns)
 	progress("dbo.trade_in_items", s.TradeInItems)
 	progress("dbo.store_credit_ledger", s.StoreCreditLedger)
-	return nil
-}
-
-// idStride is the per-worker ID range size for parallel loads. Worker w
-// gets IDs starting at w*idStride+1 for every counter family. 10^10
-// supports ~1B transactions per worker per family — comfortably above
-// any realistic single-worker share even at the 3T tier (5500 shops ÷
-// 64 workers ≈ 86 shops/worker × ~300K tx/shop ≈ 26M tx/worker).
-//
-// Layout chosen so worker IDs are visually distinguishable in queries
-// (a tx_id of 10000000123 obviously belongs to worker 1).
-const idStride int64 = 10_000_000_000
-
-// loadTransactionsParallel runs the transactions phase across `vusers`
-// goroutines. Each worker:
-//   - opens its own *MSSQL writer (separate TDS session, separate pool)
-//   - owns a round-robin shard of shopList (worker w gets shops[w], shops[w+vusers], ...)
-//   - owns a private ID range per counter family (worker w starts at w*idStride+1)
-//   - runs the same flush loop as single-worker loadTransactions, but
-//     writes to its own connection and updates LoadAllStats counters
-//     atomically.
-//
-// Resume is NOT supported: with shop-sharded ID ranges, the MAX(pk)
-// watermark would only reflect the single highest worker's progress.
-// On entry we refuse to run if any of the transactions-phase tables
-// already has rows — caller must drop+restart.
-//
-// Round-robin (vs contiguous) chunking: shop volume_multiplier is
-// log-normal, so contiguous slices of shopList risk one worker getting
-// all the busy shops. Round-robin spreads the variance.
-func loadTransactionsParallel(
-	ctx context.Context, w Writer,
-	dsn string, vusers int,
-	tier string,
-	seed uint64, asOf time.Time,
-	shopList []shops.Shop, cat *catalog.Index, hw *hardware.Index,
-	custIndex *customers.Index,
-	shiftIdx *hr.ShiftIndex,
-	s *LoadAllStats, progress func(string, int64),
-) error {
-	// Refuse to run if any transactions-phase data already exists —
-	// resume is not supported in parallel mode.
-	for _, t := range []struct{ schema, table, anchor string }{
-		{"dbo", "transactions", "transaction_id"},
-		{"dbo", "transaction_lines", "transaction_line_id"},
-		{"dbo", "payments", "payment_id"},
-		{"dbo", "inventory_movements", "movement_id"},
-		{"dbo", "trade_ins", "trade_in_id"},
-	} {
-		n, err := w.MaxBigint(ctx, t.schema, t.table, t.anchor)
-		if err != nil {
-			return fmt.Errorf("parallel preflight on %s.%s: %w", t.schema, t.table, err)
-		}
-		if n > 0 {
-			return fmt.Errorf("parallel transactions phase requires empty target tables, "+
-				"but %s.%s.%s = %d (vusers > 1 is not resumable; drop these tables and retry)",
-				t.schema, t.table, t.anchor, n)
-		}
-	}
-
-	fmt.Fprintf(os.Stderr, "  parallel mode: %d workers × %d shops sharded round-robin\n",
-		vusers, len(shopList))
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	var wg sync.WaitGroup
-	errCh := make(chan error, vusers)
-
-	for workerIdx := 0; workerIdx < vusers; workerIdx++ {
-		wg.Add(1)
-		go func(wIdx int) {
-			defer wg.Done()
-			if err := runTransactionWorker(ctx, dsn, wIdx, vusers, tier, seed, asOf, shopList, cat, hw, custIndex, shiftIdx, s); err != nil {
-				select {
-				case errCh <- fmt.Errorf("worker %d: %w", wIdx, err):
-				default:
-				}
-				cancel() // signal peers to stop early
-			}
-		}(workerIdx)
-	}
-	wg.Wait()
-	close(errCh)
-	for err := range errCh {
-		return err // first error wins
-	}
-
-	progress("dbo.transactions", atomic.LoadInt64(&s.Transactions))
-	progress("dbo.transaction_lines", atomic.LoadInt64(&s.TransactionLines))
-	progress("dbo.payments", atomic.LoadInt64(&s.Payments))
-	progress("dbo.inventory", atomic.LoadInt64(&s.Inventory))
-	progress("dbo.inventory_movements", atomic.LoadInt64(&s.InventoryMovements))
-	progress("dbo.trade_ins", atomic.LoadInt64(&s.TradeIns))
-	progress("dbo.trade_in_items", atomic.LoadInt64(&s.TradeInItems))
-	progress("dbo.store_credit_ledger", atomic.LoadInt64(&s.StoreCreditLedger))
-	return nil
-}
-
-// runTransactionWorker is one parallel-load goroutine. It owns its own
-// DB connection, its own batch buffers, and its own ID range. Stats
-// counters on `s` are updated via atomic.AddInt64 because peer workers
-// touch the same struct.
-func runTransactionWorker(
-	ctx context.Context,
-	dsn string, workerIdx, vusers int,
-	tier string,
-	seed uint64, asOf time.Time,
-	shopList []shops.Shop, cat *catalog.Index, hw *hardware.Index,
-	custIndex *customers.Index,
-	shiftIdx *hr.ShiftIndex,
-	s *LoadAllStats,
-) error {
-	const txBatchSize = 20_000
-
-	// Round-robin shard: worker w owns shops[w], shops[w+vusers], ...
-	shard := make([]shops.Shop, 0, len(shopList)/vusers+1)
-	for i := workerIdx; i < len(shopList); i += vusers {
-		shard = append(shard, shopList[i])
-	}
-	if len(shard) == 0 {
-		return nil // nothing to do (vusers > len(shopList))
-	}
-
-	workerW, err := NewMSSQL(ctx, dsn)
-	if err != nil {
-		return fmt.Errorf("open db: %w", err)
-	}
-	defer workerW.Close()
-
-	idBase := transactions.IDBase{
-		Tx:          int64(workerIdx)*idStride + 1,
-		Line:        int64(workerIdx)*idStride + 1,
-		Payment:     int64(workerIdx)*idStride + 1,
-		Movement:    int64(workerIdx)*idStride + 1,
-		TradeIn:     int64(workerIdx)*idStride + 1,
-		TradeInItem: int64(workerIdx)*idStride + 1,
-		Ledger:      int64(workerIdx)*idStride + 1,
-	}
-
-	txRows := make([][]any, 0, txBatchSize)
-	lineRows := make([][]any, 0, txBatchSize*2)
-	payRows := make([][]any, 0, txBatchSize)
-	invRows := make([][]any, 0, txBatchSize/2)
-	movRows := make([][]any, 0, txBatchSize*2)
-	tradeRows := make([][]any, 0, txBatchSize/10)
-	itemRows := make([][]any, 0, txBatchSize/5)
-	creditRows := make([][]any, 0, txBatchSize/20)
-
-	var localTx int64
-
-	flush := func() error {
-		if len(txRows) == 0 {
-			return nil
-		}
-		n := len(txRows)
-		fmt.Fprintf(os.Stderr, "  [w%d] flushing %d tx + %d lines + %d pay + %d inv + %d mov + %d trade + %d items + %d credit (running tx=%d)\n",
-			workerIdx, n, len(lineRows), len(payRows), len(invRows), len(movRows),
-			len(tradeRows), len(itemRows), len(creditRows), localTx+int64(n))
-		start := time.Now()
-
-		// PARALLEL WORKERS USE BulkInsert (inline-VALUES), NOT BulkCopy.
-		//
-		// Concurrent mssql.CopyIn sessions writing to the same heap
-		// table reliably trigger SQL Server error 4885 ("Insert bulk
-		// failed due to a schema change of the target table") because
-		// go-mssqldb's bulk-copy fetches column metadata via
-		// `SELECT * FROM <tbl> SET FMTONLY OFF` at the start of every
-		// CopyIn call, and that metadata snapshot races against
-		// concurrent allocation/stats updates from other workers.
-		//
-		// HammerDB sidesteps this by partitioning tables per worker
-		// (each TPC-C warehouse goes to its own logical partition).
-		// We don't have that partitioning, so we fall back to inline-
-		// VALUES INSERT in parallel mode — it's regular DML, which is
-		// concurrency-safe at any number of workers. The per-worker
-		// throughput drop (BulkCopy is ~2-3× faster than BulkInsert)
-		// is more than recovered by parallelism scaling cleanly to
-		// 8-16 workers.
-		//
-		// Single-worker mode (vusers=1) still uses BulkCopy via
-		// loadTransactions — keeping the V1.8c bulk-RPC win there.
-		if err := workerW.BulkInsert(ctx, "dbo", "transactions", TransactionColumns, txRows); err != nil {
-			return fmt.Errorf("dbo.transactions: %w", err)
-		}
-		atomic.AddInt64(&s.Transactions, int64(n))
-		localTx += int64(n)
-		if err := workerW.BulkInsert(ctx, "dbo", "transaction_lines", TransactionLineColumns, lineRows); err != nil {
-			return fmt.Errorf("dbo.transaction_lines: %w", err)
-		}
-		atomic.AddInt64(&s.TransactionLines, int64(len(lineRows)))
-		if err := workerW.BulkInsert(ctx, "dbo", "payments", PaymentColumns, payRows); err != nil {
-			return fmt.Errorf("dbo.payments: %w", err)
-		}
-		atomic.AddInt64(&s.Payments, int64(len(payRows)))
-		if len(invRows) > 0 {
-			if err := workerW.BulkInsert(ctx, "dbo", "inventory", InventoryColumns, invRows); err != nil {
-				return fmt.Errorf("dbo.inventory: %w", err)
-			}
-			atomic.AddInt64(&s.Inventory, int64(len(invRows)))
-		}
-		if len(movRows) > 0 {
-			if err := workerW.BulkInsert(ctx, "dbo", "inventory_movements", InventoryMovementColumns, movRows); err != nil {
-				return fmt.Errorf("dbo.inventory_movements: %w", err)
-			}
-			atomic.AddInt64(&s.InventoryMovements, int64(len(movRows)))
-		}
-		if len(tradeRows) > 0 {
-			if err := workerW.BulkInsert(ctx, "dbo", "trade_ins", TradeInColumns, tradeRows); err != nil {
-				return fmt.Errorf("dbo.trade_ins: %w", err)
-			}
-			atomic.AddInt64(&s.TradeIns, int64(len(tradeRows)))
-		}
-		if len(itemRows) > 0 {
-			if err := workerW.BulkInsert(ctx, "dbo", "trade_in_items", TradeInItemColumns, itemRows); err != nil {
-				return fmt.Errorf("dbo.trade_in_items: %w", err)
-			}
-			atomic.AddInt64(&s.TradeInItems, int64(len(itemRows)))
-		}
-		if len(creditRows) > 0 {
-			if err := workerW.BulkInsert(ctx, "dbo", "store_credit_ledger", StoreCreditLedgerColumns, creditRows); err != nil {
-				return fmt.Errorf("dbo.store_credit_ledger: %w", err)
-			}
-			atomic.AddInt64(&s.StoreCreditLedger, int64(len(creditRows)))
-		}
-
-		fmt.Fprintf(os.Stderr, "  [w%d]   committed in %s\n", workerIdx, time.Since(start).Round(time.Millisecond))
-		txRows = txRows[:0]
-		lineRows = lineRows[:0]
-		payRows = payRows[:0]
-		invRows = invRows[:0]
-		movRows = movRows[:0]
-		tradeRows = tradeRows[:0]
-		itemRows = itemRows[:0]
-		creditRows = creditRows[:0]
-		return nil
-	}
-
-	var loadErr error
-	_, err = transactions.GenerateForShard(tier, seed, asOf, shard, cat, hw, custIndex, shiftIdx, idBase, func(t transactions.Transaction) {
-		if loadErr != nil {
-			return
-		}
-		// Cooperative cancellation — peer workers may have failed.
-		if ctx.Err() != nil {
-			loadErr = ctx.Err()
-			return
-		}
-		txRows = append(txRows, TransactionToRow(t))
-		for _, lineRow := range TransactionLinesToRows(t) {
-			lineRows = append(lineRows, lineRow)
-		}
-		for _, payRow := range PaymentsToRows(t) {
-			payRows = append(payRows, payRow)
-		}
-		invRows = append(invRows, InventoryRowsFromTx(t)...)
-		movRows = append(movRows, InventoryMovementsToRows(t)...)
-		tradeRows = append(tradeRows, TradeInsToRows(t)...)
-		itemRows = append(itemRows, TradeInItemsToRows(t)...)
-		creditRows = append(creditRows, StoreCreditEventsToRows(t)...)
-		if len(txRows) >= txBatchSize {
-			if err := flush(); err != nil {
-				loadErr = err
-			}
-		}
-	})
-	if err != nil {
-		return fmt.Errorf("GenerateForShard: %w", err)
-	}
-	if loadErr != nil {
-		return fmt.Errorf("load aborted: %w", loadErr)
-	}
-	if err := flush(); err != nil {
-		return fmt.Errorf("final flush: %w", err)
-	}
 	return nil
 }

@@ -28,8 +28,8 @@ PostgreSQL**.
 
 The OLTP + web layers are generated from the same deterministic engine on both
 backends, so a SQL Server database and a PostgreSQL database of the same tier
-hold the **same rows** (aligned by primary key when built the same way — see
-[Reproducibility](#build-speed---vusers-your-mileage-will-vary)). The data
+hold the **same rows**, aligned by primary key (see
+[Reproducibility](#reproducibility)). The data
 warehouse (the dimensional model plus the `batch` ETL that populates it) now
 builds on both backends too — on PostgreSQL it is a rowstore + BRIN design
 (no columnstore, which is deliberately a "same query, two engines, different
@@ -95,7 +95,7 @@ Build it:
 ```bash
 ./build_emporium \
   --load-mssql "sqlserver://user:password@host:1433?database=nge_tiny" \
-  --init-schema --recovery-simple --tier tiny --vusers 8
+  --init-schema --recovery-simple --tier tiny
 ```
 
 The full pipeline runs end to end:
@@ -132,10 +132,8 @@ The full pipeline runs OLTP → indexes → web → **data warehouse → ETL →
 validation** (the same six phases as SQL Server), ending in the reconciliation
 gate. Notes for PostgreSQL:
 
-- The OLTP transaction load runs **serially** (the parallel path is SQL Server
-  only), so it's the slow phase on the big tiers; the web clickstream still runs
-  in parallel. `--vusers` therefore tunes only the clickstream — the data is
-  identical regardless.
+- The OLTP transaction load runs **serially**, so it's the slow phase on the big
+  tiers; the web clickstream still runs in parallel across CPU cores.
 - The warehouse is rowstore + BRIN (no columnstore); the `batch` ETL populates
   it and the build finishes with the same reconciliation checks as SQL Server.
   (The `rpt`/`loadgen` procedure libraries are not on PostgreSQL yet.)
@@ -159,10 +157,9 @@ RESTORE DATABASE nge_tiny FROM DISK = 'D:\Downloads\nge_tiny.bak'
 
 Prebuilt files are SQL Server backups today; PostgreSQL dumps (`pg_restore`) are
 planned alongside the PostgreSQL warehouse work. Building from source (above) is
-always the zero-cost option and works for both backends now. For a given seed
-and `--vusers` it produces a byte-identical database; the data and all aggregate
-results are identical regardless of `--vusers` (only the build-order surrogate
-ids differ). The downloads are purely a convenience for the larger tiers.
+always the zero-cost option and works for both backends now. For a given seed it
+produces a byte-identical database — every time, on any machine, and identically
+across both backends. The downloads are purely a convenience for the larger tiers.
 
 ### Useful flags
 
@@ -173,7 +170,6 @@ ids differ). The downloads are purely a convenience for the larger tiers.
 | `--load-postgres`     | PostgreSQL target DSN: `postgres://user:pass@host:5432/NAME` |
 | `--init-schema`       | apply the table schema before loading (use on an empty database) |
 | `--recovery-simple`   | (SQL Server) set SIMPLE recovery for faster bulk load |
-| `--vusers`            | parallel data-load workers. See **Build speed** below — more isn't always faster, and it changes id reproducibility. |
 | `--emit`              | defaults to `full` (build everything — omit it for the normal case). `oltp` builds only the OLTP base; or name a single layer, e.g. `web`. (`all` is a back-compat alias for `full`.) |
 | `--deploy-sql`        | run a single SQL file against the target (used to `CREATE DATABASE` on PostgreSQL) |
 | `--pg-call`           | run one autocommit statement against `--load-postgres` and exit — e.g. `--pg-call "CALL loadgen.usp_BatchCycle('facts')"`. Needed for procedures that `COMMIT` (the batch/loadgen write jobs), which `--deploy-sql` can't run. |
@@ -183,22 +179,14 @@ The schema files applied by `--init-schema` are at the repo root:
 `schema_v1_sqlserver.sql` / `schema_v1_sqlserver_indexes.sql` and
 `schema_v1_postgres.sql` / `schema_v1_postgres_indexes.sql`.
 
-### Build speed: `--vusers` (your mileage will vary)
+### Reproducibility
 
-`--vusers` sets how many workers load the data in parallel. On a machine with
-plenty of cores, fast disks and RAM, more workers build faster. But on SQL
-Server the parallel path falls back to a slower per-row insert — single-worker
-mode (`--vusers 1`) uses SQL Server's fast bulk-copy path — so on a modest or
-shared box `--vusers 1` can actually be the **fastest** option. Try a couple of
-values on the `tiny` tier first; your mileage will vary with cores, disk and RAM.
-(On PostgreSQL the OLTP load is serial regardless, so `--vusers` only affects the
-web clickstream.)
-
-Reproducibility note: surrogate ids (`transaction_id`, `page_view_id`, …) are
-numbered in load order, so different `--vusers` values produce the **same data
-with different id labels**. Build with a fixed `--vusers` (or `--vusers 1`) if
-you need byte-identical reproducibility, ids included — including matching
-row-for-row **across the two backends** (build both with `--vusers 1`).
+The build is fully deterministic. Given the same seed and tier, it produces a
+**byte-identical** database — every time, on any machine — and the same rows,
+aligned by primary key, **across both backends**: a SQL Server database and a
+PostgreSQL database of the same tier are literal twins for every layer the two
+engines share. All surrogate ids (`transaction_id`, `page_view_id`, …) are
+assigned in a fixed order, so they match too.
 
 ## What you get
 

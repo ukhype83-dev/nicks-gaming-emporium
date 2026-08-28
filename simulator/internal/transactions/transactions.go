@@ -134,15 +134,8 @@ type Payment struct {
 // and emitHardwareTransaction. (The old flat const taxRate=0.08 is gone.)
 
 // IDBase supplies the starting ID for each monotonic counter family
-// emitTransaction maintains. V1.8.0 introduced parallel shop-shard
-// workers (--vusers > 1); each worker is given a private ID range to
-// prevent cross-worker collisions. Single-worker callers pass IDBase{}
-// (all zeroes) and Generate fills in 1s.
-//
-// ID range layout for parallel runs: worker w gets
-//   Tx: w * idStride + 1, Line: w * idStride + 1, ... (all families)
-// where idStride is set in load.go (10^10 in V1.8). Up to ~64 workers
-// at 3T scale fits comfortably under BIGINT max (9.2 × 10^18).
+// emitTransaction maintains. Callers pass IDBase{} (all zeroes) and
+// Generate fills in 1s, so every counter family starts at 1.
 type IDBase struct {
 	Tx, Line, Payment, Movement   int64
 	TradeIn, TradeInItem, Ledger  int64
@@ -170,15 +163,13 @@ func Generate(
 }
 
 // GenerateForShard streams transactions for an arbitrary subset of
-// shops, starting each ID family from the supplied IDBase. Used by
-// load.go's parallel path (--vusers > 1): each worker calls this with
-// its own shop shard and disjoint ID range, so no two workers ever
-// emit colliding IDs.
+// shops, starting each ID family from the supplied IDBase. Generate is
+// a thin wrapper over it (the whole shop list, IDBase{}); the web
+// capture replay reuses it per shop shard.
 //
-// Per-shop output is byte-identical to single-worker Generate for the
-// same (seed, asOf, cat, shop) — RNG streams are derived per shop, not
-// from a global counter, so resharding doesn't reshuffle generation.
-// The only thing that changes between shardings is the IDs themselves.
+// Per-shop output is byte-identical for the same (seed, asOf, cat,
+// shop) — RNG streams are derived per shop, not from a global counter,
+// so which shop subset is passed doesn't reshuffle generation.
 func GenerateForShard(
 	tier string,
 	seed uint64,

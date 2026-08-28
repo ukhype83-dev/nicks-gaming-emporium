@@ -17,11 +17,9 @@ of the same tag are equivalent.
   layers can now be built on PostgreSQL as well as SQL Server, via
   `--load-postgres`. The generator is a single deterministic engine, so the two
   backends hold the **same data** for these layers — byte-identical, aligned by
-  primary key, when both are built with `--vusers 1`. New schema files
+  primary key. New schema files
   `schema_v1_postgres.sql` / `schema_v1_postgres_indexes.sql` at the repo root,
-  applied by `--init-schema`. The PostgreSQL OLTP load runs serially (the
-  parallel transaction path is SQL Server only); `--vusers` tunes only the web
-  clickstream there.
+  applied by `--init-schema`. The OLTP transaction load runs serially.
 - **PostgreSQL data warehouse + ETL.** `--emit full` on PostgreSQL now also
   builds the `dw` dimensional model (11 dimensions, 3 line-grain fact tables, 7
   rollups, a wide denormalised table) and the reprocessable `batch` ETL that
@@ -94,6 +92,15 @@ of the same tag are equivalent.
   is now applied in both paths (shared helper, idempotent). `--emit full` output
   is unchanged; standalone `--emit web` now matches it.
 
+### Removed
+- The `--vusers` multi-worker option and the parallel transaction-load path. The
+  OLTP transaction phase now always loads serially, which makes a build
+  unconditionally byte-identical for a given seed — including the surrogate ids,
+  and including a row-for-row match across the SQL Server and PostgreSQL
+  backends (there is no longer a build-mode that permutes ids). The web
+  clickstream is still loaded in parallel across CPU cores; that never affected
+  the data.
+
 ## [0.1.0] — 2026-08-21
 
 Initial public release (early access — the schema and tiers may still change
@@ -113,7 +120,6 @@ before a 1.0).
 - Prebuilt SQL Server backups per tier on the Releases page, each with a SHA-256.
 
 ### Determinism
-- Given the same seed and the same `--vusers`, a rebuild is byte-identical.
-  Surrogate ids (`transaction_id`, `page_view_id`, …) are assigned in build
-  order, so reproduce with the same `--vusers`; all aggregate/analytical results
-  are identical regardless.
+- Given the same seed, a rebuild is byte-identical. Surrogate ids
+  (`transaction_id`, `page_view_id`, …) are assigned in build order; all
+  aggregate/analytical results are identical.

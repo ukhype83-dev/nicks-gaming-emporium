@@ -57,16 +57,11 @@ func writeBatchedIfEmpty(ctx context.Context, w Writer, schema, table, idCol str
 	return bl.Total(), nil
 }
 
-// webWorkers resolves the worker count for the parallel web phases. An explicit
-// vusers > 1 wins; otherwise default to NumCPU-2 (leave headroom for GC + the
-// SQL client), clamped to [1, 12] so we never overwhelm the single SQL Server.
-func webWorkers(vusers int) int {
-	if vusers > 1 {
-		if vusers > 16 {
-			return 16
-		}
-		return vusers
-	}
+// webWorkers resolves the worker count for the parallel web-clickstream phase:
+// NumCPU-2 (leave headroom for GC + the SQL client), clamped to [1, 12] so we
+// never overwhelm the single SQL Server. (Data is identical regardless of the
+// worker count — this only affects clickstream load speed.)
+func webWorkers() int {
 	n := runtime.NumCPU() - 2
 	if n < 1 {
 		n = 1
@@ -141,14 +136,13 @@ func LoadWeb(
 	hw *hardware.Index,
 	bankDir string,
 	clickScale float64,
-	vusers int,
 	progress func(string, int64),
 ) (WebStats, error) {
 	var s WebStats
 	if progress == nil {
 		progress = func(string, int64) {}
 	}
-	workers := webWorkers(vusers)
+	workers := webWorkers()
 	if err := ensureWebTables(ctx, w); err != nil {
 		return s, err
 	}
