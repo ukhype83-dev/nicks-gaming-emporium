@@ -78,6 +78,6 @@ DROP TABLE recent_buyers;
 	if err := w.ExecSQL(ctx, stmt); err != nil {
 		return fmt.Errorf("customer status reclassification: %w", err)
 	}
-	progress("dbo.customers (status)", 1)
+	progress("customers (status)", 1)
 	return nil
 }

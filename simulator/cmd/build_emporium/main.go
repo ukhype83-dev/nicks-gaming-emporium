@@ -1150,12 +1150,12 @@ func loadShopsMSSQL(tier string, seed uint64, asOf time.Time, postals *geography
 	start := time.Now()
 
 	if err := w.BulkInsert(ctx, "dbo", "shops", dbwriter.ShopColumns, dbwriter.ShopsToRows(shopList)); err != nil {
-		fmt.Fprintf(os.Stderr, "bulk-insert dbo.shops failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "bulk-insert shops failed: %v\n", err)
 		os.Exit(1)
 	}
 
 	if err := w.BulkInsert(ctx, "dbo", "shop_addresses", dbwriter.ShopAddressColumns, dbwriter.ShopAddressesToRows(shopList)); err != nil {
-		fmt.Fprintf(os.Stderr, "bulk-insert dbo.shop_addresses failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "bulk-insert shop_addresses failed: %v\n", err)
 		os.Exit(1)
 	}
 

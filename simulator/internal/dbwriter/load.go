@@ -132,10 +132,10 @@ func LoadAll(
 	// 2. Platforms
 	_, platformRows, platformID := PlatformsFromCatalog(cat)
 	if _, err := loadIfEmpty(ctx, w, "dbo", "platforms", "platform_id", PlatformColumns, platformRows); err != nil {
-		return s, fmt.Errorf("load dbo.platforms: %w", err)
+		return s, fmt.Errorf("load platforms: %w", err)
 	}
 	s.Platforms = int64(len(platformRows))
-	progress("dbo.platforms", s.Platforms)
+	progress("platforms", s.Platforms)
 
 	// 3. Releases (~22K rows, single BulkInsert via BatchedLoader,
 	//    atomic — MAX > 0 means fully loaded.)
@@ -143,21 +143,21 @@ func LoadAll(
 	if len(releaseRows) > 0 {
 		existing, err := w.MaxBigint(ctx, "dbo", "releases", "release_id")
 		if err != nil {
-			return s, fmt.Errorf("load dbo.releases: %w", err)
+			return s, fmt.Errorf("load releases: %w", err)
 		}
 		if existing == 0 {
 			releaseLoader := NewBatchedLoader(ctx, w, "dbo", "releases", ReleaseColumns, 0)
 			for _, row := range releaseRows {
 				if err := releaseLoader.Add(row); err != nil {
-					return s, fmt.Errorf("load dbo.releases: %w", err)
+					return s, fmt.Errorf("load releases: %w", err)
 				}
 			}
 			if err := releaseLoader.Flush(); err != nil {
-				return s, fmt.Errorf("load dbo.releases: %w", err)
+				return s, fmt.Errorf("load releases: %w", err)
 			}
 		}
 		s.Releases = int64(len(releaseRows))
-		progress("dbo.releases", s.Releases)
+		progress("releases", s.Releases)
 	}
 
 	// 3b. Hardware catalog (V1.21.0 — 90 models, single BulkInsert,
@@ -165,10 +165,10 @@ func LoadAll(
 	if hw != nil {
 		hwRows := HardwareToRows(hw, platformID)
 		if _, err := loadIfEmpty(ctx, w, "dbo", "hardware", "hardware_id", HardwareColumns, hwRows); err != nil {
-			return s, fmt.Errorf("load dbo.hardware: %w", err)
+			return s, fmt.Errorf("load hardware: %w", err)
 		}
 		s.Hardware = int64(len(hwRows))
-		progress("dbo.hardware", s.Hardware)
+		progress("hardware", s.Hardware)
 	}
 
 	// 4-5. Shops + shop_addresses
@@ -273,16 +273,16 @@ func loadShops(ctx context.Context, w Writer, shopList []shops.Shop, s *LoadAllS
 	}
 	if len(newShops) > 0 {
 		if err := w.BulkInsert(ctx, "dbo", "shops", ShopColumns, newShops); err != nil {
-			return fmt.Errorf("load dbo.shops: %w", err)
+			return fmt.Errorf("load shops: %w", err)
 		}
 		if err := w.BulkInsert(ctx, "dbo", "shop_addresses", ShopAddressColumns, newAddrs); err != nil {
-			return fmt.Errorf("load dbo.shop_addresses: %w", err)
+			return fmt.Errorf("load shop_addresses: %w", err)
 		}
 	}
 	s.Shops = int64(len(shopList))
 	s.ShopAddresses = int64(len(shopList))
-	progress("dbo.shops", s.Shops)
-	progress("dbo.shop_addresses", s.ShopAddresses)
+	progress("shops", s.Shops)
+	progress("shop_addresses", s.ShopAddresses)
 	return nil
 }
 
@@ -552,13 +552,13 @@ func loadCustomers(
 
 		// Parents first.
 		if err := w.BulkCopy(ctx, "dbo", "customers", CustomerColumns, custRows); err != nil {
-			fmt.Fprintf(os.Stderr, "  ✗ dbo.customers FAILED: %v\n", err)
-			return fmt.Errorf("dbo.customers: %w", err)
+			fmt.Fprintf(os.Stderr, "  ✗ customers FAILED: %v\n", err)
+			return fmt.Errorf("customers: %w", err)
 		}
 		s.Customers += int64(n)
 		if err := w.BulkCopy(ctx, "dbo", "customer_addresses", CustomerAddressColumns, addrRows); err != nil {
-			fmt.Fprintf(os.Stderr, "  ✗ dbo.customer_addresses FAILED: %v\n", err)
-			return fmt.Errorf("dbo.customer_addresses: %w", err)
+			fmt.Fprintf(os.Stderr, "  ✗ customer_addresses FAILED: %v\n", err)
+			return fmt.Errorf("customer_addresses: %w", err)
 		}
 		s.CustomerAddresses += int64(len(addrRows))
 
@@ -632,14 +632,14 @@ func loadCustomers(
 	if err := flush(); err != nil {
 		return nil, fmt.Errorf("customer final flush: %w", err)
 	}
-	progress("dbo.customers", s.Customers)
-	progress("dbo.customer_addresses", s.CustomerAddresses)
-	progress("dbo.customer_lifecycle_events", s.LifecycleEvents)
-	progress("dbo.customer_emails", s.CustomerEmails)
-	progress("dbo.communication_preferences", s.CommPrefs)
-	progress("dbo.consent_events", s.ConsentEvents)
-	progress("dbo.loyalty_memberships", s.LoyaltyMember)
-	progress("dbo.saved_payment_methods", s.SavedPayments)
+	progress("customers", s.Customers)
+	progress("customer_addresses", s.CustomerAddresses)
+	progress("customer_lifecycle_events", s.LifecycleEvents)
+	progress("customer_emails", s.CustomerEmails)
+	progress("communication_preferences", s.CommPrefs)
+	progress("consent_events", s.ConsentEvents)
+	progress("loyalty_memberships", s.LoyaltyMember)
+	progress("saved_payment_methods", s.SavedPayments)
 	return custIndex, nil
 }
 
@@ -749,45 +749,45 @@ func loadTransactions(
 		// trade_in_items (FK to trade_ins) → store_credit_ledger
 		// (FK to trade_ins + tx).
 		if err := w.BulkCopy(ctx, "dbo", "transactions", TransactionColumns, txRows); err != nil {
-			fmt.Fprintf(os.Stderr, "  ✗ dbo.transactions FAILED: %v\n", err)
-			return fmt.Errorf("dbo.transactions: %w", err)
+			fmt.Fprintf(os.Stderr, "  ✗ transactions FAILED: %v\n", err)
+			return fmt.Errorf("transactions: %w", err)
 		}
 		s.Transactions += int64(n)
 		if err := w.BulkCopy(ctx, "dbo", "transaction_lines", TransactionLineColumns, lineRows); err != nil {
-			return fmt.Errorf("dbo.transaction_lines: %w", err)
+			return fmt.Errorf("transaction_lines: %w", err)
 		}
 		s.TransactionLines += int64(len(lineRows))
 		if err := w.BulkCopy(ctx, "dbo", "payments", PaymentColumns, payRows); err != nil {
-			return fmt.Errorf("dbo.payments: %w", err)
+			return fmt.Errorf("payments: %w", err)
 		}
 		s.Payments += int64(len(payRows))
 		if len(invRows) > 0 {
 			if err := w.BulkCopy(ctx, "dbo", "inventory", InventoryColumns, invRows); err != nil {
-				return fmt.Errorf("dbo.inventory: %w", err)
+				return fmt.Errorf("inventory: %w", err)
 			}
 			s.Inventory += int64(len(invRows))
 		}
 		if len(movRows) > 0 {
 			if err := w.BulkCopy(ctx, "dbo", "inventory_movements", InventoryMovementColumns, movRows); err != nil {
-				return fmt.Errorf("dbo.inventory_movements: %w", err)
+				return fmt.Errorf("inventory_movements: %w", err)
 			}
 			s.InventoryMovements += int64(len(movRows))
 		}
 		if len(tradeRows) > 0 {
 			if err := w.BulkCopy(ctx, "dbo", "trade_ins", TradeInColumns, tradeRows); err != nil {
-				return fmt.Errorf("dbo.trade_ins: %w", err)
+				return fmt.Errorf("trade_ins: %w", err)
 			}
 			s.TradeIns += int64(len(tradeRows))
 		}
 		if len(itemRows) > 0 {
 			if err := w.BulkCopy(ctx, "dbo", "trade_in_items", TradeInItemColumns, itemRows); err != nil {
-				return fmt.Errorf("dbo.trade_in_items: %w", err)
+				return fmt.Errorf("trade_in_items: %w", err)
 			}
 			s.TradeInItems += int64(len(itemRows))
 		}
 		if len(creditRows) > 0 {
 			if err := w.BulkCopy(ctx, "dbo", "store_credit_ledger", StoreCreditLedgerColumns, creditRows); err != nil {
-				return fmt.Errorf("dbo.store_credit_ledger: %w", err)
+				return fmt.Errorf("store_credit_ledger: %w", err)
 			}
 			s.StoreCreditLedger += int64(len(creditRows))
 		}
@@ -840,13 +840,13 @@ func loadTransactions(
 		return fmt.Errorf("transaction final flush: %w", err)
 	}
 
-	progress("dbo.transactions", s.Transactions)
-	progress("dbo.transaction_lines", s.TransactionLines)
-	progress("dbo.payments", s.Payments)
-	progress("dbo.inventory", s.Inventory)
-	progress("dbo.inventory_movements", s.InventoryMovements)
-	progress("dbo.trade_ins", s.TradeIns)
-	progress("dbo.trade_in_items", s.TradeInItems)
-	progress("dbo.store_credit_ledger", s.StoreCreditLedger)
+	progress("transactions", s.Transactions)
+	progress("transaction_lines", s.TransactionLines)
+	progress("payments", s.Payments)
+	progress("inventory", s.Inventory)
+	progress("inventory_movements", s.InventoryMovements)
+	progress("trade_ins", s.TradeIns)
+	progress("trade_in_items", s.TradeInItems)
+	progress("store_credit_ledger", s.StoreCreditLedger)
 	return nil
 }
