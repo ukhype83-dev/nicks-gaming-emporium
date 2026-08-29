@@ -98,6 +98,14 @@ of the same tag are equivalent.
   banks are unaffected (they carry no medium claims).
 
 ### Fixed
+- **PostgreSQL warehouse now analyzes itself after the ETL.**
+  `batch.usp_refresh_everything` runs `ANALYZE` on every `dw` table at the end of
+  the refresh. Postgres doesn't auto-collect statistics on a freshly bulk-loaded
+  table the way SQL Server does, so without this the planner never chose the BRIN
+  indexes on the date-ordered fact tables and every date-range query
+  sequentially scanned the whole fact table. With stats present, a one-month
+  `fact_sales` query on the medium tier drops from a full ~29 GB scan to a BRIN
+  bitmap scan touching ~230 MB (~99.7% of block ranges pruned).
 - HR payroll id determinism: `payroll_run_id` (and the `payroll_lines` foreign
   key) was assigned while iterating a Go map of countries, so the numbering
   varied between builds — non-deterministic run-to-run. Now numbered in a stable

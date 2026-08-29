@@ -156,9 +156,22 @@ END $$;
    COMMIT-driven fact/wide procedures. ---- */
 CREATE OR REPLACE PROCEDURE batch.usp_refresh_everything(p_full boolean DEFAULT true)
 LANGUAGE plpgsql AS $$
+DECLARE
+    r record;
 BEGIN
     CALL batch.usp_refresh_all_dimensions();
     CALL batch.usp_refresh_all_facts(p_full);
     CALL batch.usp_refresh_all_rollups();
     CALL batch.usp_refresh_sales_wide(p_full);
+
+    -- Refresh planner stats so the warehouse is query-ready (Postgres has no
+    -- auto-stats on a fresh bulk load); without it the BRIN indexes on the
+    -- date-ordered fact tables are never chosen and date-range queries
+    -- seq-scan the whole fact table. ANALYZE runs in its own transaction.
+    COMMIT;
+    FOR r IN SELECT format('%I.%I', schemaname, tablename) AS t
+             FROM pg_tables WHERE schemaname = 'dw'
+    LOOP
+        EXECUTE 'ANALYZE ' || r.t;
+    END LOOP;
 END $$;
