@@ -1,0 +1,15 @@
+# NGE V1.26 — Spanish comment bank (light; other kinds fall back to English).
+kind	archetype	parent_sent	era_from	era_to	text
+agree	any	pos	2008	2016	Exacto.
+agree	any	pos	2008	2016	Lo confirmo.
+agree	any	pos	2008	2016	Totalmente de acuerdo.
+agree	any	neg	2008	2016	Gracias, creía que era cosa mía.
+agree	any	neg	2008	2016	A mí me pasó igual.
+disagree	any	pos	2008	2016	No estoy nada de acuerdo.
+disagree	any	neg	2008	2016	Un poco duro, ¿no?
+question	any	any	2008	2016	¿Va bien en el modelo antiguo?
+question	any	any	2008	2016	¿Merece la pena la edición especial?
+answer	any	any	2008	2016	@{prev_user} sí, va bien, solo cargas más largas.
+agree	any	pos	2008	2016	+1
+agree	any	pos	2008	2016	Eso.
+disagree	any	pos	2008	2016	No, no estoy de acuerdo.

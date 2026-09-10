@@ -1,0 +1,46 @@
+# NGE V1.26 — Swedish review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	Äntligen spelat, och jag är såld.
+opener_pos	any	any	2005	2016	Lång väntan, men det var värt det.
+opener_pos	any	any	2005	2016	Vilket spel.
+opener_pos	any	any	2005	2016	Positivt överraskad.
+opener_neg	any	any	2005	2016	Jag ville verkligen gilla det.
+opener_neg	any	any	2005	2016	Vilket slöseri med pengar.
+opener_neg	any	any	2005	2016	En besvikelse.
+opener_neg	any	any	2005	2016	Var ska jag ens börja.
+opener_mixed	any	any	2005	2016	Blandade känslor kring den här titeln.
+opener_mixed	any	any	2005	2016	Bra tanke, halvbra utförande.
+opener_mixed	any	any	2005	2016	Helt okej, inte mer.
+experience	any	any	2005	2016	De första timmarna är sega, sedan lyfter det.
+experience	any	any	2005	2016	Jag försvann in i det en hel helg.
+experience	any	any	2005	2016	Klarade det två gånger, väl värt det.
+praise	any	any	2005	2016	Musiken är enastående.
+praise	any	any	2005	2016	Snyggast på {platform} just nu.
+praise	any	any	2005	2016	Kontrollen sitter perfekt.
+praise	any	any	2005	2016	Omsorgsfullt gjort in i minsta detalj.
+flaw	any	any	2005	2016	Laddtiderna är outhärdliga.
+flaw	any	any	2005	2016	Alldeles för mycket buggar vid lanseringen.
+flaw	any	any	2005	2016	Kameran gör som den vill.
+flaw	any	any	2005	2016	Alldeles för kort för priset.
+verdict_pos	any	any	2005	2016	Klart köpvärt. Fem stjärnor.
+verdict_pos	any	any	2005	2016	Ett måste för {platform}-ägare.
+verdict_pos	any	any	2005	2016	Full pott från mig.
+verdict_neg	any	any	2005	2016	Håll er borta, spara pengarna.
+verdict_neg	any	any	2005	2016	På rea möjligen värt en titt.
+verdict_neg	any	any	2005	2016	En stjärna, och den är generös.
+verdict_mixed	any	any	2005	2016	På rea kanske, annars inte.
+verdict_mixed	any	any	2005	2016	Tre stjärnor, mer blir det inte.
+verdict_mixed	any	any	2005	2016	Vänta tills det sjunker i pris.
+short_pos	any	any	2005	2016	Toppen.
+short_pos	any	any	2005	2016	Rekommenderas.
+short_pos	any	any	2005	2016	Mycket bra.
+short_pos	any	any	2005	2016	Älskade det.
+short_neg	any	any	2005	2016	Snöpligt.
+short_neg	any	any	2005	2016	Köp inte.
+short_neg	any	any	2005	2016	Synd.
+short_neg	any	any	2005	2016	Nej.
+short_mixed	any	any	2005	2016	Sådär.
+short_mixed	any	any	2005	2016	Medelmåttigt.
+short_mixed	any	any	2005	2016	Går att spela.
+short_mixed	any	any	2005	2016	Inget särskilt.

@@ -1,0 +1,46 @@
+# NGE V1.26 — Italian review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	Finalmente giocato, e che meraviglia.
+opener_pos	any	any	2005	2016	Lunga attesa, ma ne è valsa la pena.
+opener_pos	any	any	2005	2016	Che gioco.
+opener_pos	any	any	2005	2016	Piacevolmente sorpreso.
+opener_neg	any	any	2005	2016	Volevo davvero apprezzarlo.
+opener_neg	any	any	2005	2016	Che spreco di soldi.
+opener_neg	any	any	2005	2016	Una delusione.
+opener_neg	any	any	2005	2016	Non so da dove cominciare.
+opener_mixed	any	any	2005	2016	Sentimenti contrastanti su questo titolo.
+opener_mixed	any	any	2005	2016	Buona idea, esecuzione così così.
+opener_mixed	any	any	2005	2016	Discreto, niente di più.
+experience	any	any	2005	2016	Le prime ore sono lente, poi decolla.
+experience	any	any	2005	2016	Ci ho perso un intero weekend.
+experience	any	any	2005	2016	Finito due volte, ne è valsa la pena.
+praise	any	any	2005	2016	La colonna sonora è eccezionale.
+praise	any	any	2005	2016	Il migliore graficamente su {platform}.
+praise	any	any	2005	2016	I comandi sono perfetti.
+praise	any	any	2005	2016	Curato in ogni dettaglio.
+flaw	any	any	2005	2016	I tempi di caricamento sono insopportabili.
+flaw	any	any	2005	2016	Troppi bug al lancio.
+flaw	any	any	2005	2016	La telecamera fa quello che vuole.
+flaw	any	any	2005	2016	Troppo corto per il prezzo.
+verdict_pos	any	any	2005	2016	Acquisto obbligato. Cinque stelle.
+verdict_pos	any	any	2005	2016	Imperdibile per chi ha {platform}.
+verdict_pos	any	any	2005	2016	Voto massimo da parte mia.
+verdict_neg	any	any	2005	2016	Lascia perdere, risparmia i soldi.
+verdict_neg	any	any	2005	2016	In offerta forse, ma con riserva.
+verdict_neg	any	any	2005	2016	Una stella, ed è pure regalata.
+verdict_mixed	any	any	2005	2016	In sconto magari, altrimenti no.
+verdict_mixed	any	any	2005	2016	Tre stelle e via.
+verdict_mixed	any	any	2005	2016	Aspetta che cali di prezzo.
+short_pos	any	any	2005	2016	Ottimo.
+short_pos	any	any	2005	2016	Compratelo.
+short_pos	any	any	2005	2016	Molto bello.
+short_pos	any	any	2005	2016	Adorato.
+short_neg	any	any	2005	2016	Deludente.
+short_neg	any	any	2005	2016	Non compratelo.
+short_neg	any	any	2005	2016	Peccato.
+short_neg	any	any	2005	2016	No.
+short_mixed	any	any	2005	2016	Insomma.
+short_mixed	any	any	2005	2016	Nella media.
+short_mixed	any	any	2005	2016	Si lascia giocare.
+short_mixed	any	any	2005	2016	Niente di che.

@@ -1,0 +1,40 @@
+# NGE V1.26 — English review skeletons (design §4, Appendix B)
+# skeleton: pipe-separated slot list; "slot?P" includes the slot with probability P.
+# Slots resolve from phrases_en.tsv; micro-slots inside fragments ({title},
+# {platform}, {price}, …) are filled by the engine from real data or sub-slots.
+# sentiment: pos | mixed | neg (engine maps the blended reception score to one).
+archetype	sentiment	weight	skeleton
+essayist	pos	1.0	opener_long|context|experience|praise_detail|praise_detail?0.7|minor_flaw?0.6|store_note?0.3|verdict_long|signoff?0.6
+essayist	pos	0.5	context|experience|praise_detail|comparison?0.7|minor_flaw?0.5|verdict_long|signoff?0.4
+essayist	mixed	1.0	opener_long|context|experience|praise_detail|flaw_detail|flaw_detail?0.5|weigh_up|verdict_mixed|signoff?0.5
+essayist	neg	1.0	opener_disappointed|context|experience|flaw_detail|flaw_detail?0.7|concession?0.4|verdict_neg|signoff?0.5
+capslock	pos	1.0	opener_hype|experience_loud|praise_loud|verdict_loud|postscript?0.4
+capslock	pos	0.5	opener_hype|praise_loud|verdict_loud
+capslock	mixed	1.0	opener_hype|experience_loud|flaw_loud|verdict_mixed_loud
+capslock	neg	1.0	opener_letdown_loud|flaw_loud|flaw_loud?0.5|verdict_neg_loud
+grouch	pos	1.0	opener_reluctant|experience|praise_grudging|minor_flaw|verdict_grudging
+grouch	mixed	1.0	opener_reluctant|experience|flaw_detail|praise_grudging?0.6|flaw_detail?0.5|verdict_mixed
+grouch	neg	1.0	opener_disappointed|flaw_detail|flaw_detail|store_gripe?0.4|verdict_neg|signoff_grouch?0.4
+parent	pos	1.0	opener_parent|occasion|kid_reaction|parent_note?0.7|store_note?0.4|verdict_parent
+parent	mixed	1.0	opener_parent|occasion|kid_reaction|parent_concern|verdict_mixed
+parent	neg	1.0	opener_parent|occasion|parent_concern|parent_concern?0.5|verdict_neg_parent
+technerd	pos	1.0	opener_tech|spec_detail|spec_detail|methodology?0.5|praise_detail|verdict_tech
+technerd	mixed	1.0	opener_tech|spec_detail|flaw_tech|spec_detail?0.6|methodology?0.4|verdict_mixed_tech
+technerd	neg	1.0	opener_tech|flaw_tech|flaw_tech|methodology?0.5|verdict_neg_tech
+driveby	pos	1.0	verdict_short_pos
+driveby	mixed	1.0	verdict_short_mixed
+driveby	neg	1.0	verdict_short_neg
+collector	pos	1.0	opener_collector|condition_note|condition_note?0.5|praise_detail?0.5|verdict_collector
+collector	mixed	1.0	opener_collector|condition_note|grading_gripe|verdict_mixed
+collector	neg	1.0	opener_collector|grading_gripe|grading_gripe|store_gripe?0.5|verdict_neg_collector
+superfan	pos	1.0	opener_fan|launch_story?0.6|praise_loud|praise_detail?0.5|verdict_fan|postscript?0.5
+superfan	mixed	1.0	opener_fan|launch_story?0.4|experience|flaw_detail|loyalty_note|verdict_mixed
+superfan	neg	1.0	opener_betrayed|experience|flaw_detail|loyalty_note|verdict_neg_fan
+bucks_victim	neg	1.0	opener_refund|refund_story|bucks_rage|closure_ref?0.7|verdict_bucks
+bucks_victim	mixed	1.0	opener_refund|refund_story|bucks_rage|concession?0.3|verdict_mixed
+dealhunter	pos	1.0	opener_deal|price_note|experience?0.6|verdict_deal
+dealhunter	mixed	1.0	opener_deal|price_note|flaw_detail|verdict_mixed
+dealhunter	neg	1.0	opener_deal|price_gripe|flaw_detail?0.6|verdict_neg
+troll	pos	1.0	opener_troll_ironic|bait_line|bait_line?0.5|verdict_troll_ironic
+troll	neg	1.0	opener_troll_contrarian|bait_line|dismiss_classic|bait_line?0.4|verdict_troll|troll_signoff?0.6
+troll	mixed	1.0	opener_troll_contrarian|bait_line|concession_fake|verdict_troll

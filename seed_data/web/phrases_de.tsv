@@ -1,0 +1,46 @@
+# NGE V1.26 — German review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	Endlich gespielt, und ich bin begeistert.
+opener_pos	any	any	2005	2016	Lange gewartet, hat sich gelohnt.
+opener_pos	any	any	2005	2016	Was für ein Spiel.
+opener_pos	any	any	2005	2016	Positiv überrascht, ehrlich.
+opener_neg	any	any	2005	2016	Ich wollte es wirklich mögen.
+opener_neg	any	any	2005	2016	Schade um das Geld.
+opener_neg	any	any	2005	2016	Das war eine Enttäuschung.
+opener_neg	any	any	2005	2016	Ich weiß nicht, wo ich anfangen soll.
+opener_mixed	any	any	2005	2016	Zwiespältige Gefühle bei diesem Titel.
+opener_mixed	any	any	2005	2016	Gut gemeint, nicht ganz gut gemacht.
+opener_mixed	any	any	2005	2016	Solide, aber mehr auch nicht.
+experience	any	any	2005	2016	Die ersten Stunden ziehen sich, danach wird es besser.
+experience	any	any	2005	2016	Ich habe ein ganzes Wochenende versenkt.
+experience	any	any	2005	2016	Zweimal durchgespielt, es hat sich gelohnt.
+praise	any	any	2005	2016	Der Soundtrack ist herausragend.
+praise	any	any	2005	2016	Grafisch das Beste auf {platform}.
+praise	any	any	2005	2016	Die Steuerung sitzt perfekt.
+praise	any	any	2005	2016	Liebevoll gemacht bis ins Detail.
+flaw	any	any	2005	2016	Die Ladezeiten sind eine Zumutung.
+flaw	any	any	2005	2016	Zu viele Bugs zum Start.
+flaw	any	any	2005	2016	Die Kamera macht, was sie will.
+flaw	any	any	2005	2016	Viel zu kurz für den Preis.
+verdict_pos	any	any	2005	2016	Klare Kaufempfehlung. Fünf Sterne.
+verdict_pos	any	any	2005	2016	Ein Pflichtkauf für {platform}-Besitzer.
+verdict_pos	any	any	2005	2016	Von mir volle Punktzahl.
+verdict_neg	any	any	2005	2016	Finger weg, spart euch das Geld.
+verdict_neg	any	any	2005	2016	Höchstens im Angebot einen Blick wert.
+verdict_neg	any	any	2005	2016	Ein Stern, und der ist geschenkt.
+verdict_mixed	any	any	2005	2016	Im Angebot einen Blick wert, sonst nicht.
+verdict_mixed	any	any	2005	2016	Drei Sterne, mehr ist nicht drin.
+verdict_mixed	any	any	2005	2016	Erst kaufen, wenn es billiger ist.
+short_pos	any	any	2005	2016	Top.
+short_pos	any	any	2005	2016	Klare Empfehlung.
+short_pos	any	any	2005	2016	Hat Spaß gemacht.
+short_pos	any	any	2005	2016	Sehr gut.
+short_neg	any	any	2005	2016	Enttäuschend.
+short_neg	any	any	2005	2016	Nicht kaufen.
+short_neg	any	any	2005	2016	Schade.
+short_neg	any	any	2005	2016	Finger weg.
+short_mixed	any	any	2005	2016	Geht so.
+short_mixed	any	any	2005	2016	Mittelmaß.
+short_mixed	any	any	2005	2016	Ganz okay.
+short_mixed	any	any	2005	2016	Nichts Besonderes.

@@ -1,0 +1,345 @@
+# NGE V1.26 — curated reception tiers, TRANCHE 1 (design §4b Layer 1)
+# Authored from real-world critical/player consensus at design time (the
+# "Metacritic answer" without the scraper — decision 2026-07-19).
+# Match rule (engine): normalised_title exact match, OR prefix-match where the
+# catalog row continues with ' •' / ' /' / ':' denorm tails OR a regional tag
+# tail (' na', ' pal', ' jp', ' eu' + separators — e.g. 'mario kart: super
+# circuit na, pal • mario kart advance jp' matches 'mario kart: super circuit');
+# platform
+# 'any' matches all platforms, else must equal dbo.platforms.name exactly.
+# Tiers → score anchors: masterpiece 4.7 · great 4.3 · good 3.8 · mixed 3.0 ·
+# poor 2.2 · disaster 1.4 (before archetype bias, era morale, noise).
+# Unmatched rows are logged, not fatal. Target ~3-5K rows by final tranche.
+title	platform	tier
+super mario bros.	any	masterpiece
+super mario bros. 3	any	masterpiece
+super mario world	any	masterpiece
+super mario 64	any	masterpiece
+super mario galaxy	any	masterpiece
+super mario galaxy 2	any	masterpiece
+the legend of zelda	any	great
+the legend of zelda: a link to the past	any	masterpiece
+the legend of zelda: ocarina of time	any	masterpiece
+the legend of zelda: majora's mask	any	great
+the legend of zelda: the wind waker	any	great
+the legend of zelda: twilight princess	any	great
+the legend of zelda: link's awakening	any	great
+zelda ii: the adventure of link	any	mixed
+metroid	any	great
+super metroid	any	masterpiece
+metroid prime	any	masterpiece
+metroid: other m	any	mixed
+mega man 2	any	masterpiece
+mega man 3	any	great
+mega man x	any	masterpiece
+castlevania	any	great
+castlevania: symphony of the night	any	masterpiece
+super castlevania iv	any	great
+contra	any	great
+tetris	any	masterpiece
+dr. mario	any	good
+punch-out!!	any	great
+duck hunt	any	good
+kirby's adventure	any	great
+donkey kong country	any	great
+donkey kong country 2: diddy's kong quest	any	great
+donkey kong 64	any	good
+earthbound	any	great
+chrono trigger	any	masterpiece
+chrono cross	any	great
+secret of mana	any	great
+final fantasy iv	any	great
+final fantasy vi	any	masterpiece
+final fantasy vii	any	masterpiece
+final fantasy viii	any	great
+final fantasy ix	any	great
+final fantasy x	any	great
+final fantasy x-2	any	mixed
+final fantasy xii	any	great
+final fantasy xiii	any	mixed
+final fantasy xiii-2	any	mixed
+sonic the hedgehog	Genesis	great
+sonic the hedgehog 2	Genesis	masterpiece
+sonic the hedgehog 3	Genesis	great
+sonic & knuckles	any	great
+sonic adventure	any	good
+sonic adventure 2	any	good
+sonic heroes	any	mixed
+shadow the hedgehog	any	poor
+sonic the hedgehog	Xbox 360	disaster
+sonic the hedgehog	PlayStation 3	disaster
+sonic unleashed	any	mixed
+sonic colors	any	great
+sonic generations	any	great
+sonic and the secret rings	any	mixed
+sonic boom: rise of lyric †	any	disaster
+streets of rage 2	any	great
+gunstar heroes	any	great
+ecco the dolphin	any	good
+altered beast	any	mixed
+golden axe	any	good
+phantasy star iv	any	great
+shenmue	any	good
+shenmue ii	any	good
+jet set radio	any	great
+crazy taxi	any	good
+soulcalibur	any	masterpiece
+virtua fighter 4	any	great
+super smash bros.	any	good
+super smash bros. melee	any	masterpiece
+super smash bros. brawl	any	great
+mario kart 64	any	good
+mario kart: double dash	any	great
+mario kart wii	any	great
+mario kart: super circuit	any	good
+goldeneye 007	Nintendo 64	masterpiece
+perfect dark	Nintendo 64	great
+banjo-kazooie	any	great
+banjo-tooie	any	great
+conker's bad fur day	any	great
+star fox 64 lylat warspal	any	great
+f-zero gx	any	great
+wave race 64	any	good
+pilotwings 64	any	good
+superman	Nintendo 64	disaster
+carmageddon 64	any	disaster
+bubsy 3d	any	disaster
+e.t. the extra-terrestrial	Atari 2600	disaster
+pac-man	Atari 2600	poor
+custer's revenge	any	disaster
+metal gear solid	PlayStation	masterpiece
+metal gear solid 2: sons of liberty	any	great
+metal gear solid 3: snake eater	any	masterpiece
+metal gear solid 4: guns of the patriots	any	great
+gran turismo	any	great
+gran turismo 2	any	great
+gran turismo 3 a-spec	any	masterpiece
+gran turismo 5	any	good
+crash bandicoot	any	good
+crash bandicoot 2: cortex strikes back	any	great
+crash bandicoot: warped	any	great
+crash team racing	any	great
+spyro the dragon	any	good
+spyro 2: ripto's rage!	any	great
+tomb raider	PlayStation	great
+tomb raider ii	any	good
+tomb raider: the angel of darkness	any	poor
+resident evil	PlayStation	great
+resident evil 2	any	masterpiece
+resident evil 3: nemesis	any	great
+resident evil 4	any	masterpiece
+resident evil 5	any	good
+resident evil 6	any	mixed
+silent hill	any	great
+silent hill 2	any	masterpiece
+silent hill 3	any	great
+silent hill: homecoming	any	mixed
+parasite eve	any	good
+xenogears	any	great
+suikoden ii	any	great
+vagrant story	any	great
+tony hawk's pro skater	any	great
+tony hawk's pro skater 2	any	masterpiece
+tony hawk's pro skater 3	any	great
+tony hawk's pro skater 5	any	disaster
+spider-man	PlayStation	good
+driver	any	good
+driver 2	any	mixed
+driv3r	any	poor
+grand theft auto iii	any	masterpiece
+grand theft auto: vice city	any	masterpiece
+grand theft auto: san andreas	any	masterpiece
+grand theft auto iv	any	great
+grand theft auto v	any	masterpiece
+red dead redemption	any	masterpiece
+bully	any	great
+manhunt	any	good
+manhunt 2	any	poor
+shadow of the colossus	any	masterpiece
+ico	any	great
+okami hd	any	great
+ōkami	any	great
+god of war	PlayStation 2	great
+god of war ii	any	great
+god of war iii	any	great
+devil may cry	any	great
+devil may cry 2	any	poor
+devil may cry 3: dante's awakening	any	great
+dmc: devil may cry	any	good
+kingdom hearts	any	great
+kingdom hearts ii	any	great
+ratchet & clank	any	great
+jak and daxter: the precursor legacy	any	great
+sly cooper and the thievius raccoonus	any	good
+burnout 3: takedown	any	masterpiece
+ssx tricky	any	great
+timesplitters 2	any	great
+beyond good & evil	any	great
+psychonauts	any	great
+katamari damacy	any	great
+guitar hero	any	great
+guitar hero ii	any	great
+guitar hero iii: legends of rock	any	great
+rock band	any	great
+dance dance revolution	any	good
+halo: combat evolved	any	masterpiece
+halo 2	any	great
+halo 3	any	great
+halo: reach	any	great
+fable	any	good
+fable ii	any	great
+fable iii	any	mixed
+star wars: knights of the old republic	any	masterpiece
+star wars: the force unleashed	any	mixed
+jade empire	any	good
+ninja gaiden	Xbox	great
+dead or alive 3	any	good
+project gotham racing 2	any	great
+forza motorsport	any	great
+forza motorsport 3	any	great
+gears of war	any	great
+gears of war 2	any	great
+bioshock	any	masterpiece
+bioshock 2	any	great
+bioshock infinite	any	great
+mass effect	any	great
+mass effect 2	any	masterpiece
+mass effect 3	any	great
+the elder scrolls iii: morrowind	any	great
+the elder scrolls iv: oblivion	any	great
+the elder scrolls v: skyrim	any	masterpiece
+fallout 3	any	great
+fallout: new vegas	any	great
+fallout 4	any	great
+dead space	any	great
+dead space 2	any	great
+dead space 3	any	mixed
+portal	any	masterpiece
+portal 2	any	masterpiece
+half-life	any	masterpiece
+half-life 2	any	masterpiece
+counter-strike	any	great
+left 4 dead	any	great
+the orange box	any	masterpiece
+deus ex	any	masterpiece
+deus ex: invisible war	any	mixed
+deus ex: human revolution	any	great
+system shock 2	any	masterpiece
+thief: the dark project	any	great
+diablo ii	any	masterpiece
+starcraft	any	masterpiece
+warcraft iii: reign of chaos	any	masterpiece
+age of empires ii: the age of kings	any	masterpiece
+civilization iv	any	masterpiece
+simcity 4	any	great
+the sims	any	great
+the sims 2	any	great
+rollercoaster tycoon	any	great
+daikatana	any	disaster
+duke nukem forever	any	disaster
+aliens: colonial marines	any	disaster
+ride to hell: retribution	any	disaster
+big rigs: over the road racing	any	disaster
+rambo: the video game	any	disaster
+leisure suit larry: box office bust	any	disaster
+lair	any	poor
+haze	any	poor
+too human	any	mixed
+advent rising	any	mixed
+alone in the dark	Xbox 360	poor
+sonic free riders	any	poor
+kinect star wars	any	poor
+steel battalion: heavy armor	any	disaster
+resistance: fall of man	any	great
+uncharted: drake's fortune	any	good
+uncharted 2: among thieves	any	masterpiece
+uncharted 3: drake's deception	any	great
+the last of us	any	masterpiece
+heavy rain	any	great
+littlebigplanet	any	great
+demon's souls	any	great
+dark souls	any	masterpiece
+dark souls ii	any	great
+bloodborne	any	masterpiece
+batman: arkham asylum	any	masterpiece
+batman: arkham city	any	masterpiece
+batman: arkham origins	any	good
+assassin's creed	any	good
+assassin's creed ii	any	great
+assassin's creed iii	any	mixed
+assassin's creed unity	any	mixed
+call of duty 4: modern warfare	any	masterpiece
+call of duty: modern warfare 2	any	great
+call of duty: black ops	any	great
+call of duty: ghosts	any	mixed
+battlefield 3	any	great
+battlefield 4	any	good
+medal of honor	PlayStation	great
+medal of honor: warfighter	any	poor
+homefront	any	mixed
+brink	any	poor
+wii sports	any	great
+wii fit	any	good
+wii play	any	mixed
+mario party 8	any	mixed
+carnival games	any	poor
+babysitting mama	any	poor
+new super mario bros.	any	great
+new super mario bros. wii	any	great
+animal crossing: wild world	any	great
+nintendogs	any	great
+brain age: train your brain in minutes a day!	any	good
+professor layton and the curious village	any	great
+the world ends with you	any	great
+pokémon red version	any	masterpiece
+pokémon gold version	any	masterpiece
+pokémon ruby	any	great
+pokémon diamond	any	great
+pokémon black	any	great
+tamagotchi: party on!	any	poor
+imagine: babyz	any	poor
+deca sports sports islandpal	any	poor
+monster hunter freedom unite	any	great
+persona 3	any	great
+persona 4	any	masterpiece
+dragon quest viii: journey of the cursed king	any	great
+ni no kuni: wrath of the white witch	any	great
+xenoblade chronicles	any	masterpiece
+the witcher 2: assassins of kings	any	great
+the witcher 3: wild hunt	any	masterpiece
+dragon age: origins	any	great
+dragon age ii	any	mixed
+minecraft	any	masterpiece
+terraria	any	great
+journey	any	masterpiece
+limbo	any	great
+braid	any	great
+fez	any	great
+super meat boy	any	great
+spelunky	any	great
+shovel knight	any	great
+undertale	any	masterpiece
+stardew valley	any	masterpiece
+rocket league	any	great
+destiny	any	mixed
+watch dogs	any	mixed
+no man's sky	any	poor
+mighty no. 9	any	poor
+street fighter ii	any	masterpiece
+street fighter ii turbo	any	masterpiece
+super street fighter iv	any	great
+street fighter x tekken	any	mixed
+mortal kombat	Genesis	great
+mortal kombat ii	any	great
+mortal kombat: armageddon	any	mixed
+tekken 3	any	masterpiece
+tekken 5	any	great
+marvel vs. capcom 2	any	great
+killer instinct	any	good
+primal rage	any	mixed
+shaq fu	any	disaster
+fight club	any	disaster
+wwf no mercy	any	great
+wcw/nwo revenge	any	good
+memory manor	any	good
+situation critical	any	good

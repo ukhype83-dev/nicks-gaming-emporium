@@ -1,0 +1,15 @@
+# NGE V1.26 — German comment bank (light; other kinds fall back to English).
+kind	archetype	parent_sent	era_from	era_to	text
+agree	any	pos	2008	2016	Genau so ist es.
+agree	any	pos	2008	2016	Kann ich nur bestätigen.
+agree	any	pos	2008	2016	Volle Zustimmung.
+agree	any	neg	2008	2016	Danke, dachte schon, es liegt an mir.
+agree	any	neg	2008	2016	Ging mir genauso.
+disagree	any	pos	2008	2016	Sehe ich völlig anders.
+disagree	any	neg	2008	2016	Zu hart geurteilt, finde ich.
+question	any	any	2008	2016	Läuft das auch auf dem alten Modell?
+question	any	any	2008	2016	Lohnt sich die Special Edition?
+answer	any	any	2008	2016	@{prev_user} ja, läuft, nur längere Ladezeiten.
+agree	any	pos	2008	2016	+1
+agree	any	pos	2008	2016	So ist es.
+disagree	any	pos	2008	2016	Nein, sehe ich anders.

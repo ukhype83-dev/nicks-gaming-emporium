@@ -1,0 +1,15 @@
+# NGE V1.26 — Japanese comment bank (light; other kinds fall back to English).
+kind	archetype	parent_sent	era_from	era_to	text
+agree	any	pos	2008	2016	まさにその通り。
+agree	any	pos	2008	2016	同意する。
+agree	any	pos	2008	2016	完全に同感。
+agree	any	neg	2008	2016	自分だけかと思ってた、ありがとう。
+agree	any	neg	2008	2016	自分も同じだった。
+disagree	any	pos	2008	2016	全然そうは思わない。
+disagree	any	neg	2008	2016	少し厳しすぎない?
+question	any	any	2008	2016	旧型でもちゃんと動く?
+question	any	any	2008	2016	限定版は買う価値ある?
+answer	any	any	2008	2016	@{prev_user} 動くよ、ロードが長いだけ。
+agree	any	pos	2008	2016	+1
+agree	any	pos	2008	2016	それな。
+disagree	any	pos	2008	2016	いや、そうは思わない。

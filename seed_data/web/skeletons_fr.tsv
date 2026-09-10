@@ -1,0 +1,10 @@
+# NGE V1.26 — non-English review skeletons (archetype-agnostic, design §4b).
+# Generic slots; the engine falls back archetype->any. Short variants keep the
+# drive-by feel. Header row below is skipped by the loader.
+archetype	sentiment	weight	skeleton
+any	pos	1.0	opener_pos|experience?0.6|praise|praise?0.35|verdict_pos
+any	pos	0.6	short_pos
+any	neg	1.0	opener_neg|experience?0.5|flaw|flaw?0.35|verdict_neg
+any	neg	0.6	short_neg
+any	mixed	1.0	opener_mixed|praise?0.6|flaw|verdict_mixed
+any	mixed	0.6	short_mixed

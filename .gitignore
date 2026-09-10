@@ -1,0 +1,26 @@
+# Built generator binaries (users build their own)
+/simulator/build_emporium
+/simulator/be
+/simulator/simulator
+*.exe
+
+# Go build/test artifacts
+*.test
+*.out
+
+# Local generator output / logs
+*.log
+
+# Python (only relevant if you add tooling; the build pipeline is not shipped)
+__pycache__/
+*.pyc
+.venv/
+
+# Never commit the raw seed sources (multi-GB); only the built TSVs ship
+/seed_data/raw/
+
+# Editor / OS cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

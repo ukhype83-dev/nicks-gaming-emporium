@@ -1,0 +1,46 @@
+# NGE V1.26 — French review phrases (design §4b, lighter non-English bank).
+# Authored, not machine-translated. archetype=any, sentiment=any (slot carries sentiment).
+slot	archetype	sentiment	era_from	era_to	text
+opener_pos	any	any	2005	2016	Enfin joué, et quel plaisir.
+opener_pos	any	any	2005	2016	Longue attente, mais ça valait le coup.
+opener_pos	any	any	2005	2016	Quelle claque.
+opener_pos	any	any	2005	2016	Agréablement surpris.
+opener_neg	any	any	2005	2016	Je voulais vraiment l'aimer.
+opener_neg	any	any	2005	2016	Quel gâchis d'argent.
+opener_neg	any	any	2005	2016	Une vraie déception.
+opener_neg	any	any	2005	2016	Par où commencer...
+opener_mixed	any	any	2005	2016	Sentiments partagés sur ce titre.
+opener_mixed	any	any	2005	2016	Bonne intention, exécution moyenne.
+opener_mixed	any	any	2005	2016	Correct, sans plus.
+experience	any	any	2005	2016	Les premières heures traînent, puis ça décolle.
+experience	any	any	2005	2016	J'y ai perdu tout un week-end.
+experience	any	any	2005	2016	Fini deux fois, ça valait le coup.
+praise	any	any	2005	2016	La bande-son est exceptionnelle.
+praise	any	any	2005	2016	Le plus beau jeu sur {platform}.
+praise	any	any	2005	2016	La prise en main est parfaite.
+praise	any	any	2005	2016	Soigné dans les moindres détails.
+flaw	any	any	2005	2016	Les temps de chargement sont insupportables.
+flaw	any	any	2005	2016	Trop de bugs au lancement.
+flaw	any	any	2005	2016	La caméra fait n'importe quoi.
+flaw	any	any	2005	2016	Bien trop court pour le prix.
+verdict_pos	any	any	2005	2016	Achat indispensable. Cinq étoiles.
+verdict_pos	any	any	2005	2016	Un must pour les possesseurs de {platform}.
+verdict_pos	any	any	2005	2016	La note maximale pour moi.
+verdict_neg	any	any	2005	2016	À éviter, gardez votre argent.
+verdict_neg	any	any	2005	2016	À voir en promo, à la rigueur.
+verdict_neg	any	any	2005	2016	Une étoile, et encore.
+verdict_mixed	any	any	2005	2016	En promo pourquoi pas, sinon non.
+verdict_mixed	any	any	2005	2016	Trois étoiles, pas plus.
+verdict_mixed	any	any	2005	2016	Attendez une baisse de prix.
+short_pos	any	any	2005	2016	Excellent.
+short_pos	any	any	2005	2016	Foncez.
+short_pos	any	any	2005	2016	Très bon.
+short_pos	any	any	2005	2016	J'ai adoré.
+short_neg	any	any	2005	2016	Décevant.
+short_neg	any	any	2005	2016	À éviter.
+short_neg	any	any	2005	2016	Dommage.
+short_neg	any	any	2005	2016	Non.
+short_mixed	any	any	2005	2016	Bof.
+short_mixed	any	any	2005	2016	Moyen.
+short_mixed	any	any	2005	2016	Correct.
+short_mixed	any	any	2005	2016	Sans plus.
