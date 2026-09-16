@@ -397,6 +397,20 @@ performance tuning, and analytics/BI practice at a range of scales — including
 **cross-engine** work, since the OLTP and web layers hold the same data on both
 SQL Server and PostgreSQL.
 
+## How NGE compares
+
+How NGE compares to the sample databases people usually reach for. Each is good at different things:
+
+| Sample database | Domain | Engine(s) | Scale | Beyond OLTP? |
+|---|---|---|---|---|
+| **Nick's Gaming Emporium** | Fictional video-game retailer (full 1986-2016 lifecycle) | PostgreSQL + SQL Server (same data, one generator) | Four tiers, laptop-sized to ~3TB | OLTP + data warehouse + web layer |
+| pagila | DVD-rental store | PostgreSQL | Small (~a few MB) | OLTP |
+| Chinook | Digital media store | Many (SQLite, PostgreSQL, MySQL, SQL Server, Oracle, etc.) | Small (~15 MB) | OLTP |
+| AdventureWorks | Bicycle manufacturer / retailer | SQL Server (ports exist) | Small to medium (~hundreds of MB) | OLTP + a separate DW edition |
+| StackOverflow database | Q&A site (posts, votes, users) | SQL Server and PostgreSQL | Several sizes, up to ~400 GB | OLTP |
+
+The small classics (pagila, Chinook) are ideal when you want something tiny to spin up in seconds. NGE is built for the opposite case: realistic data at a scale that actually exercises a query planner, spanning transactional, analytical, and web workloads, with the same data available on both PostgreSQL and SQL Server. Different needs, different tools.
+
 ## Notes
 
 - The generator writes only to the target database you specify; it never
