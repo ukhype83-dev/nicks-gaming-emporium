@@ -281,12 +281,13 @@ psql -d nge_large -c "ANALYZE;"
 [**`FINGERPRINTS.md`**](FINGERPRINTS.md) publishes a 20-metric **fingerprint**
 for every tier — row counts and money totals across the OLTP, web, and warehouse
 layers, with the exact query for each engine. After restoring, run the query and
-confirm your database matches its row: that proves the restore is byte-faithful,
-not merely that the file downloaded.
+confirm your database matches its row. It's an aggregate consistency check
+(counts and totals), so it catches incomplete or mismatched restores, though not
+an edit to a single row.
 
 Building from source (above) is always the zero-cost option and works for both
-backends. For a given seed it produces a byte-identical database — every time, on
-any machine, and identically across both engines. The downloads are purely a
+backends. For a given seed it produces the same data every time, on any machine,
+and on both engines. The downloads are purely a
 convenience for the larger tiers.
 
 ### Useful flags
@@ -309,8 +310,8 @@ The schema files applied by `--init-schema` are at the repo root:
 
 ### Reproducibility
 
-The build is fully deterministic. Given the same seed and tier, it produces a
-**byte-identical** database — every time, on any machine — and the same rows,
+The build is fully deterministic. Given the same seed and tier, it generates
+**identical data** every time, on any machine, and the same rows,
 aligned by primary key, **across both backends**: a SQL Server database and a
 PostgreSQL database of the same tier are literal twins for every layer the two
 engines share. All surrogate ids (`transaction_id`, `page_view_id`, …) are

@@ -6,9 +6,12 @@ is published. After you restore a download (or build from source), run the
 fingerprint query for your engine and confirm the row matches your tier in the
 tables below.
 
-A match proves the database is **byte-faithful**, not merely that the file
-arrived intact. (A plain SHA-256 tells you the *download* is good; the
-fingerprint tells you the *restore* is good.)
+The fingerprint is an **aggregate consistency check**. A plain SHA-256 tells
+you the *download* is good; a matching fingerprint tells you the *restore* is
+complete and consistent: every layer is present with the right row counts and
+money totals, which catches truncated, partial or mismatched restores. It does
+not prove that every individual row is identical. Changing one customer's
+email, for example, would leave all 20 metrics unchanged.
 
 Because the generator is deterministic, these are also the numbers a
 **from-source** build of the same tier produces — the download and the build are
@@ -117,8 +120,8 @@ large    1356470465  2101970283  1377101078  2250673092 111860307  39399217   73
   inherent decimal-division rounding difference: the monthly wage rollup computes
   `SUM(annual_wage / 12 / fx_rate)`, and SQL Server's `decimal/decimal` uses a
   smaller intermediate scale than PostgreSQL's `numeric/numeric`. The **source
-  data is byte-identical** — `dw_fact = line_total = tx_total` to the penny on
-  both engines — and `msum_rev` (the revenue rollup) matches exactly. It is a
+  totals match**: `dw_fact`, `line_total` and `tx_total` agree to the penny on
+  both engines, and `msum_rev` (the revenue rollup) matches exactly. It is a
   derived, recomputable value, and a genuine "same query, two engines, different
   precision rule" teaching point rather than a defect.
 - **`fraud_n` is 0 on `tiny`/`small`.** A couple of canon "anomalies" (including
