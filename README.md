@@ -281,9 +281,9 @@ psql -d nge_large -c "ANALYZE;"
 [**`FINGERPRINTS.md`**](FINGERPRINTS.md) publishes a 20-metric **fingerprint**
 for every tier — row counts and money totals across the OLTP, web, and warehouse
 layers, with the exact query for each engine. After restoring, run the query and
-confirm your database matches its row. It's an aggregate consistency check
-(counts and totals), so it catches incomplete or mismatched restores, though not
-an edit to a single row.
+confirm your database matches its row. It's a summary-level check built from
+counts and sums: good at spotting an incomplete or wrong-tier restore, but blind
+to in-row edits that leave those numbers alone.
 
 Building from source (above) is always the zero-cost option and works for both
 backends. For a given seed it produces the same data every time, on any machine,

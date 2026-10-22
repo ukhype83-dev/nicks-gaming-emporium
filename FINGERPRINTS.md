@@ -6,12 +6,12 @@ is published. After you restore a download (or build from source), run the
 fingerprint query for your engine and confirm the row matches your tier in the
 tables below.
 
-The fingerprint is an **aggregate consistency check**. A plain SHA-256 tells
-you the *download* is good; a matching fingerprint tells you the *restore* is
-complete and consistent: every layer is present with the right row counts and
-money totals, which catches truncated, partial or mismatched restores. It does
-not prove that every individual row is identical. Changing one customer's
-email, for example, would leave all 20 metrics unchanged.
+The fingerprint is a **summary-level check** built from counts and sums. A
+plain SHA-256 tells you the *download* is good; a matching fingerprint tells you
+the *restore* is complete: every layer is there with the right number of rows
+and the right money totals, so a truncated, partial or wrong-tier restore will
+show up. What it can't see is a change inside a row that leaves the counts and
+sums alone, such as an edited text column or two rows trading values.
 
 Because the generator is deterministic, these are also the numbers a
 **from-source** build of the same tier produces — the download and the build are
